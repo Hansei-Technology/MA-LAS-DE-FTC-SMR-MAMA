@@ -30,6 +30,9 @@ public class ExtendoSystem {
     }
 
     public void setPower(double power) {
+        if(Math.abs(power) < 0.05) {
+            power = 0;
+        }
         motor.setPower(power);
     }
 

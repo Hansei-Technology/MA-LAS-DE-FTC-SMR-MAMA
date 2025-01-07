@@ -36,6 +36,6 @@ public class IntakeClaw {
     }
 
     public void update() {
-        clawServo.setPosition(isOpen ? PositionsIntake.openedClaw : PositionsIntake.closedClaw);
+        //clawServo.setPosition(isOpen ? PositionsIntake.openedClaw : PositionsIntake.closedClaw);
     }
 }

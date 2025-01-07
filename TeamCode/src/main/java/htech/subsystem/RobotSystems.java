@@ -13,6 +13,7 @@ public class RobotSystems {
     public ElapsedTime timer;
     public ElapsedTime timerCollect;
     public ElapsedTime timerSpecimen;
+    public ElapsedTime tttt;
 
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
         this.extendoSystem = extendoSystem;
@@ -22,6 +23,7 @@ public class RobotSystems {
         timer = new ElapsedTime();
         timerCollect = new ElapsedTime();
         timerSpecimen = new ElapsedTime();
+        tttt = new ElapsedTime();
     }
 
     public void update() {
@@ -98,6 +100,7 @@ public class RobotSystems {
                 }
                 if(timerCollect.milliseconds() > RobotSettings.timeToCollectGoingDown && !intakeSubsystem.claw.isOpen) {
                     //intakeSubsystem.claw.close();
+                    liftSystem.setPower(-0.3);
                     timerCollect.reset();
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
                 }
@@ -120,6 +123,7 @@ public class RobotSystems {
                 }
 
                 if(timerCollect.milliseconds() > RobotSettings.timeToCollect) {
+                    liftSystem.reset();
                     intakeSubsystem.goToWall();
                     extendoSystem.goToGround();
                     //transferState = TransferStates.LIFT_GOING_DOWN;
@@ -173,13 +177,14 @@ public class RobotSystems {
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeWall_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
                     intakeSubsystem.goToTransfer();
                     timer.reset();
+                    tttt.reset();
                     transferState = TransferStates.READY_TO_TRANSFER;
                 }
 
                 break;
 
             case READY_TO_TRANSFER:
-                if (timer.milliseconds() > RobotSettings.timeReady_Transfer) {
+                if (tttt.milliseconds() > RobotSettings.timeReady_Transfer) {
                     timer.reset();
                     outtakeSubsystem.claw.close();
                     transferState = TransferStates.CATCHING;

@@ -75,7 +75,7 @@ public class TeleOpSolo extends LinearOpMode {
                     lift.setPower(-0.35);
                 }
                 lift.setPower(0);
-                lift.reset(gamepad1);
+                lift.reset();
                 gamepad1.rumble(100);
             }
 

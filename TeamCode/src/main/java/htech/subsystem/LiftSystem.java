@@ -33,8 +33,8 @@ public class LiftSystem {
         left.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         right.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-        right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         right.setDirection(DcMotorEx.Direction.REVERSE);
         left.setDirection(DcMotorEx.Direction.FORWARD);
@@ -45,6 +45,9 @@ public class LiftSystem {
     }
 
     public void setPower(double power) {
+        if(Math.abs(power) < 0.1) {
+            power = 0;
+        }
         left.setPower(power);
         right.setPower(power);
     }
@@ -99,7 +102,7 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
-    public void reset(Gamepad g) {
+    public void reset() {
         left.setPower(0);
         right.setPower(0);
 
@@ -111,7 +114,7 @@ public class LiftSystem {
 
         currentPos = 0;
         target_position = 0;
-        g.rumble(100);
+        //g.rumble(100);
         PIDON = true;
     }
 
