@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import htech.mechanism.intake.BreakBeam;
 import htech.mechanism.intake.IntakeBar;
 import htech.mechanism.intake.IntakeBarMotionProfile;
 import htech.mechanism.intake.IntakeClaw;
@@ -16,6 +17,7 @@ public class IntakeSubsystem {
     public final IntakeRotation rotation;
     public final IntakeBar bar;
     public final IntakeJoint joint;
+    public final BreakBeam breakBeam;
 
     boolean fastCollect = false;
     boolean hopPeSpate = false;
@@ -36,6 +38,7 @@ public class IntakeSubsystem {
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         // MECHANISM //
+        breakBeam = new BreakBeam(hardwareMap);
         claw = new IntakeClaw(hardwareMap);
         rotation = new IntakeRotation(hardwareMap);
         bar = new IntakeBar(hardwareMap);
@@ -47,6 +50,10 @@ public class IntakeSubsystem {
         bar.goToGround();
         rotation.goToFlipped();
         claw.open();
+    }
+
+    public boolean hasElement() {
+        return breakBeam.hasElement();
     }
 
     public void initAuto() {
@@ -63,7 +70,13 @@ public class IntakeSubsystem {
         rotation.goToFlipped();
         claw.open();
         if(intakeState != intakeState.COLLECTING) intakeState = intakeState.DOWN;
+    }
 
+    public void goDownWithoutResetRotation() {
+        joint.goToPickup();
+        bar.goToGround();
+        claw.open();
+        if(intakeState != intakeState.COLLECTING) intakeState = intakeState.DOWN;
     }
 
     public void goToWall() {
@@ -95,7 +108,8 @@ public class IntakeSubsystem {
             bar.goToCollect();
             intakeState = intakeState.COLLECT_GOING_DOWN;
         }
-        else goDown();
+        else if(intakeState == IntakeState.WALL) goDown();
+        else goDownWithoutResetRotation();
     }
 
     public void hopPeSpateCollect(){

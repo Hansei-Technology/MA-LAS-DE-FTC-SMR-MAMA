@@ -117,7 +117,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
     public static double SAFE3_X = -40, SAFE3_Y = 40;
     public static double SAMPLE3_X = -48, SAMPLE3_Y = 52.3, SAMPLE3_ANGLE = 0;
-    public static double SPECIMEN1_X = -7.9, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
+    public static double SPECIMEN1_X = -8.1, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
 
     public static double SCORE1_X = -27, SCORE1_Y = 1;
     public static double SCORE2_X = -27, SCORE2_Y = -1;
@@ -125,7 +125,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     public static double SCORE4_X = -27, SCORE4_Y = -3.5;
     public static double SAFE_SCORE_X = -14, SAFE_SCORE_Y = 0;
 
-    public static double SPECIMEN_X = -8.4, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
+    public static double SPECIMEN_X = -8.5, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
 
     public static double SAFE_SPECIMEN_X = -20, SAFE_SPECIMEN_Y = 5;
     public static double SAFE_SPECIMEN2_X = -20, SAFE_SPECIMEN2_Y = SPECIMEN_Y;
@@ -387,12 +387,12 @@ public class FiveSpecimensAuto extends LinearOpMode {
 //                            collectingSample = false;
 //                        }
 //                    }
-//                    if(collectingSpecimen){
-//                        if(follower.getCurrentTValue() >= 0.6){
-//                            follower.setMaxPower(collectSpeed);
-//                            collectingSpecimen = false;
-//                        }
-//                    }
+                    if(collectingSpecimen){
+                        if(follower.getCurrentTValue() >= 0.6){
+                            follower.setMaxPower(collectSpeed);
+                            collectingSpecimen = false;
+                        }
+                    }
                     if(!follower.isBusy()){
                         CS = NS;
                     }

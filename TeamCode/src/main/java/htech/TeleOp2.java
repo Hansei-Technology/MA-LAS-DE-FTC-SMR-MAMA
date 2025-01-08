@@ -78,7 +78,7 @@ public class TeleOp2 extends LinearOpMode {
 
             //rotations(both of them)
             if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                intakeSubsystem.rotation.handleRotation(gamepad2.right_trigger - gamepad2.left_trigger);
+                intakeSubsystem.rotation.handleRotation(- gamepad2.right_trigger + gamepad2.left_trigger);
             }
 
             if(stickyGamepad2.dpad_left) {
@@ -94,6 +94,7 @@ public class TeleOp2 extends LinearOpMode {
             }
             if(gamepad2.dpad_up) {
                 extendo.goToMax();
+                //intakeSubsystem.goDown();
 //                intakeSubsystem.goDown();
             }
 
@@ -140,6 +141,7 @@ public class TeleOp2 extends LinearOpMode {
             telemetry.addData("extendoPID", extendo.pidEnabled);
             telemetry.addData("outtakeRot", robotSystems.outtakeSubsystem.joint.getRot());
             telemetry.addData("intakeRot", intakeSubsystem.rotation.rotLevel);
+           // telemetry.addData("BreakBeam", intakeSubsystem.breakBeam.hasElement());
 
             telemetry.update();
         }

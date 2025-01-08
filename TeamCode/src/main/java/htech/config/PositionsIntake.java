@@ -8,8 +8,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class PositionsIntake {
     // INTAKE CLAW //
-    public static double closedClaw = 0.59;
-    public static double openedClaw = 0.35;
+    public static double closedClaw = 0.52;
+    public static double openedClaw = 0.38;
 
     // INTAKE ROTATION //
 //    public static double normalRotation = 0.275;
