@@ -122,7 +122,7 @@ public class LiftSystem {
 
 
     public boolean isAtPosition() {
-        return Math.abs(currentPos - target_position) < 10;
+        return Math.abs(currentPos - target_position) < 18;
     }
 
     public void update() {

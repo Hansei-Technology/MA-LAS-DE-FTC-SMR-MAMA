@@ -1,5 +1,6 @@
 package htech.subsystem;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -94,6 +95,19 @@ public class ExtendoSystem {
             setPower(power);
         }
 
+    }
+
+    public void reset() {
+        motor.setPower(0);
+
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        currentPos = 0;
+        target_position = 0;
+        //g.rumble(100);
+        pidEnabled = true;
     }
 
     public boolean isAtPosition() {

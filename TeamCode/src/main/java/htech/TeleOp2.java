@@ -131,6 +131,17 @@ public class TeleOp2 extends LinearOpMode {
                 gamepad1.rumble(100);
             }
 
+            if(gamepad1.dpad_up){
+                while(gamepad1.dpad_up){
+                    extendo.setPower(-0.35);
+                }
+                extendo.setPower(0);
+                extendo.reset();
+                gamepad1.rumble(100);
+            }
+
+
+
             //telemetry:
             telemetry.addData("[STATUS]", "Main Teleop is running.");
             telemetry.addData("Match Time", matchTimer.seconds());

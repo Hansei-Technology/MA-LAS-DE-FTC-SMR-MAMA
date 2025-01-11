@@ -83,7 +83,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
 
     //Timers
-    public static int timeToScoreSpecimen = 200;
+    public static int timeToScoreSpecimen = 300;
     public static int timeToTransfer = 650;
     public static int timeToCollectSpecimen = 75;
     public int TIME_TO_WAIT = 0;
@@ -95,15 +95,15 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
 
     //Speeds
-    public static double maxSpeed = 0.9;
-    public static double scoreSpeed = 0.7;
+    public static double maxSpeed = 1;
+    public static double scoreSpeed = 1;
     public static double sample3Speed = 0.7;
     public static double collectSpeed = 0.6;
 
 
     //Poses
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -27, PRELOAD_Y = 0, PRELOAD_ANGLE = START_ANGLE;
+    public static double PRELOAD_X = -29, PRELOAD_Y = 0, PRELOAD_ANGLE = START_ANGLE;
 
     public static double SAFE1_X = -5, SAFE1_Y = 30;
     public static double SAFE12_X = -30, SAFE12_Y = 10;
@@ -117,15 +117,15 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
     public static double SAFE3_X = -40, SAFE3_Y = 40;
     public static double SAMPLE3_X = -48, SAMPLE3_Y = 52.3, SAMPLE3_ANGLE = 0;
-    public static double SPECIMEN1_X = -8.1, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
+    public static double SPECIMEN1_X = -5.8, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
 
-    public static double SCORE1_X = -27, SCORE1_Y = 1;
-    public static double SCORE2_X = -27, SCORE2_Y = -1;
-    public static double SCORE3_X = -27, SCORE3_Y = -2.5;
-    public static double SCORE4_X = -27, SCORE4_Y = -3.5;
+    public static double SCORE1_X = -26, SCORE1_Y = -2;
+    public static double SCORE2_X = -26, SCORE2_Y = -2;
+    public static double SCORE3_X = -26, SCORE3_Y = -3.5;
+    public static double SCORE4_X = -26, SCORE4_Y = -4.5;
     public static double SAFE_SCORE_X = -14, SAFE_SCORE_Y = 0;
 
-    public static double SPECIMEN_X = -8.5, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
+    public static double SPECIMEN_X = -6.1, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
 
     public static double SAFE_SPECIMEN_X = -20, SAFE_SPECIMEN_Y = 5;
     public static double SAFE_SPECIMEN2_X = -20, SAFE_SPECIMEN2_Y = SPECIMEN_Y;
