@@ -14,9 +14,9 @@ public class IntakeBar {
     public IntakeBar(HardwareMap hardwareMap) {
         barServo = hardwareMap.get(Servo.class, Servos.intakeBarServoLeft);
         barServo2 = hardwareMap.get(Servo.class, Servos.intakeBarServoRight);
-        barServo.setPosition(PositionsIntake.transferPositionBar + PositionsIntake.offsetBar);
-        barServo2.setPosition(PositionsIntake.transferPositionBar);
-        currentPosition = PositionsIntake.transferPositionBar;
+//        barServo.setPosition(PositionsIntake.transferPositionBar + PositionsIntake.offsetBar);
+//        barServo2.setPosition(PositionsIntake.transferPositionBar);
+//        currentPosition = PositionsIntake.transferPositionBar;
     }
 
     public void goToGround() {

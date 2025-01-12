@@ -23,7 +23,6 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 
 /**
@@ -40,8 +39,8 @@ import com.pedropathing.pathgen.Point;
  * @version 1.0, 3/12/2024
  */
 @Config
-@Autonomous (name = "BasketAuto", group = "HTECH")
-public class BasketAuto extends OpMode {
+@Autonomous (name = "0+4 rapid", group = "HTECH")
+public class AutoBasketRapid extends OpMode {
     ChassisMovement chassisMovement;
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
@@ -58,24 +57,27 @@ public class BasketAuto extends OpMode {
 
     private Path goToPreload;
 
+    public int timeToPlacePreload = 400;
+
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -26, PRELOAD_Y = 0, PRELOAD_ANGLE;
-    public static double SAFE_X = -7, SAFE_Y = -10, SAFE_ANGLE;
+    public static double PRELOAD_X = -12, PRELOAD_Y = -39, PRELOAD_ANGLE = 130;
+    public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -29, SAMPLE1_Y = -37.6, SAMPLE1_ANGLE = 180;
-    public static double SAMPLE2_X = -38.7, SAMPLE2_Y = -38.3, SAMPLE2_ANGLE = 270;
-    public static double SAMPLE3_X = -39, SAMPLE3_Y = -39.5, SAMPLE3_ANGLE = 270;
-    public static double BASKET1_X = -12.5, BASKET1_Y = -38.5, BASKET1_ANGLE = 130;
-    public static double BASKET2_X = -12.5, BASKET2_Y = -38.5, BASKET2_ANGLE = 127;
-    public static double BASKET3_X = -13, BASKET3_Y = -38.5, BASKET3_ANGLE = 130;
+    public static double SAMPLE1_X = -28.7, SAMPLE1_Y = -37.9, SAMPLE1_ANGLE = 180;
+    public static double SAMPLE2_X = -38.7, SAMPLE2_Y = -38.3, SAMPLE2_ANGLE = 267;
+    public static double SAMPLE3_X = -38.9, SAMPLE3_Y = -39.5, SAMPLE3_ANGLE = 269;
+    public static double BASKET1_X = -11.5, BASKET1_Y = -39.5, BASKET1_ANGLE = 130;
+    public static double BASKET2_X = -11.5, BASKET2_Y = -39.5, BASKET2_ANGLE = 127;
+    public static double BASKET3_X = -12, BASKET3_Y = -39, BASKET3_ANGLE = 130;
     public static double PARK_X = -55, PARK_Y = -14.3, PARK_ANGLE = 270;
     public static double SAFE_PARK_X = -52, SAFE_PARK_Y = -38, SAFE_PARK_ANGLE;
+    public static double liftMagic = 1300;
 
     public static int timeToPreload = 400;
     public static int timeToSample = 200;
-    public static int timeToCollect1 = 1200;
-    public static int timeToCollect2 = 1200;
-    public static int timeToCollect3 = 1500;
+    public static int timeToCollect1 = 800;
+    public static int timeToCollect2 = 700;
+    public static int timeToCollect3 = 800;
     public static int time_to_transfer = 1000;
     public static int time_to_lift = 850;
     public static int time_to_drop = 1050;
@@ -98,6 +100,7 @@ public class BasketAuto extends OpMode {
         TRANSFERING,
         PRELOAD,
         PLACING_PRELOAD,
+        PLACING_PRELOAD_2,
         SAMPLE1,
         SAMPLE2,
         SAMPLE3,
@@ -138,89 +141,95 @@ public class BasketAuto extends OpMode {
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        //follower.setPose(new Pose(START_X, START_Y, START_ANGLE));
+        follower.setPose(new Pose(START_X, START_Y, START_ANGLE));
 
-        goToPreload = new Path(new BezierLine(new Point(START_X,START_Y, Point.CARTESIAN), new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN)));
-        goToPreload.setConstantHeadingInterpolation(PRELOAD_ANGLE);
-        goToPreload.setReversed(true);
-        follower.setMaxPower(0.6);
+        goToPreload = new Path(
+                // Line 1
+                new BezierCurve(
+                        new Point(START_X,START_Y, Point.CARTESIAN),
+                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN)
+                )
+        );
+        goToPreload.setLinearHeadingInterpolation(Math.toRadians(START_ANGLE), Math.toRadians(PRELOAD_ANGLE));
 
 
         goTo1Sample = new Path(
-                        // Line 1
-                        new BezierCurve(
-                                new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN),
-                                new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
-                                new Point(SAMPLE1_X,SAMPLE1_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo1Sample.setLinearHeadingInterpolation(Math.toRadians(START_ANGLE), Math.toRadians(SAMPLE1_ANGLE));
+                // Line 1
+                new BezierCurve(
+                        new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN),
+                        new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
+                        new Point(SAMPLE1_X,SAMPLE1_Y, Point.CARTESIAN)
+                )
+        );
+        goTo1Sample.setLinearHeadingInterpolation(Math.toRadians(PRELOAD_ANGLE), Math.toRadians(SAMPLE1_ANGLE));
 
 
 
         goTo1Basket = new Path(
-                        new BezierLine(
-                                new Point(SAMPLE1_X, SAMPLE1_Y, Point.CARTESIAN),
-                                //new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
-                                new Point(BASKET1_X, BASKET1_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo1Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE1_ANGLE), Math.toRadians(BASKET1_ANGLE));
+                new BezierLine(
+                        new Point(SAMPLE1_X, SAMPLE1_Y, Point.CARTESIAN),
+                        //new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(BASKET1_X, BASKET1_Y, Point.CARTESIAN)
+                )
+        );
+        goTo1Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE1_ANGLE), Math.toRadians(BASKET1_ANGLE));
 
 
         goTo2Sample = new Path(
-                        // Line 1
-                        new BezierCurve(
-                                new Point(BASKET1_X,BASKET1_Y, Point.CARTESIAN),
-                                new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
-                                new Point(SAMPLE2_X,SAMPLE2_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo2Sample.setLinearHeadingInterpolation(Math.toRadians(BASKET1_ANGLE), Math.toRadians(SAMPLE2_ANGLE));
+                // Line 1
+                new BezierCurve(
+                        new Point(BASKET1_X,BASKET1_Y, Point.CARTESIAN),
+                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(SAMPLE2_X,SAMPLE2_Y, Point.CARTESIAN)
+                )
+        );
+        goTo2Sample.setLinearHeadingInterpolation(Math.toRadians(BASKET1_ANGLE), Math.toRadians(SAMPLE2_ANGLE));
 
 
         goTo2Basket = new Path(
-                        new BezierCurve(
-                                new Point(SAMPLE2_X, SAMPLE2_Y, Point.CARTESIAN),
-                                new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
-                                new Point(BASKET2_X, BASKET2_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo2Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE2_ANGLE), Math.toRadians(BASKET2_ANGLE));
+                new BezierLine(
+                        new Point(SAMPLE2_X, SAMPLE2_Y, Point.CARTESIAN),
+                        //new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(BASKET2_X, BASKET2_Y, Point.CARTESIAN)
+                )
+        );
+        goTo2Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE2_ANGLE), Math.toRadians(BASKET2_ANGLE));
 
 
 
         goTo3Sample = new Path(
-                        // Line 1
-                        new BezierCurve(
-                                new Point(BASKET2_X,BASKET2_Y, Point.CARTESIAN),
-                                new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
-                                new Point(SAMPLE3_X,SAMPLE3_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo3Sample.setLinearHeadingInterpolation(Math.toRadians(BASKET2_ANGLE), Math.toRadians(SAMPLE3_ANGLE));
+                // Line 1
+                new BezierCurve(
+                        new Point(BASKET2_X,BASKET2_Y, Point.CARTESIAN),
+                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(SAMPLE3_X,SAMPLE3_Y, Point.CARTESIAN)
+                )
+        );
+        goTo3Sample.setLinearHeadingInterpolation(Math.toRadians(BASKET2_ANGLE), Math.toRadians(SAMPLE3_ANGLE));
 
 
         goTo3Basket = new Path(
-                        new BezierCurve(
-                                new Point(SAMPLE3_X, SAMPLE3_Y, Point.CARTESIAN),
-                                new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
-                                new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN)
-                        )
-                );
-                goTo3Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE3_ANGLE), Math.toRadians(BASKET3_ANGLE));
+                new BezierCurve(
+                        new Point(SAMPLE3_X, SAMPLE3_Y, Point.CARTESIAN),
+                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
+                        new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN)
+                )
+        );
+        goTo3Basket.setLinearHeadingInterpolation(Math.toRadians(SAMPLE3_ANGLE), Math.toRadians(BASKET3_ANGLE));
 
         goToPark = new Path(
-                        new BezierCurve(
-                                new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN),
-                                new Point(SAFE_PARK_X, SAFE_PARK_Y, Point.CARTESIAN),
-                                new Point(PARK_X, PARK_Y, Point.CARTESIAN)
-                        )
-                );
-                goToPark.setLinearHeadingInterpolation(Math.toRadians(BASKET3_ANGLE), Math.toRadians(PARK_ANGLE));
+                new BezierCurve(
+                        new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN),
+                        new Point(SAFE_PARK_X, SAFE_PARK_Y, Point.CARTESIAN),
+                        new Point(PARK_X, PARK_Y, Point.CARTESIAN)
+                )
+        );
+        goToPark.setLinearHeadingInterpolation(Math.toRadians(BASKET3_ANGLE), Math.toRadians(PARK_ANGLE));
 
 
-        follower.followPath(goToPreload, true);
+        follower.setMaxPower(0.6);
+        follower.followPath(goToPreload);
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -235,8 +244,8 @@ public class BasketAuto extends OpMode {
 
         switch (CS) {
             case PRELOAD:
-                lift.goToHighChamber();
-                outtakeSubsystem.goToSpecimenScore();
+                //lift.goToHighBasket();
+                //outtakeSubsystem.goToSampleScore();
                 NS = STATES.PLACING_PRELOAD;
                 CS = STATES.MOVING;
                 break;
@@ -244,15 +253,18 @@ public class BasketAuto extends OpMode {
             case MOVING:
                 if(!follower.isBusy() ||  follower.getCurrentTValue() > 0.99) {
                     switch(NS) {
-                        case PLACING_PRELOAD:
-                            lift.goToMagicPos();
-                            break;
                         case BASKET1:
                             lift.goToHighBasket();
                             break;
                     }
                     firstTime = true;
+                    timer.reset();
                     CS = NS;
+                }
+
+                if(follower.getCurrentTValue() > 0.4 && NS == STATES.PLACING_PRELOAD) {
+                    lift.goToHighBasket();
+                    outtakeSubsystem.goToSampleScore();
                 }
                 break;
 
@@ -278,23 +290,43 @@ public class BasketAuto extends OpMode {
                 break;
 
             case PLACING_PRELOAD:
-                if(lift.isAtPosition()) {
+                if(firstTime) {
+                    lift.goToHighBasket();
+                    firstTime = false;
+                }
+
+                if(lift.isAtPosition() || timer.milliseconds() > timeToPlacePreload) {
                     outtakeSubsystem.claw.open();
-                    NS = STATES.SAMPLE1;
+                    firstTime = false;
+                    NS = STATES.PLACING_PRELOAD_2;
                     CS = STATES.WAITING;
                     TIME_TO_WAIT = timeToPreload;
                     timer.reset();
                 }
+
+
                 break;
 
-            case SAMPLE1:
-                follower.setMaxPower(0.6);
-                follower.followPath(goTo1Sample, true);
+            case PLACING_PRELOAD_2:
                 outtakeSubsystem.goToTransfer();
                 lift.goToGround();
                 intakeSubsystem.goDown();
-                intakeSubsystem.claw.open();
+                firstTime = false;
 
+                if(lift.isDown()) {
+                    CS = STATES.SAMPLE1;
+                    //CS = STATES.MOVING;
+                    firstTime = true;
+                }
+
+                break;
+
+            case SAMPLE1:
+                timer.reset();
+                follower.setMaxPower(0.8);
+                follower.followPath(goTo1Sample, true);
+                intakeSubsystem.goDown();
+                intakeSubsystem.claw.open();
                 timer.reset();
                 NS = STATES.COLLECTING1;
                 CS = STATES.MOVING;
@@ -306,7 +338,7 @@ public class BasketAuto extends OpMode {
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.6);
+                    follower.setMaxPower(0.8);
                     follower.followPath(goTo1Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
                     NS = STATES.BASKET1;
@@ -340,7 +372,7 @@ public class BasketAuto extends OpMode {
                 break;
 
             case SAMPLE2:
-                follower.setMaxPower(0.6);
+                follower.setMaxPower(0.8);
                 follower.followPath(goTo2Sample, true);
                 outtakeSubsystem.goToTransfer();
                 lift.goToGround();
@@ -359,7 +391,7 @@ public class BasketAuto extends OpMode {
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.6);
+                    follower.setMaxPower(0.8);
                     follower.followPath(goTo2Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
                     NS = STATES.BASKET2;
@@ -374,10 +406,10 @@ public class BasketAuto extends OpMode {
 
             case BASKET2:
                 lift.goToHighBasket();
-                    if(firstTime) {
-                        timer.reset();
-                        firstTime = false;
-                    }
+                if(firstTime) {
+                    timer.reset();
+                    firstTime = false;
+                }
                 if(timer.milliseconds() > time_to_lift) {
                     outtakeSubsystem.goToSampleScore();
                 }
@@ -392,7 +424,7 @@ public class BasketAuto extends OpMode {
                 break;
 
             case SAMPLE3:
-                follower.setMaxPower(0.6);
+                follower.setMaxPower(0.8);
                 follower.followPath(goTo3Sample, true);
                 outtakeSubsystem.goToTransfer();
                 lift.goToGround();
@@ -412,7 +444,7 @@ public class BasketAuto extends OpMode {
                     extendo.goToPos(extendoPoz3);
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.6);
+                    follower.setMaxPower(0.8);
                     follower.followPath(goTo3Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
                     NS = STATES.BASKET3;

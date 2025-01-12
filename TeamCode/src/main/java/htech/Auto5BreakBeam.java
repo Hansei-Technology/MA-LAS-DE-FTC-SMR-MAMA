@@ -6,8 +6,11 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import htech.config.Sensors;
+import htech.mechanism.intake.BreakBeam;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.ExtendoSystem;
@@ -26,8 +29,8 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 
 @Config
-@Autonomous(name = "[AUTO] 5+0", group = "HTECH")
-public class FiveSpecimensAuto extends LinearOpMode {
+@Autonomous(name = "[AUTO] 5+0 breakBeam", group = "HTECH")
+public class Auto5BreakBeam extends LinearOpMode {
 
 
     //Mechanisms
@@ -39,6 +42,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     RobotSystems robotSystems;
     ElapsedTime timer;
     ElapsedTime matchTimer;
+    DigitalChannel sensor;
 
 
     //Pedro
@@ -92,6 +96,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     //Booleans
     public boolean collectingSpecimen = false;
     public boolean collectingSample = false;
+    public boolean bb = false;
 
 
     //Speeds
@@ -125,7 +130,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     public static double SCORE4_X = -26, SCORE4_Y = -7;
     public static double SAFE_SCORE_X = -14, SAFE_SCORE_Y = 0;
 
-    public static double SPECIMEN_X = -6.5, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
+    public static double SPECIMEN_X = -6.2, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
 
     public static double SAFE_SPECIMEN_X = -20, SAFE_SPECIMEN_Y = 5;
     public static double SAFE_SPECIMEN2_X = -20, SAFE_SPECIMEN2_Y = SPECIMEN_Y;
@@ -154,6 +159,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
         lift = new LiftSystem(hardwareMap);
         extendo = new ExtendoSystem(hardwareMap);
+        sensor = hardwareMap.get(DigitalChannel.class, Sensors.BreakBeamIntake);
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         timer = new ElapsedTime();
         matchTimer = new ElapsedTime();
@@ -396,6 +402,14 @@ public class FiveSpecimensAuto extends LinearOpMode {
                     if(!follower.isBusy()){
                         CS = NS;
                     }
+                    if(bb){
+                        if(follower.getCurrentTValue() > 0.84){
+                            if(!sensor.getState()){
+                                CS = NS;
+                            }
+                        }
+                        bb = false;
+                    }
                     break;
 
                 case PLACING_SPECIMEN:
@@ -422,6 +436,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
                 case COLLECTING_SAMPLES:
                     collectingSample = true;
+                    bb = true;
                     lift.goToGround();
                     extendo.goToGround();
                     intakeSubsystem.goToWall();
@@ -436,6 +451,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
                     break;
 
                 case COLLECTING_SPECIMEN:
+
                     intakeSubsystem.claw.close();
                     TIME_TO_WAIT = timeToCollectSpecimen;
                     timer.reset();
