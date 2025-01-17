@@ -67,6 +67,7 @@ public class TeleOp2 extends LinearOpMode {
 
             //intake
             if(stickyGamepad1.right_bumper) {
+                outtakeSubsystem.claw.open();
                 intakeSubsystem.collect(false);
             }
 
