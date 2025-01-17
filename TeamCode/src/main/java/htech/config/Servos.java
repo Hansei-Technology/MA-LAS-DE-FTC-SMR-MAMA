@@ -23,4 +23,7 @@ public abstract class Servos {
 
     public static String hangLeftServo = "s4e";
     public static String hangRightServo = "s5e";
+
+    public static String ptoLeftServo = "";
+    public static String ptoRightServo = "";
 }

@@ -3,7 +3,7 @@ package htech.util;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import htech.mechanism.HangSystem;
+import htech.mechanism.hang.HangSystem;
 
 @TeleOp
 public class HangTest extends LinearOpMode {

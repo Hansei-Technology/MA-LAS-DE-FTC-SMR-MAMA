@@ -1,4 +1,4 @@
-package htech.mechanism;
+package htech.mechanism.hang;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -20,3 +20,4 @@ public class HangSystem {
         right.setPower(goesSameWay? power : -power);
     }
 }
+
