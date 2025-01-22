@@ -85,7 +85,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     //Timers
     public static int timeToScoreSpecimen = 400;
     public static int timeToTransfer = 730;
-    public static int timeToCollectSpecimen = 75;
+    public static int timeToCollectSpecimen = 100;
     public int TIME_TO_WAIT = 0;
 
 
@@ -117,7 +117,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
     public static double SAFE3_X = -40, SAFE3_Y = 40;
     public static double SAMPLE3_X = -48, SAMPLE3_Y = 52.3, SAMPLE3_ANGLE = 0;
-    public static double SPECIMEN1_X = -6.2, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
+    public static double SPECIMEN1_X = -7.6, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
 
     public static double SCORE1_X = -26, SCORE1_Y = -4;
     public static double SCORE2_X = -26, SCORE2_Y = -5;
@@ -125,7 +125,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
     public static double SCORE4_X = -26, SCORE4_Y = -7;
     public static double SAFE_SCORE_X = -14, SAFE_SCORE_Y = 0;
 
-    public static double SPECIMEN_X = -6.5, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
+    public static double SPECIMEN_X = -6.45, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
 
     public static double SAFE_SPECIMEN_X = -20, SAFE_SPECIMEN_Y = 5;
     public static double SAFE_SPECIMEN2_X = -20, SAFE_SPECIMEN2_Y = SPECIMEN_Y;

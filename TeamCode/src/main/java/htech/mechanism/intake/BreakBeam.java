@@ -13,6 +13,7 @@ public class BreakBeam {
     }
 
     public boolean hasElement() {
-        return !sensor.getState();
+        //return !sensor.getState();
+        return true;
     }
 }

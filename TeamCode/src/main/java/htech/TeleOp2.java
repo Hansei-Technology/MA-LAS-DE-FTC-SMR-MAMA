@@ -49,6 +49,7 @@ public class TeleOp2 extends LinearOpMode {
 
         intakeSubsystem.init();
         outtakeSubsystem.init();
+        lift.PIDON = true;
 
         matchTimer.reset();
 
@@ -153,6 +154,7 @@ public class TeleOp2 extends LinearOpMode {
             telemetry.addData("extendoPID", extendo.pidEnabled);
             telemetry.addData("outtakeRot", robotSystems.outtakeSubsystem.joint.getRot());
             telemetry.addData("intakeRot", intakeSubsystem.rotation.rotLevel);
+            telemetry.addData("PID VERT", lift.PIDON);
            // telemetry.addData("BreakBeam", intakeSubsystem.breakBeam.hasElement());
 
             telemetry.update();

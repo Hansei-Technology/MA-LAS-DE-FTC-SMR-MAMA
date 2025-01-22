@@ -98,7 +98,8 @@ public class RobotSystems {
                 }
                 if(timerCollect.milliseconds() > RobotSettings.timeToCollectGoingDown && !intakeSubsystem.claw.isOpen) {
                     //intakeSubsystem.claw.close();
-                    liftSystem.setPower(-0.3);
+                    liftSystem.setPower(-0.4);
+                    liftSystem.PIDON = false;
                     timerCollect.reset();
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
                 }
@@ -158,9 +159,13 @@ public class RobotSystems {
                 //condition to exit
                 if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
                     intakeSubsystem.goToReady();
+                    liftSystem.setPower(-0.3);
+                    liftSystem.PIDON = false;
                     transferState = TransferStates.INTAKE_DOWN;
                 } else {
                     intakeSubsystem.goToReady();
+                    if(firstTime) liftSystem.setPower(-0.3);
+                    liftSystem.PIDON = false;
                     transferState = TransferStates.INTAKE_WALL;
                 }
                 break;
@@ -169,6 +174,7 @@ public class RobotSystems {
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeDown_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
                     intakeSubsystem.goToTransfer();
                     timer.reset();
+                    firstTime = true;
                     transferState = TransferStates.READY_TO_TRANSFER;
                 }
 
@@ -178,12 +184,14 @@ public class RobotSystems {
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeWall_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
                     intakeSubsystem.goToTransfer();
                     timer.reset();
+                    firstTime = true;
                     transferState = TransferStates.READY_TO_TRANSFER;
                 }
 
                 break;
 
             case READY_TO_TRANSFER:
+                if(firstTime) liftSystem.reset();
                 if (timer.milliseconds() > RobotSettings.timeReady_Transfer) {
                     timer.reset();
                     outtakeSubsystem.claw.close();

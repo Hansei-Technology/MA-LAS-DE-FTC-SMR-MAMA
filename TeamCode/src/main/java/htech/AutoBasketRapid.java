@@ -60,30 +60,30 @@ public class AutoBasketRapid extends OpMode {
     public int timeToPlacePreload = 400;
 
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -12, PRELOAD_Y = -39, PRELOAD_ANGLE = 130;
+    public static double PRELOAD_X = -14.5, PRELOAD_Y = -38.3, PRELOAD_ANGLE = 122;
     public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -28.7, SAMPLE1_Y = -37.9, SAMPLE1_ANGLE = 180;
-    public static double SAMPLE2_X = -38.7, SAMPLE2_Y = -38.3, SAMPLE2_ANGLE = 267;
-    public static double SAMPLE3_X = -38.9, SAMPLE3_Y = -39.5, SAMPLE3_ANGLE = 269;
+    public static double SAMPLE1_X = -28.5, SAMPLE1_Y = -38.1, SAMPLE1_ANGLE = 180;
+    public static double SAMPLE2_X = -37.6, SAMPLE2_Y = -38.55, SAMPLE2_ANGLE = 270;
+    public static double SAMPLE3_X = -38.25, SAMPLE3_Y = -39.3, SAMPLE3_ANGLE = 270;
     public static double BASKET1_X = -11.5, BASKET1_Y = -39.5, BASKET1_ANGLE = 130;
     public static double BASKET2_X = -11.5, BASKET2_Y = -39.5, BASKET2_ANGLE = 127;
     public static double BASKET3_X = -12, BASKET3_Y = -39, BASKET3_ANGLE = 130;
-    public static double PARK_X = -55, PARK_Y = -14.3, PARK_ANGLE = 270;
+    public static double PARK_X = -55, PARK_Y = -13, PARK_ANGLE = 270;
     public static double SAFE_PARK_X = -52, SAFE_PARK_Y = -38, SAFE_PARK_ANGLE;
     public static double liftMagic = 1300;
 
     public static int timeToPreload = 400;
     public static int timeToSample = 200;
-    public static int timeToCollect1 = 800;
-    public static int timeToCollect2 = 700;
-    public static int timeToCollect3 = 800;
-    public static int time_to_transfer = 1000;
-    public static int time_to_lift = 850;
-    public static int time_to_drop = 1050;
+    public static int timeToCollect1 = 450;
+    public static int timeToCollect2 = 300;
+    public static int timeToCollect3 = 1000;
+    public static int time_to_transfer = 0;
+    public static int time_to_lift = 950;
+    public static int time_to_drop = 1150;
 
 
-    public static int extendoPoz3 = 320;
+    public static int extendoPoz3 = 330;
 
     Path goTo1Sample;
     Path goTo2Sample;
