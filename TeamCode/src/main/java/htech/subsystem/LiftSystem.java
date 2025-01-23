@@ -127,7 +127,7 @@ public class LiftSystem {
 
     public void update() {
         if(PIDON) {
-            currentPos = left.getCurrentPosition();
+            currentPos = right.getCurrentPosition();
             double power = pidController.update(currentPos);
             setPower(power);
         }
