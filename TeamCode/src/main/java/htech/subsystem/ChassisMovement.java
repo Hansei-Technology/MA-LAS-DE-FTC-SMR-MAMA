@@ -2,6 +2,7 @@ package htech.subsystem;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -31,6 +32,8 @@ public class ChassisMovement {
         // MOTOR CONFIGURATION //
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
         leftRearMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRearMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

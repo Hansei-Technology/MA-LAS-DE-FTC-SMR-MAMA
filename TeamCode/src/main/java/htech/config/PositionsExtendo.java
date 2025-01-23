@@ -10,7 +10,7 @@ public class PositionsExtendo {
     public static int maxAuto = 345;
     public static int mid = 250;
 
-    public static double kP = 0.01;
+    public static double kP = 0.02;
     public static double kI = 0;
     public static double kD = 0;
 

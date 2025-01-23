@@ -95,6 +95,16 @@ public class ExtendoSystem {
             setPower(power);
         }
 
+        if(pidController.p != PositionsExtendo.kP) {
+            pidController.p = PositionsExtendo.kP;
+        }
+        if(pidController.i != PositionsExtendo.kI) {
+            pidController.i = PositionsExtendo.kI;
+        }
+        if(pidController.d != PositionsExtendo.kD) {
+            pidController.d = PositionsExtendo.kD;
+        }
+
     }
 
     public void reset() {

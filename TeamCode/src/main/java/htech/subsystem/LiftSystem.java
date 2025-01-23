@@ -127,9 +127,19 @@ public class LiftSystem {
 
     public void update() {
         if(PIDON) {
-            currentPos = right.getCurrentPosition();
+            currentPos = -right.getCurrentPosition();
             double power = pidController.update(currentPos);
             setPower(power);
+        }
+
+        if(pidController.p != PositionsLift.kP) {
+            pidController.p = PositionsLift.kP;
+        }
+        if(pidController.i != PositionsLift.kI) {
+            pidController.i = PositionsLift.kI;
+        }
+        if(pidController.d != PositionsLift.kD) {
+            pidController.d = PositionsLift.kD;
         }
     }
 }
