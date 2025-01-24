@@ -8,25 +8,25 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
     static {
-        FollowerConstants.localizers = Localizers.PINPOINT;
+        FollowerConstants.localizers = Localizers.TWO_WHEEL;
 
-        FollowerConstants.leftFrontMotorName = "m1";
-        FollowerConstants.leftRearMotorName = "m0";
-        FollowerConstants.rightFrontMotorName = "m2";
-        FollowerConstants.rightRearMotorName = "m3";
+        FollowerConstants.leftFrontMotorName = "m3";
+        FollowerConstants.leftRearMotorName = "m2";
+        FollowerConstants.rightFrontMotorName = "m1";
+        FollowerConstants.rightRearMotorName = "m0";
 
         FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 13.5;
+        FollowerConstants.mass = 13.6;
 
-        FollowerConstants.xMovement = 73;
-        FollowerConstants.yMovement = 61;
+        FollowerConstants.xMovement = 72.13670631057991;
+        FollowerConstants.yMovement = 53.37333148216942;
 
-        FollowerConstants.forwardZeroPowerAcceleration = -35;
-        FollowerConstants.lateralZeroPowerAcceleration = -82;
+        FollowerConstants.forwardZeroPowerAcceleration = 32.4372790338799;
+        FollowerConstants.lateralZeroPowerAcceleration = -88.7300271852157;
 
         FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(0.5,0,0.05,0);
         FollowerConstants.useSecondaryTranslationalPID = false;

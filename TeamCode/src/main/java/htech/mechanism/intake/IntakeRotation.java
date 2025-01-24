@@ -67,14 +67,14 @@ public class IntakeRotation {
     public void handleRotation(double pow) {
         rotLevel += pow * PositionsIntake.rotSpeed;
 
-        if(rotLevel > 1) {
+        if(rotLevel > 3) {
             rotLevel = 1;
         } else if(rotLevel < -6) {
             rotLevel = -6;
         }
 
-        rotationServo.setPosition(PositionsIntake.flippedNormalRotation + rotLevel * PositionsIntake.rotation30Deg);
-        currentPosition = PositionsIntake.flippedNormalRotation + rotLevel * PositionsIntake.rotation30Deg;
+        rotationServo.setPosition(PositionsIntake.flippedNormalRotation - rotLevel * PositionsIntake.rotation30Deg);
+        currentPosition = PositionsIntake.flippedNormalRotation - rotLevel * PositionsIntake.rotation30Deg;
     }
 
     public void update() {

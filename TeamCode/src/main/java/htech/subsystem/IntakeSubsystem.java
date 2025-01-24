@@ -96,6 +96,7 @@ public class IntakeSubsystem {
     public void goToTransfer() {
         joint.goToTransfer();
         bar.goToTransfer();
+        rotation.goToNormal();
         intakeState = intakeState.TRANSFER;
     }
 

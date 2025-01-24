@@ -54,7 +54,7 @@ public class TeleOp2 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            chassisMovement.updateMovement(gamepad1);
+            chassisMovement.updateMovementSlowRotation(gamepad1);
 //            chassisFollower.move(gamepad1);
 
             //extendo
@@ -115,7 +115,6 @@ public class TeleOp2 extends LinearOpMode {
             }
 
             if(gamepad2.right_bumper) outtakeSubsystem.claw.open();
-            if(gamepad2.left_bumper) robotSystems.scoreSpecimen();
 
 
             stickyGamepad2.update();

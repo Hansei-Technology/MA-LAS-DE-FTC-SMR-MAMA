@@ -44,4 +44,8 @@ public class OuttakeSubsystem {
     public void goToSpecimenScore() {
         joint.goToSpecimenScore();
     }
+
+    public void goToAfterTransfer() {
+        joint.goToAfterTransfer();
+    }
 }

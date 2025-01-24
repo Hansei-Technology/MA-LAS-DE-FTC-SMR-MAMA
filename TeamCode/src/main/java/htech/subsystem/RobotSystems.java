@@ -201,7 +201,7 @@ public class RobotSystems {
                 if (timer.milliseconds() > RobotSettings.timeWaitingToCatch) {
                     timer.reset();
                     intakeSubsystem.goToWall();
-                    outtakeSubsystem.goToSpecimenScore();
+                    outtakeSubsystem.goToAfterTransfer();
                     transferState = TransferStates.TRANSFER_READY;
                 }
                 break;

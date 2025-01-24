@@ -59,18 +59,22 @@ public class AutoBasketRapid extends OpMode {
 
     public int timeToPlacePreload = 400;
 
+
+    public static double fastSpeed = 0.9;
+    public static double slowSpeed = 0.7;
+
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -12, PRELOAD_Y = -39, PRELOAD_ANGLE = 130;
-    public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
-    public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -28.7, SAMPLE1_Y = -37.9, SAMPLE1_ANGLE = 180;
-    public static double SAMPLE2_X = -38.7, SAMPLE2_Y = -38.3, SAMPLE2_ANGLE = 267;
-    public static double SAMPLE3_X = -38.9, SAMPLE3_Y = -39.5, SAMPLE3_ANGLE = 269;
-    public static double BASKET1_X = -11.5, BASKET1_Y = -39.5, BASKET1_ANGLE = 130;
-    public static double BASKET2_X = -11.5, BASKET2_Y = -39.5, BASKET2_ANGLE = 127;
-    public static double BASKET3_X = -12, BASKET3_Y = -39, BASKET3_ANGLE = 130;
-    public static double PARK_X = -55, PARK_Y = -14.3, PARK_ANGLE = 270;
-    public static double SAFE_PARK_X = -52, SAFE_PARK_Y = -38, SAFE_PARK_ANGLE;
+    public static double PRELOAD_X = -20, PRELOAD_Y = 10, PRELOAD_ANGLE = 45;
+    //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
+    //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
+    public static double SAMPLE1_X = -14, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
+    public static double SAMPLE2_X = -22.4, SAMPLE2_Y = 16, SAMPLE2_ANGLE = 90;
+    public static double SAMPLE3_X = -23.5, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
+    public static double BASKET1_X = -20.5, BASKET1_Y = 10.5, BASKET1_ANGLE = 45;
+    public static double BASKET2_X = -20.5, BASKET2_Y = 10.5, BASKET2_ANGLE = 45;
+    public static double BASKET3_X = -20.5, BASKET3_Y = 10.5, BASKET3_ANGLE = 45;
+    public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
+    public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double liftMagic = 1300;
 
     public static int timeToPreload = 400;
@@ -79,11 +83,13 @@ public class AutoBasketRapid extends OpMode {
     public static int timeToCollect2 = 700;
     public static int timeToCollect3 = 800;
     public static int time_to_transfer = 1000;
-    public static int time_to_lift = 850;
-    public static int time_to_drop = 1050;
+    public static int time_to_lift = 750;
+    public static int time_to_drop = 950;
 
 
-    public static int extendoPoz3 = 320;
+    public static int extendoPoz1 = 330;
+    public static int extendoPoz2 = 320;
+    public static int extendoPoz3 = 280;
 
     Path goTo1Sample;
     Path goTo2Sample;
@@ -145,9 +151,8 @@ public class AutoBasketRapid extends OpMode {
 
         goToPreload = new Path(
                 // Line 1
-                new BezierCurve(
+                new BezierLine(
                         new Point(START_X,START_Y, Point.CARTESIAN),
-                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN)
                 )
         );
@@ -156,9 +161,8 @@ public class AutoBasketRapid extends OpMode {
 
         goTo1Sample = new Path(
                 // Line 1
-                new BezierCurve(
+                new BezierLine(
                         new Point(PRELOAD_X,PRELOAD_Y, Point.CARTESIAN),
-                        new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
                         new Point(SAMPLE1_X,SAMPLE1_Y, Point.CARTESIAN)
                 )
         );
@@ -169,7 +173,6 @@ public class AutoBasketRapid extends OpMode {
         goTo1Basket = new Path(
                 new BezierLine(
                         new Point(SAMPLE1_X, SAMPLE1_Y, Point.CARTESIAN),
-                        //new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(BASKET1_X, BASKET1_Y, Point.CARTESIAN)
                 )
         );
@@ -178,9 +181,8 @@ public class AutoBasketRapid extends OpMode {
 
         goTo2Sample = new Path(
                 // Line 1
-                new BezierCurve(
+                new BezierLine(
                         new Point(BASKET1_X,BASKET1_Y, Point.CARTESIAN),
-                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(SAMPLE2_X,SAMPLE2_Y, Point.CARTESIAN)
                 )
         );
@@ -190,7 +192,6 @@ public class AutoBasketRapid extends OpMode {
         goTo2Basket = new Path(
                 new BezierLine(
                         new Point(SAMPLE2_X, SAMPLE2_Y, Point.CARTESIAN),
-                        //new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(BASKET2_X, BASKET2_Y, Point.CARTESIAN)
                 )
         );
@@ -200,9 +201,8 @@ public class AutoBasketRapid extends OpMode {
 
         goTo3Sample = new Path(
                 // Line 1
-                new BezierCurve(
+                new BezierLine(
                         new Point(BASKET2_X,BASKET2_Y, Point.CARTESIAN),
-                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(SAMPLE3_X,SAMPLE3_Y, Point.CARTESIAN)
                 )
         );
@@ -210,9 +210,8 @@ public class AutoBasketRapid extends OpMode {
 
 
         goTo3Basket = new Path(
-                new BezierCurve(
+                new BezierLine(
                         new Point(SAMPLE3_X, SAMPLE3_Y, Point.CARTESIAN),
-                        new Point(SAFE_BASKET_X, SAFE_BASKET_Y, Point.CARTESIAN),
                         new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN)
                 )
         );
@@ -228,7 +227,9 @@ public class AutoBasketRapid extends OpMode {
         goToPark.setLinearHeadingInterpolation(Math.toRadians(BASKET3_ANGLE), Math.toRadians(PARK_ANGLE));
 
 
-        follower.setMaxPower(0.6);
+        follower.setMaxPower(slowSpeed);
+        outtakeSubsystem.goToSampleScore();
+        lift.goToHighBasket();
         follower.followPath(goToPreload);
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -251,20 +252,18 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case MOVING:
-                if(!follower.isBusy() ||  follower.getCurrentTValue() > 0.99) {
-                    switch(NS) {
-                        case BASKET1:
-                            lift.goToHighBasket();
-                            break;
+
+                if(NS == STATES.COLLECTING1 || NS == STATES.COLLECTING2 || NS == STATES.COLLECTING3 || NS == STATES.PARKED) {
+                    if(follower.getCurrentTValue() > 0.6) {
+                        lift.goToGround();
+                        outtakeSubsystem.goToTransfer();
                     }
+                }
+
+                if(!follower.isBusy() ||  follower.getCurrentTValue() > 0.99) {
                     firstTime = true;
                     timer.reset();
                     CS = NS;
-                }
-
-                if(follower.getCurrentTValue() > 0.4 && NS == STATES.PLACING_PRELOAD) {
-                    lift.goToHighBasket();
-                    outtakeSubsystem.goToSampleScore();
                 }
                 break;
 
@@ -281,7 +280,7 @@ public class AutoBasketRapid extends OpMode {
                         firstTime = false;
                     }
                     if(timer.milliseconds() > time_to_transfer) {
-                        //lift.goToHighBasket();
+                        lift.goToHighBasket();
 //                        outtakeSubsystem.goToSampleScore();
                         firstTime = true;
                         CS = STATES.MOVING;
@@ -290,10 +289,10 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case PLACING_PRELOAD:
-                if(firstTime) {
-                    lift.goToHighBasket();
-                    firstTime = false;
-                }
+//                if(firstTime) {
+//                    lift.goToHighBasket();
+//                    firstTime = false;
+//                }
 
                 if(lift.isAtPosition() || timer.milliseconds() > timeToPlacePreload) {
                     outtakeSubsystem.claw.open();
@@ -308,22 +307,26 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case PLACING_PRELOAD_2:
-                outtakeSubsystem.goToTransfer();
-                lift.goToGround();
+//                outtakeSubsystem.goToTransfer();
+//                lift.goToGround();
                 intakeSubsystem.goDown();
-                firstTime = false;
+                firstTime = true;
+                //follower.setMaxPower(fastSpeed);
+                //follower.followPath(goTo1Sample, true);
+                CS = STATES.SAMPLE1;
 
-                if(lift.isDown()) {
-                    CS = STATES.SAMPLE1;
-                    //CS = STATES.MOVING;
-                    firstTime = true;
-                }
+
+//                if(lift.isDown()) {
+//                    CS = STATES.SAMPLE1;
+//                    //CS = STATES.MOVING;
+//                    firstTime = true;
+//                }
 
                 break;
 
             case SAMPLE1:
                 timer.reset();
-                follower.setMaxPower(0.8);
+                follower.setMaxPower(fastSpeed);
                 follower.followPath(goTo1Sample, true);
                 intakeSubsystem.goDown();
                 intakeSubsystem.claw.open();
@@ -334,11 +337,12 @@ public class AutoBasketRapid extends OpMode {
 
             case COLLECTING1:
                 if(firstTime) {
+                    extendo.goToPos(extendoPoz1);
                     timer.reset();
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(fastSpeed);
                     follower.followPath(goTo1Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
                     NS = STATES.BASKET1;
@@ -372,12 +376,12 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case SAMPLE2:
-                follower.setMaxPower(0.8);
+                follower.setMaxPower(fastSpeed);
                 follower.followPath(goTo2Sample, true);
                 outtakeSubsystem.goToTransfer();
-                lift.goToGround();
+                //lift.goToGround();
                 intakeSubsystem.goDown();
-                intakeSubsystem.rotation.goToPerpendicular();
+                intakeSubsystem.rotation.goToFlipped();
                 intakeSubsystem.claw.open();
 
                 timer.reset();
@@ -388,10 +392,11 @@ public class AutoBasketRapid extends OpMode {
             case COLLECTING2:
                 if(firstTime) {
                     timer.reset();
+                    extendo.goToPos(extendoPoz2);
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(fastSpeed);
                     follower.followPath(goTo2Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
                     NS = STATES.BASKET2;
@@ -424,12 +429,12 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case SAMPLE3:
-                follower.setMaxPower(0.8);
+                follower.setMaxPower(fastSpeed);
                 follower.followPath(goTo3Sample, true);
                 outtakeSubsystem.goToTransfer();
-                lift.goToGround();
+                //lift.goToGround();
                 intakeSubsystem.goDown();
-                intakeSubsystem.rotation.goToPerpendicular();
+                intakeSubsystem.rotation.goToAutoPos();
                 intakeSubsystem.claw.open();
 
                 timer.reset();
@@ -444,7 +449,7 @@ public class AutoBasketRapid extends OpMode {
                     extendo.goToPos(extendoPoz3);
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(fastSpeed);
                     follower.followPath(goTo3Basket, true);
                     //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
                     NS = STATES.BASKET3;
@@ -478,11 +483,11 @@ public class AutoBasketRapid extends OpMode {
                 break;
 
             case PARK:
-                follower.setMaxPower(0.8);
+                follower.setMaxPower(fastSpeed);
 
                 follower.followPath(goToPark, true);
                 outtakeSubsystem.goToTransfer();
-                lift.goToGround();
+                //lift.goToGround();
                 intakeSubsystem.goToReady();
                 intakeSubsystem.claw.open();
 
