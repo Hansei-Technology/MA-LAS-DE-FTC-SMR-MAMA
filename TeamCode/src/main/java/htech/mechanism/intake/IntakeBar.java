@@ -37,6 +37,12 @@ public class IntakeBar {
         currentPosition = PositionsIntake.transferPositionBar;
     }
 
+    public void goToReady() {
+        barServo.setPosition(PositionsIntake.readyPositionBar + PositionsIntake.offsetBar);
+        barServo2.setPosition(PositionsIntake.readyPositionBar);
+        currentPosition = PositionsIntake.readyPositionBar;
+    }
+
     public void cycleHeight() {
         if (currentPosition == PositionsIntake.groundPositionBar) {
             this.goToWall();

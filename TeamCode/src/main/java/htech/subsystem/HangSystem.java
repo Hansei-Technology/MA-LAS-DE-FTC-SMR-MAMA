@@ -17,7 +17,7 @@ public class HangSystem {
     }
 
     public void setPower(double power) {
-        left.setPower(power);
+        left.setPower(-power);
         right.setPower(power);
     }
 }

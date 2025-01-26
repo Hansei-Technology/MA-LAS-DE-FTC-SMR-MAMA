@@ -67,21 +67,21 @@ public class AutoBasketRapid extends OpMode {
     public static double PRELOAD_X = -20, PRELOAD_Y = 10, PRELOAD_ANGLE = 45;
     //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -14, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
+    public static double SAMPLE1_X = -13.2, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
     public static double SAMPLE2_X = -22.4, SAMPLE2_Y = 16, SAMPLE2_ANGLE = 90;
     public static double SAMPLE3_X = -23.5, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
     public static double BASKET1_X = -20.5, BASKET1_Y = 10.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -20.5, BASKET2_Y = 10.5, BASKET2_ANGLE = 45;
-    public static double BASKET3_X = -20.5, BASKET3_Y = 10.5, BASKET3_ANGLE = 45;
+    public static double BASKET3_X = -20, BASKET3_Y = 10.5, BASKET3_ANGLE = 45;
     public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
     public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double liftMagic = 1300;
 
     public static int timeToPreload = 400;
     public static int timeToSample = 200;
-    public static int timeToCollect1 = 800;
-    public static int timeToCollect2 = 700;
-    public static int timeToCollect3 = 800;
+    public static int timeToCollect1 = 1200;
+    public static int timeToCollect2 = 1000;
+    public static int timeToCollect3 = 1000;
     public static int time_to_transfer = 1000;
     public static int time_to_lift = 750;
     public static int time_to_drop = 950;

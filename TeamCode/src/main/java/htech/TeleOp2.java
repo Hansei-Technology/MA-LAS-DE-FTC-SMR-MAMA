@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import htech.classes.StickyGamepad;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
+import htech.subsystem.HangSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
@@ -25,11 +26,13 @@ public class TeleOp2 extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
+    HangSystem hang;
 //    ChassisFollower chassisFollower;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // SUBSYSTEMS //
+        hang = new HangSystem(hardwareMap);
         chassisMovement = new ChassisMovement(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
@@ -53,6 +56,7 @@ public class TeleOp2 extends LinearOpMode {
         matchTimer.reset();
 
         while (opModeIsActive()) {
+            hang.setPower(gamepad2.right_stick_y);
 
             chassisMovement.updateMovementSlowRotation(gamepad1);
 //            chassisFollower.move(gamepad1);
