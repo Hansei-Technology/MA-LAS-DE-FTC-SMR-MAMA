@@ -86,17 +86,30 @@ public class IntakeSubsystem {
         intakeState = intakeState.WALL;
     }
 
-    public void goToReady() {
-        joint.goToPreTransfer();
-        bar.goToReady();
-        rotation.goToNormal();
+    public void goToReady(boolean sample) {
+        if(sample)
+        {
+            rotation.goToFlipped();
+            joint.goToPreTransferSample();
+            bar.goToReadySample();
+        } else {
+            joint.goToPreTransfer();
+            bar.goToReady();
+            rotation.goToNormal();
+        }
         intakeState = intakeState.READY;
     }
 
-    public void goToTransfer() {
-        joint.goToTransfer();
-        bar.goToTransfer();
-        rotation.goToNormal();
+    public void goToTransfer(boolean sample) {
+        if(sample) {
+            rotation.goToFlipped();
+            joint.goToTransferSample();
+            bar.goToTransferSample();
+        } else {
+            joint.goToTransfer();
+            bar.goToTransfer();
+            rotation.goToNormal();
+        }
         intakeState = intakeState.TRANSFER;
     }
 

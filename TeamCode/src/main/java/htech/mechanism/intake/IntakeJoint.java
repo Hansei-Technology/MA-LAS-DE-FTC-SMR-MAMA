@@ -30,10 +30,22 @@ public class IntakeJoint {
         currentPosition = PositionsIntake.prepTransferPositionJoint;
     }
 
-    public void goToTransfer() {
-        jointServo.setPosition(PositionsIntake.finalTransferPositionJoint);
-        currentPosition = PositionsIntake.finalTransferPositionJoint;
+    public void goToPreTransferSample() {
+        jointServo.setPosition(PositionsIntake.readyPositionJointSample);
+        currentPosition = PositionsIntake.readyPositionJointSample;
     }
+
+    public void goToTransfer() {
+        jointServo.setPosition(PositionsIntake.transferPositionJoint);
+        currentPosition = PositionsIntake.transferPositionJoint;
+    }
+
+    public void goToTransferSample() {
+        jointServo.setPosition(PositionsIntake.transferPositionJointSample);
+        currentPosition = PositionsIntake.transferPositionJointSample;
+    }
+
+
 
     public void goToCollect() {
         jointServo.setPosition(PositionsIntake.collectPositionJoint);

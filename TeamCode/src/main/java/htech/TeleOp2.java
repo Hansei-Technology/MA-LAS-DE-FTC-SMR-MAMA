@@ -75,8 +75,11 @@ public class TeleOp2 extends LinearOpMode {
                 intakeSubsystem.collect(false);
             }
 
-            if(stickyGamepad1.x || stickyGamepad2.x){
-                robotSystems.startTransfer();
+            if(stickyGamepad1.x){
+                robotSystems.startTransfer(false); //for specimen
+            }
+            if(stickyGamepad2.x) {
+                robotSystems.startTransfer(true); //for sample
             }
 
             if (stickyGamepad1.left_bumper) intakeSubsystem.claw.toggle();
@@ -115,7 +118,7 @@ public class TeleOp2 extends LinearOpMode {
             if(gamepad2.a) {
                 lift.goToGround();
                 outtakeSubsystem.goToTransfer();
-                if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.TRANSFER) intakeSubsystem.goToReady();
+                if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.TRANSFER) intakeSubsystem.goToReady(robotSystems.transferingSample);
             }
 
             if(gamepad2.right_bumper) outtakeSubsystem.claw.open();

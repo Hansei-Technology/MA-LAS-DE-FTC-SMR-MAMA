@@ -10,6 +10,7 @@ public class BreakBeam {
     DigitalChannel sensor;
     public BreakBeam(HardwareMap map) {
         sensor = map.get(DigitalChannel.class, Sensors.BreakBeamIntake);
+        sensor.setMode(DigitalChannel.Mode.INPUT);
     }
 
     public boolean hasElement() {

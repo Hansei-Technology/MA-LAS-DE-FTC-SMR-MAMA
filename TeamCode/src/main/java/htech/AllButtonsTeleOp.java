@@ -50,11 +50,19 @@ public class AllButtonsTeleOp extends LinearOpMode {
             } else if (gamepad1.a) {
                 intakeSubsystem.goToWall();
             } else if (gamepad1.b) {
-                intakeSubsystem.goToReady();
+                intakeSubsystem.goToReady(true);
 
                 outtakeSubsystem.goToTransfer();
             } else if (gamepad1.y) {
-                intakeSubsystem.goToTransfer();
+                intakeSubsystem.goToTransfer(true);
+            }
+
+            if (gamepad2.b) {
+                intakeSubsystem.goToReady(false);
+
+                outtakeSubsystem.goToTransfer();
+            } else if (gamepad2.y) {
+                intakeSubsystem.goToTransfer(false);
             }
 
             if (gamepad1.dpad_left) {

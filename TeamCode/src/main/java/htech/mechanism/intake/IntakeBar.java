@@ -37,10 +37,22 @@ public class IntakeBar {
         currentPosition = PositionsIntake.transferPositionBar;
     }
 
+    public void goToTransferSample() {
+        barServo.setPosition(PositionsIntake.transferPositionBarSample + PositionsIntake.offsetBar);
+        barServo2.setPosition(PositionsIntake.transferPositionBarSample);
+        currentPosition = PositionsIntake.transferPositionBarSample;
+    }
+
     public void goToReady() {
         barServo.setPosition(PositionsIntake.readyPositionBar + PositionsIntake.offsetBar);
         barServo2.setPosition(PositionsIntake.readyPositionBar);
         currentPosition = PositionsIntake.readyPositionBar;
+    }
+
+    public void goToReadySample() {
+        barServo.setPosition(PositionsIntake.readyPositionBarSample + PositionsIntake.offsetBar);
+        barServo2.setPosition(PositionsIntake.readyPositionBarSample);
+        currentPosition = PositionsIntake.readyPositionBarSample;
     }
 
     public void cycleHeight() {

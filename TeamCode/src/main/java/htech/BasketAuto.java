@@ -451,7 +451,7 @@ public class BasketAuto extends OpMode {
                 follower.followPath(goToPark, true);
                 outtakeSubsystem.goToTransfer();
                 lift.goToGround();
-                intakeSubsystem.goToReady();
+                intakeSubsystem.goToReady(true);
                 intakeSubsystem.claw.open();
 
                 timer.reset();

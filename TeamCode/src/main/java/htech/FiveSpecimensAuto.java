@@ -444,7 +444,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
                     break;
 
                 case TRANSFERING:
-                    robotSystems.startTransfer();
+                    robotSystems.startTransfer(false);
                     TIME_TO_WAIT = timeToTransfer;
                     timer.reset();
                     CS = STATES.WAITING;

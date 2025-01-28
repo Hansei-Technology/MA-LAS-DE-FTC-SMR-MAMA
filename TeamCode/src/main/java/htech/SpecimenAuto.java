@@ -420,7 +420,7 @@ public class SpecimenAuto extends LinearOpMode {
                 case COLLECTING_SAMPLES:
                     lift.goToGround();
                     extendo.goToGround();
-                    intakeSubsystem.goToReady();
+                    intakeSubsystem.goToReady(false);
                     follower.setMaxPower(maxSpeed);
                     follower.followPath(goToCollectSamples);
                     lift.goToGround();
@@ -481,7 +481,7 @@ public class SpecimenAuto extends LinearOpMode {
                     NS = STATES.TRANSFERING;
                     break;
                 case TRANSFERING:
-                    robotSystems.startTransfer();
+                    robotSystems.startTransfer(false);
                     TIME_TO_WAIT = time_to_transfer;
                     timer.reset();
                     CS = STATES.WAITING;

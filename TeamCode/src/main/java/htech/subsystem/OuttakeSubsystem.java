@@ -4,12 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import htech.mechanism.intake.IntakeBar;
+import htech.mechanism.outtake.LimitSwitch;
 import htech.mechanism.outtake.OuttakeClaw;
 import htech.mechanism.outtake.OuttakeJoint;
 @Config
 public class OuttakeSubsystem {
     public final OuttakeClaw claw;
     public final OuttakeJoint joint;
+    public final LimitSwitch limitSwitch;
 
     public enum outtakeStates {
         SPECIMEN,
@@ -22,6 +24,7 @@ public class OuttakeSubsystem {
 
 
     public OuttakeSubsystem(HardwareMap hardwareMap) {
+        limitSwitch = new LimitSwitch(hardwareMap);
         // MECHANISM //
         claw = new OuttakeClaw(hardwareMap);
         joint = new OuttakeJoint(hardwareMap);
@@ -32,9 +35,18 @@ public class OuttakeSubsystem {
         claw.open();
     }
 
+    public void goToTransferSample() {
+        joint.goToTransferSample();
+        claw.open();
+    }
+
     public void goToTransfer() {
         joint.goToTransfer();
         claw.open();
+    }
+
+    public boolean hasElement() {
+        return limitSwitch.isPressed();
     }
 
     public void goToSampleScore() {

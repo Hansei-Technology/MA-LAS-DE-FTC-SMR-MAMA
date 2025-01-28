@@ -34,7 +34,8 @@ public class RobotSystems {
 //        updateHopPeSpate();
     }
 
-    public void startTransfer() {
+    public void startTransfer(boolean sample) {
+        transferingSample = sample;
         if(intakeSubsystem.claw.isOpen) {
             intakeSubsystem.claw.close();
             transferState = TransferStates.CLOSING_CLAW;
@@ -55,6 +56,7 @@ public class RobotSystems {
         INTAKE_DOWN,
         INTAKE_WALL,
         READY_TO_TRANSFER,
+        READY_TO_TRANSFER_SAMPLE,
         CATCHING,
         WAITING_TO_CATCH,
         TRANSFER_READY,
@@ -73,7 +75,7 @@ public class RobotSystems {
 //    public HopPeSpateStates hopPeSpateState = HopPeSpateStates.IDLE;
 
     public boolean firstTime = true;
-
+    public boolean transferingSample = true;
 
     public enum SpecimenStates {
         IDLE,
@@ -128,7 +130,16 @@ public class RobotSystems {
                     } else {
                         intakeSubsystem.goDownWithoutResetRotation();
                     }
+                    timer.reset();
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
+                }
+                break;
+            case COLECT_GOING_UP:
+                if(timer.milliseconds() > RobotSettings.timeToCollectGoingUp) {
+                    if(!intakeSubsystem.hasElement()) {
+                        intakeSubsystem.goDownWithoutResetRotation();
+                        extendoSystem.pidEnabled = false;
+                    }
                 }
                 break;
         }
@@ -151,23 +162,34 @@ public class RobotSystems {
                 //on entry
                 liftSystem.goToGround();
                 extendoSystem.goToGround();
-                outtakeSubsystem.goToTransfer();
+                if(transferingSample) outtakeSubsystem.goToTransferSample();
+                else outtakeSubsystem.goToTransfer();
+
                 outtakeSubsystem.claw.open();
                 timer.reset();
 
                 //condition to exit
-                if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
-                    intakeSubsystem.goToReady();
-                    transferState = TransferStates.INTAKE_DOWN;
+
+
+                if(transferingSample) {
+                    intakeSubsystem.goToTransfer(true);
+                    timer.reset();
+                    transferState = TransferStates.READY_TO_TRANSFER_SAMPLE;
                 } else {
-                    intakeSubsystem.goToReady();
-                    transferState = TransferStates.INTAKE_WALL;
+                    if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
+                        intakeSubsystem.goToReady(transferingSample);
+                        transferState = TransferStates.INTAKE_DOWN;
+                    } else {
+                        intakeSubsystem.goToReady(transferingSample);
+                        transferState = TransferStates.INTAKE_WALL;
+                    }
                 }
+
                 break;
 
             case INTAKE_DOWN:
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeDown_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
-                    intakeSubsystem.goToTransfer();
+                    intakeSubsystem.goToTransfer(transferingSample);
                     timer.reset();
                     transferState = TransferStates.READY_TO_TRANSFER;
                 }
@@ -176,9 +198,22 @@ public class RobotSystems {
 
             case INTAKE_WALL:
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeWall_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
-                    intakeSubsystem.goToTransfer();
+                    intakeSubsystem.goToTransfer(transferingSample);
+                    intakeSubsystem.claw.goToSliding();
                     timer.reset();
                     transferState = TransferStates.READY_TO_TRANSFER;
+                }
+
+                break;
+
+            case READY_TO_TRANSFER_SAMPLE:
+                if(timer.milliseconds() > RobotSettings.magicTransferTime) intakeSubsystem.claw.goToSliding();
+
+
+                if (timer.milliseconds() > RobotSettings.timeDown_Transfer_SAMPLE) {
+                    timer.reset();
+                    outtakeSubsystem.claw.close();
+                    transferState = TransferStates.CATCHING;
                 }
 
                 break;
@@ -193,8 +228,13 @@ public class RobotSystems {
             case CATCHING:
                 if(timer.milliseconds() > RobotSettings.timeToCatch /* && intakeSubsystem.isAtPos()*/) {
                     timer.reset();
-                    intakeSubsystem.claw.open();
-                    transferState = TransferStates.WAITING_TO_CATCH;
+                    if(outtakeSubsystem.hasElement()) {
+                        intakeSubsystem.claw.open();
+                        transferState = TransferStates.WAITING_TO_CATCH;
+                    } else {
+                        intakeSubsystem.goToWall();
+                        transferState = TransferStates.LIFT_GOING_DOWN;
+                    }
                 }
                 break;
             case WAITING_TO_CATCH:

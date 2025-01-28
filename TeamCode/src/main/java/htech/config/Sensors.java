@@ -8,4 +8,5 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class Sensors {
     public static String BreakBeamIntake = "d1";
+    public static String LimitSwitch = "d1e";
 }

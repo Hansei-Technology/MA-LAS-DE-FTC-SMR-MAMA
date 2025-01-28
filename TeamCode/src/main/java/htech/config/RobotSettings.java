@@ -29,6 +29,8 @@ public abstract class RobotSettings {
     public static int timeToCloseOuttake = 150;
     public static int timeFailedToCloseLift = 1000;
     public static int timeToHopPeSpate = 350;
+    public static int timeDown_Transfer_SAMPLE = 800;
+    public static int magicTransferTime = 350;
 
     public static int timeToCollect = 300;
     public static int timeToCollectGoingDown = 175;

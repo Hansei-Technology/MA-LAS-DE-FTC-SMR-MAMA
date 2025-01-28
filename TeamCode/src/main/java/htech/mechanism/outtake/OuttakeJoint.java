@@ -36,6 +36,15 @@ public class OuttakeJoint {
         currentPositionRight = PositionsOuttake.jointTransferRight;
     }
 
+    public void goToTransferSample() {
+        rotLevel = 0;
+        servoLeft.setPosition(PositionsOuttake.jointTransferSampleLeft + PositionsOuttake.jointRotation90 * rotLevel);
+        servoRight.setPosition(PositionsOuttake.jointTransferSampleRight + PositionsOuttake.jointRotation90 * rotLevel);
+
+        currentPositionLeft = PositionsOuttake.jointTransferSampleLeft;
+        currentPositionRight = PositionsOuttake.jointTransferSampleRight;
+    }
+
     public void goToSpecimenScore() {
         servoLeft.setPosition(PositionsOuttake.jointSpecimenLeft + PositionsOuttake.jointRotation90 * rotLevel);
         servoRight.setPosition(PositionsOuttake.jointSpecimenRight + PositionsOuttake.jointRotation90 * rotLevel);

@@ -38,4 +38,9 @@ public class IntakeClaw {
     public void update() {
         //clawServo.setPosition(isOpen ? PositionsIntake.openedClaw : PositionsIntake.closedClaw);
     }
+
+    public void goToSliding() {
+        clawServo.setPosition(PositionsIntake.closedClawSliding);
+        isOpen = false;
+    }
 }
