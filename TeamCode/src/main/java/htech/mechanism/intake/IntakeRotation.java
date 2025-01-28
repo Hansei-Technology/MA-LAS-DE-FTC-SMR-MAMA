@@ -64,12 +64,15 @@ public class IntakeRotation {
     }
 
 
-    public void handleRotation(double pow) {
+    public void handleRotation(Gamepad g) {
+        float pow = g.left_trigger - g.right_trigger;
         rotLevel += pow * PositionsIntake.rotSpeed;
 
         if(rotLevel > 3) {
+            g.rumble(150);
             rotLevel = 1;
         } else if(rotLevel < -6) {
+            g.rumble(150);
             rotLevel = -6;
         }
 

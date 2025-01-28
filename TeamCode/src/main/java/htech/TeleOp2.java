@@ -86,7 +86,7 @@ public class TeleOp2 extends LinearOpMode {
 
             //rotations(both of them)
             if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                intakeSubsystem.rotation.handleRotation(- gamepad2.right_trigger + gamepad2.left_trigger);
+                intakeSubsystem.rotation.handleRotation(gamepad2);
             }
 
             if(stickyGamepad2.dpad_left) {

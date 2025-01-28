@@ -30,7 +30,6 @@ public class RobotSystems {
         intakeSubsystem.update();
         updateTranfer();
         updateCollect();
-        updateSpecimen();
 //        updateHopPeSpate();
     }
 
@@ -42,11 +41,6 @@ public class RobotSystems {
         } else {
             transferState = TransferStates.LIFT_GOING_DOWN;
         }
-    }
-
-
-    public void scoreSpecimen() {
-        specimenState = SpecimenStates.GOING_TO_SPECIMEN;
     }
 
     public enum TransferStates {
@@ -76,14 +70,6 @@ public class RobotSystems {
 
     public boolean firstTime = true;
     public boolean transferingSample = true;
-
-    public enum SpecimenStates {
-        IDLE,
-        GOING_TO_SPECIMEN,
-        WAITING_TO_CATCH,
-        LIFT_GOING_DOWN
-    }
-    public SpecimenStates specimenState = SpecimenStates.IDLE;
 
     void updateCollect() {
         switch (intakeSubsystem.intakeState) {
@@ -135,11 +121,12 @@ public class RobotSystems {
                 }
                 break;
             case COLECT_GOING_UP:
+                if(!intakeSubsystem.hasElement()) {
+                    intakeSubsystem.goDownWithoutResetRotation();
+                    extendoSystem.pidEnabled = false;
+                }
                 if(timer.milliseconds() > RobotSettings.timeToCollectGoingUp) {
-                    if(!intakeSubsystem.hasElement()) {
-                        intakeSubsystem.goDownWithoutResetRotation();
-                        extendoSystem.pidEnabled = false;
-                    }
+
                 }
                 break;
         }
@@ -171,19 +158,25 @@ public class RobotSystems {
                 //condition to exit
 
 
-                if(transferingSample) {
-                    intakeSubsystem.goToTransfer(true);
-                    timer.reset();
-                    transferState = TransferStates.READY_TO_TRANSFER_SAMPLE;
-                } else {
-                    if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
-                        intakeSubsystem.goToReady(transferingSample);
-                        transferState = TransferStates.INTAKE_DOWN;
+                if(intakeSubsystem.hasElement()) {
+                    if(transferingSample) {
+                        intakeSubsystem.goToTransfer(true);
+                        timer.reset();
+                        transferState = TransferStates.READY_TO_TRANSFER_SAMPLE;
                     } else {
-                        intakeSubsystem.goToReady(transferingSample);
-                        transferState = TransferStates.INTAKE_WALL;
+                        if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
+                            intakeSubsystem.goToReady(transferingSample);
+                            transferState = TransferStates.INTAKE_DOWN;
+                        } else {
+                            intakeSubsystem.goToReady(transferingSample);
+                            transferState = TransferStates.INTAKE_WALL;
+                        }
                     }
+                } else {
+                    intakeSubsystem.claw.open();
+                    transferState = TransferStates.IDLE;
                 }
+
 
                 break;
 
@@ -249,34 +242,6 @@ public class RobotSystems {
                 if (timer.milliseconds() > RobotSettings.timeToCloseOuttake) {
                     timer.reset();
                     transferState = TransferStates.IDLE;
-                }
-                break;
-        }
-    }
-
-    public void updateSpecimen() {
-        switch (specimenState) {
-            case IDLE:
-                break;
-            case GOING_TO_SPECIMEN:
-                liftSystem.goToMagicPos();
-                if(liftSystem.isAtPosition()) {
-                    timerSpecimen.reset();
-                    outtakeSubsystem.claw.open();
-                    specimenState = SpecimenStates.WAITING_TO_CATCH;
-                }
-
-                break;
-            case WAITING_TO_CATCH:
-                if(timerSpecimen.milliseconds() > RobotSettings.time_to_specimen) {
-                    liftSystem.goToGround();
-                    outtakeSubsystem.goToTransfer();
-                    specimenState = SpecimenStates.LIFT_GOING_DOWN;
-                }
-                break;
-            case LIFT_GOING_DOWN:
-                if(liftSystem.isDown()) {
-                    specimenState = SpecimenStates.IDLE;
                 }
                 break;
         }

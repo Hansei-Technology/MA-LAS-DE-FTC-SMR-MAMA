@@ -76,7 +76,8 @@ public class IntakeSubsystem {
         joint.goToPickup();
         bar.goToGround();
         claw.open();
-        if(intakeState != intakeState.COLLECTING) intakeState = intakeState.DOWN;
+        //if(intakeState != intakeState.COLLECTING)
+        intakeState = intakeState.DOWN;
     }
 
     public void goToWall() {
