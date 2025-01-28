@@ -19,14 +19,14 @@ public abstract class PositionsIntake {
     public static double flippedNormalRotation = 0.642;
 
     public static double rotation30Deg = 0.095;
-    public static double rotSpeed = 0.06;
+    public static double rotSpeed = 0.1;
     public static double rotationAuto = 0.72;
 
     // INTAKE BAR //
     public static double groundPositionBar = 0.441; // over the samples
     public static double wallPositionBar = 0.52;
-    public static double transferPositionBar = 0.73; // maybe change this
-    public static double readyPositionBar = 0.71;
+    public static double transferPositionBar = 0.77; // maybe change this
+    public static double readyPositionBar = 0.725;
     public static double collectPositionBar = 0.38; // collect position = lower than ground
     public static double offsetBar = 0; //difference between the two bars
 
@@ -34,7 +34,7 @@ public abstract class PositionsIntake {
     public static double groundPositionJoint = 0.24;
     public static double wallPickupPositionJoint = 0.44;
     public static double prepTransferPositionJoint = 0.68;
-    public static double transferPositionJoint = 0.74;
+    public static double transferPositionJoint = 0.735;
     public static double collectPositionJoint = 0.24;
 
 

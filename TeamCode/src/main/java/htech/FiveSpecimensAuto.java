@@ -83,7 +83,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
 
     //Timers
-    public static int timeToScoreSpecimen = 400;
+    public static int timeToScoreSpecimen = 700;
     public static int timeToTransfer = 730;
     public static int timeToCollectSpecimen = 75;
     public int TIME_TO_WAIT = 0;
@@ -103,29 +103,29 @@ public class FiveSpecimensAuto extends LinearOpMode {
 
     //Poses
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -29, PRELOAD_Y = 0, PRELOAD_ANGLE = START_ANGLE;
+    public static double PRELOAD_X = -26, PRELOAD_Y = 0, PRELOAD_ANGLE = START_ANGLE;
 
     public static double SAFE1_X = -5, SAFE1_Y = 30;
     public static double SAFE12_X = -30, SAFE12_Y = 10;
     public static double SAFE13_X = -60, SAFE13_Y = 37;
     public static double SAMPLE1_X = -48, SAMPLE1_Y = 37, SAMPLE1_ANGLE = 0;
-    public static double HUMAN1_X = -20, HUMAN1_Y = SAMPLE1_Y, HUMAN1_ANGLE = 0;
+    public static double HUMAN1_X = -23, HUMAN1_Y = SAMPLE1_Y, HUMAN1_ANGLE = 0;
 
     public static double SAFE2_X = -48, SAFE2_Y = 30;
     public static double SAMPLE2_X = -48, SAMPLE2_Y = 45, SAMPLE2_ANGLE = 0;
-    public static double HUMAN2_X = -20, HUMAN2_Y = SAMPLE2_Y, HUMAN2_ANGLE = 0;
+    public static double HUMAN2_X = -23, HUMAN2_Y = SAMPLE2_Y, HUMAN2_ANGLE = 0;
 
     public static double SAFE3_X = -40, SAFE3_Y = 40;
     public static double SAMPLE3_X = -48, SAMPLE3_Y = 52.3, SAMPLE3_ANGLE = 0;
-    public static double SPECIMEN1_X = -6.2, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
+    public static double SPECIMEN1_X = -11, SPECIMEN1_Y = SAMPLE3_Y, SPECIMEN1_ANGLE = 0;
 
-    public static double SCORE1_X = -26, SCORE1_Y = -4;
-    public static double SCORE2_X = -26, SCORE2_Y = -5;
-    public static double SCORE3_X = -26, SCORE3_Y = -6;
-    public static double SCORE4_X = -26, SCORE4_Y = -7;
+    public static double SCORE1_X = -24, SCORE1_Y = -4;
+    public static double SCORE2_X = -24, SCORE2_Y = -5;
+    public static double SCORE3_X = -24, SCORE3_Y = -6;
+    public static double SCORE4_X = -24, SCORE4_Y = -7;
     public static double SAFE_SCORE_X = -14, SAFE_SCORE_Y = 0;
 
-    public static double SPECIMEN_X = -6.5, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
+    public static double SPECIMEN_X = -10, SPECIMEN_Y = 30, SPECIMEN_ANGLE = 0;
 
     public static double SAFE_SPECIMEN_X = -20, SAFE_SPECIMEN_Y = 5;
     public static double SAFE_SPECIMEN2_X = -20, SAFE_SPECIMEN2_Y = SPECIMEN_Y;
@@ -316,7 +316,7 @@ public class FiveSpecimensAuto extends LinearOpMode {
             switch(CS){
 
                 case SPECIMEN:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE) {
                         follower.setMaxPower(scoreSpeed);
                         lift.goToHighChamber();
                         outtakeSubsystem.goToSpecimenScore();
@@ -399,7 +399,13 @@ public class FiveSpecimensAuto extends LinearOpMode {
                     break;
 
                 case PLACING_SPECIMEN:
-                    lift.goToMagicPos();
+                    follower.setMaxPower(maxSpeed);
+                    if(SCORING_CS == SCORING_STATES.IDLE) {
+                        follower.followPath(goToCollectSamples);
+                    } else {
+                        follower.followPath(goToWall);
+                    }
+
                     if(timer.milliseconds() > timeToScoreSpecimen){
                         outtakeSubsystem.claw.open();
                         if(SCORING_CS == SCORING_STATES.IDLE){
@@ -426,8 +432,6 @@ public class FiveSpecimensAuto extends LinearOpMode {
                     extendo.goToGround();
                     intakeSubsystem.goToWall();
                     intakeSubsystem.claw.open();
-                    follower.setMaxPower(maxSpeed);
-                    follower.followPath(goToCollectSamples);
                     TRAJECTORY_CS = TRAJECTORY_STATES.COLLECTING_SAMPLES;
                     lift.goToGround();
                     CS = STATES.MOVING;

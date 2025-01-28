@@ -192,7 +192,7 @@ public class RobotSystems {
             case INTAKE_WALL:
                 if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeWall_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
                     intakeSubsystem.goToTransfer(transferingSample);
-                    intakeSubsystem.claw.goToSliding();
+                    //intakeSubsystem.claw.goToSliding();
                     timer.reset();
                     transferState = TransferStates.READY_TO_TRANSFER;
                 }
