@@ -50,7 +50,8 @@ public class Specimen0_4FailSafe extends LinearOpMode {
         WALL,
         PARK,
         PARKED,
-        MOVING, WAITING, TRANSFER
+        MOVING, WAITING, TRANSFER,
+        CHECK_SPECIMEN, FAIL_SAFE;
         //FAIL_SAFE
     }
     public enum SCORING_STATES{
@@ -370,23 +371,36 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                     timer.reset();
                     timeToWait = timeToCollect;
                     CS = STATES.WAITING;
-                    NS = STATES.TRANSFER;
+                    NS = STATES.CHECK_SPECIMEN;
                     break;
 
-                case TRANSFER:
-
-                    if(intakeSubsystem.hasElement()) {
-                        robotSystems.startTransfer(false);
-                        timer.reset();
-                        timeToWait = timeToTransfer;
-                        CS = STATES.WAITING;
-                        NS = STATES.SCORE;
-                    } else {
-                        follower.setMaxPower(mediumSpeed);
-                        follower.followPath(SCORING_CS == SCORING_STATES.SCORE1 ? failSafe1 : failSafe);
-                        NS = STATES.COLLECTING_SPECIMEN;
-                        CS = STATES.MOVING;
+                case CHECK_SPECIMEN:
+                    if(intakeSubsystem.hasElement()){
+                        CS = STATES.TRANSFER;
                     }
+                    else{
+                        intakeSubsystem.claw.open();
+                        timer.reset();
+                        timeToWait = 100;
+                        CS = STATES.WAITING;
+                        NS = STATES.FAIL_SAFE;
+                    }
+                    break;
+
+                case FAIL_SAFE:
+                    follower.setMaxPower(mediumSpeed);
+                    follower.followPath(failSafe1);
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SPECIMEN;
+                    break;
+
+
+                case TRANSFER:
+                    robotSystems.startTransfer(false);
+                    timer.reset();
+                    timeToWait = timeToTransfer;
+                    CS = STATES.WAITING;
+                    NS = STATES.SCORE;
                     break;
 
                 case SCORE:
