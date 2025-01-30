@@ -95,7 +95,7 @@ public class RobotSystems {
                 firstTime = true;
                 if(!intakeSubsystem.hopPeSpate && intakeSubsystem.fastCollect && timerCollect.milliseconds() > RobotSettings.timeToCollect) {
                     transferState = TransferStates.LIFT_GOING_DOWN;
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.DOWN;
+                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
                     timerCollect.reset();
                     intakeSubsystem.fastCollect = false;
                 }
@@ -239,12 +239,16 @@ public class RobotSystems {
                 }
                 break;
             case TRANSFER_READY:
-                if (timer.milliseconds() > RobotSettings.timeToCloseOuttake) {
+                if (timer.milliseconds() > RobotSettings.timeToLastPosTransfer) {
                     timer.reset();
                     transferState = TransferStates.IDLE;
                 }
                 break;
         }
+    }
+
+    public boolean isTransfering() {
+        return transferState != TransferStates.IDLE;
     }
 
 //    public void updateHopPeSpate(){

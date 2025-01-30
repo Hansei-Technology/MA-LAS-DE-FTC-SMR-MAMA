@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import htech.mechanism.intake.BreakBeam;
+import htech.mechanism.intake.ColorSensor;
 import htech.mechanism.intake.IntakeBar;
 import htech.mechanism.intake.IntakeBarMotionProfile;
 import htech.mechanism.intake.IntakeClaw;
@@ -17,7 +18,8 @@ public class IntakeSubsystem {
     public final IntakeRotation rotation;
     public final IntakeBar bar;
     public final IntakeJoint joint;
-    public final BreakBeam breakBeam;
+    //public final BreakBeam breakBeam;
+    public final ColorSensor colorSensor;
 
     boolean fastCollect = false;
     boolean hopPeSpate = false;
@@ -38,7 +40,8 @@ public class IntakeSubsystem {
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         // MECHANISM //
-        breakBeam = new BreakBeam(hardwareMap);
+        //breakBeam = new BreakBeam(hardwareMap);
+        colorSensor = new ColorSensor(hardwareMap);
         claw = new IntakeClaw(hardwareMap);
         rotation = new IntakeRotation(hardwareMap);
         bar = new IntakeBar(hardwareMap);
@@ -53,7 +56,8 @@ public class IntakeSubsystem {
     }
 
     public boolean hasElement() {
-        return breakBeam.hasElement();
+        //return breakBeam.hasElement();
+        return colorSensor.hasElement();
     }
 
     public void initAuto() {

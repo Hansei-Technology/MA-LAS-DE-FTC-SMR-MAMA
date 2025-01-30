@@ -100,18 +100,18 @@ public class TeleOp2 extends LinearOpMode {
                 extendo.goToGround();
                 intakeSubsystem.goToWall();
             }
-            if(gamepad2.dpad_up) {
+            if(gamepad2.dpad_up && lift.isDown()) {
                 extendo.goToMax();
                 //intakeSubsystem.goDown();
 //                intakeSubsystem.goDown();
             }
 
             //lift
-            if(gamepad2.b) {
+            if(gamepad2.b && !robotSystems.isTransfering()) {
                 lift.goToHighChamber();
                 outtakeSubsystem.goToSpecimenScore();
             }
-            if(gamepad2.y) {
+            if(gamepad2.y && !robotSystems.isTransfering()) {
                 lift.goToHighBasket();
                 outtakeSubsystem.goToSampleScore();
             }
@@ -131,7 +131,7 @@ public class TeleOp2 extends LinearOpMode {
             //reset lift
             if(gamepad1.dpad_down) {
                 while (gamepad1.dpad_down) {
-                    lift.setPower(-0.35);
+                    lift.setPower(-0.5);
                 }
                 lift.setPower(0);
                 lift.reset();

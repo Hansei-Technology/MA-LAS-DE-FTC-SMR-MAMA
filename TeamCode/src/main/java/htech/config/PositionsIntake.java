@@ -5,9 +5,9 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class PositionsIntake {
     // INTAKE CLAW //
-    public static double closedClaw = 0.4;
-    public static double closedClawSliding = 0.425;
-    public static double openedClaw = 0.56;
+    public static double closedClaw = 0.315;
+    public static double closedClawSliding = 0.318;
+    public static double openedClaw = 0.45;
 
     // INTAKE ROTATION //
 //    public static double normalRotation = 0.275;
@@ -23,24 +23,29 @@ public abstract class PositionsIntake {
     public static double rotationAuto = 0.72;
 
     // INTAKE BAR //
-    public static double groundPositionBar = 0.441; // over the samples
+    public static double groundPositionBar = 0.48; // over the samples
     public static double wallPositionBar = 0.52;
     public static double transferPositionBar = 0.77; // maybe change this
     public static double readyPositionBar = 0.725;
-    public static double collectPositionBar = 0.38; // collect position = lower than ground
+    public static double collectPositionBar = 0.435; // collect position = lower than ground
     public static double offsetBar = 0; //difference between the two bars
 
     // INTAKE JOINT //
     public static double groundPositionJoint = 0.24;
     public static double wallPickupPositionJoint = 0.44;
     public static double prepTransferPositionJoint = 0.68;
-    public static double transferPositionJoint = 0.735;
+    public static double transferPositionJoint = 0.76;
     public static double collectPositionJoint = 0.24;
 
-
-    public static double transferPositionBarSample = 0.8;
-    public static double transferPositionJointSample = 0.76;
+    //sample positions for joint
+    public static double transferPositionBarSample = 0.776;
+    public static double transferPositionJointSample = 0.82;
     public static double readyPositionBarSample = 0.71;
     public static double readyPositionJointSample = 0.68;
+
+    public static float colorSensorGain = 2;
+    public static float thresholdRed = 0.02f;
+    public static float thresholdGreen = 0.04f;
+    public static float thresholdBlue = 0.02f;
 
 }

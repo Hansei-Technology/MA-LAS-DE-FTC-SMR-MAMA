@@ -67,15 +67,16 @@ public class AutoBasketRapid extends OpMode {
     public static double PRELOAD_X = -20, PRELOAD_Y = 10, PRELOAD_ANGLE = 45;
     //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -13.2, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
-    public static double SAMPLE2_X = -22.4, SAMPLE2_Y = 16, SAMPLE2_ANGLE = 90;
-    public static double SAMPLE3_X = -23.5, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
+    public static double SAMPLE1_X = -18.3, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
+    public static double SAMPLE2_X = -26, SAMPLE2_Y = 16, SAMPLE2_ANGLE = 90;
+    public static double SAMPLE3_X = -27, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
     public static double BASKET1_X = -20.5, BASKET1_Y = 10.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -20.5, BASKET2_Y = 10.5, BASKET2_ANGLE = 45;
     public static double BASKET3_X = -20, BASKET3_Y = 10.5, BASKET3_ANGLE = 45;
     public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
     public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double liftMagic = 1300;
+    boolean offf = false;
 
     public static int timeToPreload = 400;
     public static int timeToSample = 200;
@@ -254,7 +255,7 @@ public class AutoBasketRapid extends OpMode {
             case MOVING:
 
                 if(NS == STATES.COLLECTING1 || NS == STATES.COLLECTING2 || NS == STATES.COLLECTING3 || NS == STATES.PARKED) {
-                    if(follower.getCurrentTValue() > 0.6) {
+                    if(follower.getCurrentTValue() > 0.7) {
                         lift.goToGround();
                         outtakeSubsystem.goToTransfer();
                     }
@@ -342,12 +343,21 @@ public class AutoBasketRapid extends OpMode {
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(fastSpeed);
-                    follower.followPath(goTo1Basket, true);
-                    //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
-                    NS = STATES.BASKET1;
-                    firstTime = true;
-                    CS = STATES.TRANSFERING;
+                    if(intakeSubsystem.hasElement() || offf == true) {
+                        follower.setMaxPower(fastSpeed);
+                        follower.followPath(goTo1Basket, true);
+                        //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
+                        NS = STATES.BASKET1;
+                        firstTime = true;
+                        CS = STATES.TRANSFERING;
+                    } else {
+                        timer.reset();
+                        firstTime = true;
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.claw.open();
+                        offf = true;
+                    }
+
                 }
                 if(timer.milliseconds() > timeToCollect1 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
                     intakeSubsystem.collect(true);
@@ -358,6 +368,7 @@ public class AutoBasketRapid extends OpMode {
             case BASKET1:
                 //lift.goToHighBasket();
                 if(firstTime) {
+                    offf = false;
                     timer.reset();
                     firstTime = false;
                 }
@@ -396,12 +407,20 @@ public class AutoBasketRapid extends OpMode {
                     firstTime = false;
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(fastSpeed);
-                    follower.followPath(goTo2Basket, true);
-                    //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
-                    NS = STATES.BASKET2;
-                    firstTime = true;
-                    CS = STATES.TRANSFERING;
+                    if(intakeSubsystem.hasElement() || offf == true) {
+                        follower.setMaxPower(fastSpeed);
+                        follower.followPath(goTo2Basket, true);
+                        //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
+                        NS = STATES.BASKET2;
+                        firstTime = true;
+                        CS = STATES.TRANSFERING;
+                    } else {
+                        timer.reset();
+                        firstTime = true;
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.claw.open();
+                        offf = true;
+                    }
                 }
                 if(timer.milliseconds() > timeToCollect2 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
                     intakeSubsystem.collect(true);
@@ -412,6 +431,7 @@ public class AutoBasketRapid extends OpMode {
             case BASKET2:
                 lift.goToHighBasket();
                 if(firstTime) {
+                    offf = false;
                     timer.reset();
                     firstTime = false;
                 }
@@ -449,12 +469,20 @@ public class AutoBasketRapid extends OpMode {
                     extendo.goToPos(extendoPoz3);
                 }
                 if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) {
-                    follower.setMaxPower(fastSpeed);
-                    follower.followPath(goTo3Basket, true);
-                    //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN;
-                    NS = STATES.BASKET3;
-                    firstTime = true;
-                    CS = STATES.TRANSFERING;
+                    if(intakeSubsystem.hasElement() || offf == true) {
+                        follower.setMaxPower(fastSpeed);
+                        follower.followPath(goTo3Basket, true);
+                        //robotSystems.transferState = RobotSystems.TransferStates.LIFT_GOING_DOWN; //start transfer
+                        NS = STATES.BASKET3;
+                        firstTime = true;
+                        CS = STATES.TRANSFERING;
+                    } else {
+                        timer.reset();
+                        firstTime = true;
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.claw.open();
+                        offf = true;
+                    }
                 }
                 if(timer.milliseconds() > timeToCollect3 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
                     intakeSubsystem.collect(true);

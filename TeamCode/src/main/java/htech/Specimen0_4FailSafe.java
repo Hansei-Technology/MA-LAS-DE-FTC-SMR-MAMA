@@ -1,6 +1,7 @@
 package htech;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -24,8 +25,8 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 
 @Config
-@Autonomous(name = "[AUTO] Specimen", group = "HTECH")
-public class SpecimenAuto extends LinearOpMode {
+@Autonomous(name = "[AUTO] 0+4 Fail Safe", group = "HTECH")
+public class Specimen0_4FailSafe extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
     LiftSystem lift;
@@ -35,7 +36,7 @@ public class SpecimenAuto extends LinearOpMode {
     Follower follower;
 
     Path preload;
-    PathChain collectSamples;
+    PathChain collectSamples, failSafe1, failSafe;
     Path score1, score2, score3, score4;
     Path wall;
     Path park;
@@ -50,6 +51,7 @@ public class SpecimenAuto extends LinearOpMode {
         PARK,
         PARKED,
         MOVING, WAITING, TRANSFER
+        //FAIL_SAFE
     }
     public enum SCORING_STATES{
         IDLE,
@@ -76,7 +78,7 @@ public class SpecimenAuto extends LinearOpMode {
 
     public static double safeSample3X = -5, safeSample3Y = 30;
     public static double sample3X = -48, sample3Y = 52, sample3H = 0;
-    public static double specimen1X = -10, specimen1Y = 52, specimen1H = 0;
+    public static double specimen1X = -9, specimen1Y = 52, specimen1H = 0;
 
     public static double score1X = -25.3, score1Y = -4, scoreH = 0;
     public static double score2X = -25.3, score2Y = -5;
@@ -103,8 +105,11 @@ public class SpecimenAuto extends LinearOpMode {
 
     public static double timeout = 255;
 
+    public Pose curr;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        curr = new Pose(0,0,0);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
         lift = new LiftSystem(hardwareMap);
@@ -232,6 +237,44 @@ public class SpecimenAuto extends LinearOpMode {
         wall.setConstantHeadingInterpolation(Math.toRadians(specimenH));
         wall.setPathEndTimeoutConstraint(timeout);
 
+        failSafe1 = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(specimen1X, specimen1Y, Point.CARTESIAN),
+                                new Point(specimen1X - 10, specimen1Y, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(preloadH)
+                .setPathEndTimeoutConstraint(500)
+                .addPath(
+                        new BezierLine(
+                                new Point(specimen1X - 10, specimen1Y, Point.CARTESIAN),
+                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(preloadH)
+                .setPathEndTimeoutConstraint(200)
+                .build();
+
+        failSafe = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(specimenX, specimenY, Point.CARTESIAN),
+                                new Point(specimenX - 10, specimenY, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(preloadH)
+                .setPathEndTimeoutConstraint(500)
+                .addPath(
+                        new BezierLine(
+                                new Point(specimenX - 10, specimenY, Point.CARTESIAN),
+                                new Point(specimenX, specimenY, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(preloadH)
+                .setPathEndTimeoutConstraint(200)
+                .build();
+
         park = new Path(
                 new BezierLine(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
@@ -331,11 +374,19 @@ public class SpecimenAuto extends LinearOpMode {
                     break;
 
                 case TRANSFER:
-                    robotSystems.startTransfer(false);
-                    timer.reset();
-                    timeToWait = timeToTransfer;
-                    CS = STATES.WAITING;
-                    NS = STATES.SCORE;
+
+                    if(intakeSubsystem.hasElement()) {
+                        robotSystems.startTransfer(false);
+                        timer.reset();
+                        timeToWait = timeToTransfer;
+                        CS = STATES.WAITING;
+                        NS = STATES.SCORE;
+                    } else {
+                        follower.setMaxPower(mediumSpeed);
+                        follower.followPath(SCORING_CS == SCORING_STATES.SCORE1 ? failSafe1 : failSafe);
+                        NS = STATES.COLLECTING_SPECIMEN;
+                        CS = STATES.MOVING;
+                    }
                     break;
 
                 case SCORE:
