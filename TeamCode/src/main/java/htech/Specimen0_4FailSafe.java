@@ -108,6 +108,8 @@ public class Specimen0_4FailSafe extends LinearOpMode {
 
     public Pose curr;
 
+    public boolean firstSpecimen = true;
+
     @Override
     public void runOpMode() throws InterruptedException {
         curr = new Pose(0,0,0);
@@ -292,6 +294,8 @@ public class Specimen0_4FailSafe extends LinearOpMode {
         );
         scoreSpecimen.setConstantHeadingInterpolation(preloadH);
 
+        follower.setMaxPower(mediumSpeed);
+        follower.followPath(preload);
 
         waitForStart();
 
@@ -301,18 +305,13 @@ public class Specimen0_4FailSafe extends LinearOpMode {
 
                 case IDLE:
                     CS = STATES.SPECIMEN;
-                    follower.setMaxPower(mediumSpeed);
-                    follower.followPath(preload);
                     break;
 
                 case SPECIMEN:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                        lift.goToHighChamber();
-                        outtakeSubsystem.goToSpecimenScore();
-                        CS = STATES.MOVING;
-                        NS = STATES.SCORING_SPECIMEN;
-
-                    }
+                    lift.goToHighChamber();
+                    outtakeSubsystem.goToSpecimenScore();
+                    CS = STATES.MOVING;
+                    NS = STATES.SCORING_SPECIMEN;
                     break;
 
                 case SCORING_SPECIMEN:
@@ -388,10 +387,18 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                     break;
 
                 case FAIL_SAFE:
-                    follower.setMaxPower(mediumSpeed);
-                    follower.followPath(failSafe1);
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
+                    if(SCORING_CS == SCORING_STATES.SCORE1){
+                        follower.setMaxPower(slowSpeed);
+                        follower.followPath(failSafe1);
+                        CS = STATES.MOVING;
+                        NS = STATES.COLLECTING_SPECIMEN;
+                    }
+                    else{
+                        follower.setMaxPower(slowSpeed);
+                        follower.followPath(failSafe);
+                        CS = STATES.MOVING;
+                        NS = STATES.COLLECTING_SPECIMEN;
+                    }
                     break;
 
 
@@ -404,22 +411,24 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                     break;
 
                 case SCORE:
-                    follower.setMaxPower(maxSpeed);
-                    switch (SCORING_CS){
-                        case SCORE1:
-                            follower.followPath(score1);
-                            break;
-                        case SCORE2:
-                            follower.followPath(score2);
-                            break;
-                        case SCORE3:
-                            follower.followPath(score3);
-                            break;
-                        case SCORE4:
-                            follower.followPath(score4);
-                            break;
+                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                        follower.setMaxPower(maxSpeed);
+                        switch (SCORING_CS){
+                            case SCORE1:
+                                follower.followPath(score1);
+                                break;
+                            case SCORE2:
+                                follower.followPath(score2);
+                                break;
+                            case SCORE3:
+                                follower.followPath(score3);
+                                break;
+                            case SCORE4:
+                                follower.followPath(score4);
+                                break;
+                        }
+                        CS = STATES.SPECIMEN;
                     }
-                    CS = STATES.SPECIMEN;
                     break;
 
                 case WALL:
