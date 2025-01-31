@@ -30,8 +30,8 @@ public abstract class PositionsOuttake {
     public static double jointCatapultareLeft = 0.619;
     public static double jointCatapultareRight = 0.651;
 
-    public static double jointTransferSampleLeft = 0.37;
-    public static double jointTransferSampleRight = 0.52;
+    public static double jointTransferSampleLeft = 0.365;
+    public static double jointTransferSampleRight = 0.525;
 
     public static double afterTransferLeft = 0.475;
     public static double afterTransferRight = 0.435;

@@ -27,7 +27,7 @@ public abstract class PositionsIntake {
     public static double wallPositionBar = 0.52;
     public static double transferPositionBar = 0.77; // maybe change this
     public static double readyPositionBar = 0.725;
-    public static double collectPositionBar = 0.435; // collect position = lower than ground
+    public static double collectPositionBar = 0.428; // collect position = lower than ground
     public static double offsetBar = 0; //difference between the two bars
 
     // INTAKE JOINT //
@@ -38,10 +38,10 @@ public abstract class PositionsIntake {
     public static double collectPositionJoint = 0.24;
 
     //sample positions for joint
-    public static double transferPositionBarSample = 0.776;
-    public static double transferPositionJointSample = 0.82;
+    public static double transferPositionBarSample = 0.755;
+    public static double transferPositionJointSample = 0.76;
     public static double readyPositionBarSample = 0.71;
-    public static double readyPositionJointSample = 0.68;
+    public static double readyPositionJointSample = 0.73;
 
     public static float colorSensorGain = 2;
     public static float thresholdRed = 0.02f;

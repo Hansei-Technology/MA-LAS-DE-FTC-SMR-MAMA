@@ -1,7 +1,6 @@
 package htech;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -25,8 +24,8 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 
 @Config
-@Autonomous(name = "[AUTO] 0+4 Fail Safe", group = "HTECH")
-public class Specimen0_4FailSafe extends LinearOpMode {
+@Autonomous(name = "[AUTO] 4+0 Fail Safe", group = "HTECH")
+public class Specimen4FailSafe extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
     LiftSystem lift;
@@ -40,7 +39,7 @@ public class Specimen0_4FailSafe extends LinearOpMode {
     Path score1, score2, score3, score4;
     Path wall;
     Path park;
-    Path scoreSpecimen;
+    Path scoreSpecimen, scoreSpecimen2;
 
     public enum STATES{
         IDLE,
@@ -65,7 +64,7 @@ public class Specimen0_4FailSafe extends LinearOpMode {
     SCORING_STATES SCORING_CS = SCORING_STATES.IDLE;
 
     public static double startX = 0, startY = 0, startH = 0;
-    public static double preloadX = -30, preloadY = 0, preloadH = startH;
+    public static double preloadX = -26, preloadY = 0, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
@@ -75,9 +74,9 @@ public class Specimen0_4FailSafe extends LinearOpMode {
 
     public static double safeSample2X = -48, safeSample2Y = 30;
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -23, human2Y = 45, human2H = 0;
+    public static double human2X = -26, human2Y = 45, human2H = 0;
 
-    public static double safeSample3X = -5, safeSample3Y = 30;
+    public static double safeSample3X = -20, safeSample3Y = 30;
     public static double sample3X = -48, sample3Y = 52, sample3H = 0;
     public static double specimen1X = -9, specimen1Y = 52, specimen1H = 0;
 
@@ -87,7 +86,7 @@ public class Specimen0_4FailSafe extends LinearOpMode {
     public static double score4X = -25.3, score4Y = -7;
     public static double safeScoreX = -14, safeScoreY = 0;
 
-    public static double specimenX = -10, specimenY = 30, specimenH = 0;
+    public static double specimenX = -9.5, specimenY = 30, specimenH = 0;
     public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
     public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
 
@@ -101,8 +100,8 @@ public class Specimen0_4FailSafe extends LinearOpMode {
 
     public static double maxSpeed = 1;
     public static double collectSpeed = 0.6;
-    public static double mediumSpeed = 0.8;
-    public static double slowSpeed = 0.5;
+    public static double mediumSpeed = 1;
+    public static double slowSpeed = 0.7;
 
     public static double timeout = 255;
 
@@ -182,7 +181,7 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
-                .setPathEndTimeoutConstraint(0)
+                .setPathEndTimeoutConstraint(100)
                 .addPath(
                         new BezierLine(
                                 new Point(sample3X, sample3Y, Point.CARTESIAN),
@@ -244,38 +243,38 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(specimen1X, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X - 10, specimen1Y, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(preloadH)
-                .setPathEndTimeoutConstraint(500)
-                .addPath(
-                        new BezierLine(
-                                new Point(specimen1X - 10, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
                 .setPathEndTimeoutConstraint(200)
+                .addPath(
+                        new BezierLine(
+                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN),
+                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(preloadH)
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         failSafe = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
                                 new Point(specimenX, specimenY, Point.CARTESIAN),
-                                new Point(specimenX - 10, specimenY, Point.CARTESIAN)
+                                new Point(specimenX - 5, specimenY, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
-                .setPathEndTimeoutConstraint(500)
+                .setPathEndTimeoutConstraint(300)
                 .addPath(
                         new BezierLine(
-                                new Point(specimenX - 10, specimenY, Point.CARTESIAN),
+                                new Point(specimenX - 5, specimenY, Point.CARTESIAN),
                                 new Point(specimenX, specimenY, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
-                .setPathEndTimeoutConstraint(200)
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         park = new Path(
@@ -289,10 +288,18 @@ public class Specimen0_4FailSafe extends LinearOpMode {
         scoreSpecimen = new Path(
                 new BezierLine(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
-                        new Point(preloadX + 4, preloadY, Point.CARTESIAN)
+                        new Point(preloadX + 5, preloadY, Point.CARTESIAN)
                 )
         );
         scoreSpecimen.setConstantHeadingInterpolation(preloadH);
+
+        scoreSpecimen2 = new Path(
+                new BezierLine(
+                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(preloadX + 7, preloadY, Point.CARTESIAN)
+                )
+        );
+        scoreSpecimen2.setConstantHeadingInterpolation(preloadH);
 
         follower.setMaxPower(mediumSpeed);
         follower.followPath(preload);
@@ -305,35 +312,40 @@ public class Specimen0_4FailSafe extends LinearOpMode {
 
                 case IDLE:
                     CS = STATES.SPECIMEN;
+                    outtakeSubsystem.goToSpecimenScore();
                     break;
 
                 case SPECIMEN:
                     lift.goToHighChamber();
-                    outtakeSubsystem.goToSpecimenScore();
+                    //outtakeSubsystem.goToSpecimenScore();
                     CS = STATES.MOVING;
                     NS = STATES.SCORING_SPECIMEN;
                     break;
 
                 case SCORING_SPECIMEN:
                     follower.setMaxPower(mediumSpeed);
-                    follower.followPath(scoreSpecimen);
                     CS = STATES.WAITING;
                     timer.reset();
                     timeToWait = timeToScoreSpecimen;
                     switch (SCORING_CS){
                         case IDLE:
+                            follower.followPath(scoreSpecimen);
                             NS = STATES.COLLECTING_SAMPLES;
                             break;
                         case SCORE1:
+                            follower.followPath(scoreSpecimen);
                             NS = STATES.WALL;
                             break;
                         case SCORE2:
+                            follower.followPath(scoreSpecimen2);
                             NS = STATES.WALL;
                             break;
                         case SCORE3:
+                            follower.followPath(scoreSpecimen2);
                             NS = STATES.WALL;
                             break;
                         case SCORE4:
+                            follower.followPath(scoreSpecimen2);
                             NS = STATES.PARK;
                             break;
                     }
@@ -411,7 +423,7 @@ public class Specimen0_4FailSafe extends LinearOpMode {
                     break;
 
                 case SCORE:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                    if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
                         follower.setMaxPower(maxSpeed);
                         switch (SCORING_CS){
                             case SCORE1:
