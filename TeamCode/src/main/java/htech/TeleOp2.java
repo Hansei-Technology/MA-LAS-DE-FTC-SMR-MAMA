@@ -79,7 +79,7 @@ public class TeleOp2 extends LinearOpMode {
                 robotSystems.startTransfer(false); //for specimen
             }
             if(stickyGamepad2.x) {
-                robotSystems.startTransfer(true); //for sample
+                robotSystems.startTransfer(false); //for sample
             }
 
             if (stickyGamepad1.left_bumper) intakeSubsystem.claw.toggle();

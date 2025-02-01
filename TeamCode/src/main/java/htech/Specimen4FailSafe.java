@@ -181,7 +181,7 @@ public class Specimen4FailSafe extends LinearOpMode {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
-                .setPathEndTimeoutConstraint(100)
+                .setPathEndTimeoutConstraint(0)
                 .addPath(
                         new BezierLine(
                                 new Point(sample3X, sample3Y, Point.CARTESIAN),

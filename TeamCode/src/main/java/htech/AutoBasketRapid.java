@@ -64,15 +64,15 @@ public class AutoBasketRapid extends OpMode {
     public static double slowSpeed = 0.7;
 
     public static double START_X = 0, START_Y = 0, START_ANGLE = 0;
-    public static double PRELOAD_X = -20, PRELOAD_Y = 10, PRELOAD_ANGLE = 45;
+    public static double PRELOAD_X = -21, PRELOAD_Y = 9, PRELOAD_ANGLE = 45;
     //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
     public static double SAMPLE1_X = -18.3, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
-    public static double SAMPLE2_X = -26, SAMPLE2_Y = 16, SAMPLE2_ANGLE = 90;
+    public static double SAMPLE2_X = -26, SAMPLE2_Y = 22, SAMPLE2_ANGLE = 90;
     public static double SAMPLE3_X = -27, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
-    public static double BASKET1_X = -20.5, BASKET1_Y = 10.5, BASKET1_ANGLE = 45;
-    public static double BASKET2_X = -20.5, BASKET2_Y = 10.5, BASKET2_ANGLE = 45;
-    public static double BASKET3_X = -20, BASKET3_Y = 10.5, BASKET3_ANGLE = 45;
+    public static double BASKET1_X = -21.5, BASKET1_Y = 9.5, BASKET1_ANGLE = 45;
+    public static double BASKET2_X = -21.5, BASKET2_Y = 9.5, BASKET2_ANGLE = 45;
+    public static double BASKET3_X = -21, BASKET3_Y = 9.5, BASKET3_ANGLE = 45;
     public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
     public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double liftMagic = 1300;
@@ -89,7 +89,7 @@ public class AutoBasketRapid extends OpMode {
 
 
     public static int extendoPoz1 = 330;
-    public static int extendoPoz2 = 320;
+    public static int extendoPoz2 = 160;
     public static int extendoPoz3 = 280;
 
     Path goTo1Sample;
@@ -254,9 +254,16 @@ public class AutoBasketRapid extends OpMode {
 
             case MOVING:
 
-                if(NS == STATES.COLLECTING1 || NS == STATES.COLLECTING2 || NS == STATES.COLLECTING3 || NS == STATES.PARKED) {
-                    if(follower.getCurrentTValue() > 0.7) {
+                if(NS == STATES.COLLECTING1 || NS == STATES.COLLECTING2 || NS == STATES.COLLECTING3) {
+                    if(follower.getCurrentTValue() > 0.95) {
                         lift.goToGround();
+                        outtakeSubsystem.goToTransfer();
+                    }
+                }
+
+                if(NS == STATES.PARKED) {
+                    if(follower.getCurrentTValue() > 0.4) {
+                        lift.goToPark();
                         outtakeSubsystem.goToTransfer();
                     }
                 }
@@ -276,16 +283,9 @@ public class AutoBasketRapid extends OpMode {
 
             case TRANSFERING:
                 if(robotSystems.transferState == RobotSystems.TransferStates.IDLE) {
-                    if(firstTime) {
-                        timer.reset();
-                        firstTime = false;
-                    }
-                    if(timer.milliseconds() > time_to_transfer) {
                         lift.goToHighBasket();
-//                        outtakeSubsystem.goToSampleScore();
                         firstTime = true;
                         CS = STATES.MOVING;
-                    }
                 }
                 break;
 
@@ -389,7 +389,7 @@ public class AutoBasketRapid extends OpMode {
             case SAMPLE2:
                 follower.setMaxPower(fastSpeed);
                 follower.followPath(goTo2Sample, true);
-                outtakeSubsystem.goToTransfer();
+                //outtakeSubsystem.goToTransfer();
                 //lift.goToGround();
                 intakeSubsystem.goDown();
                 intakeSubsystem.rotation.goToFlipped();
@@ -403,6 +403,7 @@ public class AutoBasketRapid extends OpMode {
             case COLLECTING2:
                 if(firstTime) {
                     timer.reset();
+                    //outtakeSubsystem.goToTransfer();
                     extendo.goToPos(extendoPoz2);
                     firstTime = false;
                 }
