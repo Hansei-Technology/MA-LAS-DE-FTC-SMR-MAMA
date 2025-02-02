@@ -67,9 +67,9 @@ public class AutoBasketRapid extends OpMode {
     public static double PRELOAD_X = -21, PRELOAD_Y = 9, PRELOAD_ANGLE = 45;
     //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
-    public static double SAMPLE1_X = -18.3, SAMPLE1_Y = 15.5, SAMPLE1_ANGLE = 90;
-    public static double SAMPLE2_X = -26, SAMPLE2_Y = 22, SAMPLE2_ANGLE = 90;
-    public static double SAMPLE3_X = -27, SAMPLE3_Y = 20.7, SAMPLE3_ANGLE = 115;
+    public static double SAMPLE1_X = -17.9, SAMPLE1_Y = 15.3, SAMPLE1_ANGLE = 90;
+    public static double SAMPLE2_X = -25.9, SAMPLE2_Y = 22, SAMPLE2_ANGLE = 90;
+    public static double SAMPLE3_X = -27, SAMPLE3_Y = 20.2, SAMPLE3_ANGLE = 115;
     public static double BASKET1_X = -21.5, BASKET1_Y = 9.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -21.5, BASKET2_Y = 9.5, BASKET2_ANGLE = 45;
     public static double BASKET3_X = -21, BASKET3_Y = 9.5, BASKET3_ANGLE = 45;
@@ -138,6 +138,7 @@ public class AutoBasketRapid extends OpMode {
         lift = new LiftSystem(hardwareMap);
         extendo = new ExtendoSystem(hardwareMap);
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
+        robotSystems.autoSample = true;
         timer = new ElapsedTime();
         matchTimer = new ElapsedTime();
 

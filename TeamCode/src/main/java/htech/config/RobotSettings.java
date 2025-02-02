@@ -17,7 +17,7 @@ public abstract class RobotSettings {
     //timers are in milliseconds
     public static int timeToCloseClaw = 150;
     public static int timeDown_Transfer = 720;
-    public static int timeWall_Transfer = 450; //550
+    public static int timeWall_Transfer = 600; //550
     public static int timeReady_Transfer = 420;
     public static int timeToCatch = 250;
     public static int timeWaitingToCatch = 300;

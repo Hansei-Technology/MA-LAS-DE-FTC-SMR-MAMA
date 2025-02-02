@@ -78,7 +78,7 @@ public class Specimen4FailSafe extends LinearOpMode {
 
     public static double safeSample3X = -20, safeSample3Y = 30;
     public static double sample3X = -48, sample3Y = 52, sample3H = 0;
-    public static double specimen1X = -9, specimen1Y = 52, specimen1H = 0;
+    public static double specimen1X = -9.3, specimen1Y = 52, specimen1H = 0;
 
     public static double score1X = -25.3, score1Y = -4, scoreH = 0;
     public static double score2X = -25.3, score2Y = -5;
@@ -94,7 +94,7 @@ public class Specimen4FailSafe extends LinearOpMode {
 
 
     public static double timeToTransfer = 700;
-    public static double timeToCollect = 75;
+    public static double timeToCollect = 100;
     public static double timeToScoreSpecimen = 550;
     public double timeToWait = 0;
 

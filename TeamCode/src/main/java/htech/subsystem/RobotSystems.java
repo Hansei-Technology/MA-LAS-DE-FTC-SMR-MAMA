@@ -14,6 +14,8 @@ public class RobotSystems {
     public ElapsedTime timerCollect;
     public ElapsedTime timerSpecimen;
 
+    public boolean autoSample = false;
+
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
         this.extendoSystem = extendoSystem;
         this.liftSystem = liftSystem;
@@ -95,6 +97,7 @@ public class RobotSystems {
                 firstTime = true;
                 if(!intakeSubsystem.hopPeSpate && intakeSubsystem.fastCollect && timerCollect.milliseconds() > RobotSettings.timeToCollect) {
                     transferState = TransferStates.LIFT_GOING_DOWN;
+                    transferingSample = false;
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
                     timerCollect.reset();
                     intakeSubsystem.fastCollect = false;
@@ -234,7 +237,7 @@ public class RobotSystems {
                 if (timer.milliseconds() > RobotSettings.timeWaitingToCatch) {
                     timer.reset();
                     intakeSubsystem.goToWall();
-                    if(transferingSample) outtakeSubsystem.goToAfterTransfer();
+                    if(autoSample) outtakeSubsystem.goToAfterTransfer();
                     else outtakeSubsystem.goToSpecimenScore();
                     transferState = TransferStates.TRANSFER_READY;
                 }
