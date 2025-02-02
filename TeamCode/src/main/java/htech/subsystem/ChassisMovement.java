@@ -1,5 +1,6 @@
 package htech.subsystem;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,8 +15,7 @@ public class ChassisMovement {
     private final DcMotorEx rightFrontMotor;
     private final DcMotorEx leftRearMotor;
     private final DcMotorEx rightRearMotor;
-
-//    private final Follower follower;
+    private final Follower follower;
 
     private static final double speed = RobotSettings.speed;
     private static final double rotationSpeed = RobotSettings.rotationSpeed;
@@ -27,7 +27,7 @@ public class ChassisMovement {
         leftRearMotor = hardwareMap.get(DcMotorEx.class, Motors.leftRearMotor);
         rightRearMotor = hardwareMap.get(DcMotorEx.class, Motors.rightRearMotor);
 
-//        follower = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap);
 
         // MOTOR CONFIGURATION //
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
@@ -35,17 +35,17 @@ public class ChassisMovement {
         rightFrontMotor.setDirection(DcMotorEx.Direction.FORWARD);
         rightRearMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
-        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-//        follower.startTeleopDrive();
+        follower.startTeleopDrive();
     }
 
     public void move(Gamepad g) {
@@ -90,6 +90,16 @@ public class ChassisMovement {
         rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * 0.6) * speed);
 //        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x);
 //        follower.update();
+    }
+
+    public void moveWithPedro(Gamepad g) {
+        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x * 0.6);
+        follower.update();
+    }
+
+    public void moveWithPedroReverse(Gamepad g) {
+        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, -g.right_stick_x * 0.6);
+        follower.update();
     }
 
     public void updateMovementSlowRotationReverse(Gamepad g){
