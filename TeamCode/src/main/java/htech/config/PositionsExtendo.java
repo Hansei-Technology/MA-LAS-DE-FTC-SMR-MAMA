@@ -9,6 +9,7 @@ public class PositionsExtendo {
     public static int max = 430;
     public static int maxAuto = 345;
     public static int mid = 250;
+    public static int limePoz = 40;
 
     public static double kP = 0.01;
     public static double kI = 0;

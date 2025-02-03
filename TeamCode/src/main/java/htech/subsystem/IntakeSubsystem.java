@@ -151,4 +151,10 @@ public class IntakeSubsystem {
         rotation.update();
         claw.update();
     }
+
+    public void goToCollectSubmersible() {
+        joint.goToPickup();
+        bar.goToCollectSub();
+        intakeState = intakeState.DOWN;
+    }
 }

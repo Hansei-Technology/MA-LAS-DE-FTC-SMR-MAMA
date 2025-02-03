@@ -1,21 +1,29 @@
 package htech.subsystem;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import htech.config.Motors;
 import htech.config.RobotSettings;
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
 public class ChassisMovement {
     private final DcMotorEx leftFrontMotor;
     private final DcMotorEx rightFrontMotor;
     private final DcMotorEx leftRearMotor;
     private final DcMotorEx rightRearMotor;
-    private final Follower follower;
+//    private final Follower follower;
 
     private static final double speed = RobotSettings.speed;
     private static final double rotationSpeed = RobotSettings.rotationSpeed;
@@ -27,7 +35,8 @@ public class ChassisMovement {
         leftRearMotor = hardwareMap.get(DcMotorEx.class, Motors.leftRearMotor);
         rightRearMotor = hardwareMap.get(DcMotorEx.class, Motors.rightRearMotor);
 
-        follower = new Follower(hardwareMap);
+//        Constants.setConstants(FConstants.class, LConstants.class);
+//        follower = new Follower(hardwareMap);
 
         // MOTOR CONFIGURATION //
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
@@ -45,7 +54,17 @@ public class ChassisMovement {
         leftRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        follower.startTeleopDrive();
+        List<DcMotor> motors = Arrays.asList(this.leftFrontMotor, this.leftRearMotor, this.rightFrontMotor, this.rightRearMotor);
+        for (DcMotor dcMotor : motors) {
+            DcMotorEx motor = (DcMotorEx) dcMotor;
+            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+            motor.setMotorType(motorConfigurationType);
+        }
+
+
+
+//        follower.startTeleopDrive();
     }
 
     public void move(Gamepad g) {
@@ -91,16 +110,16 @@ public class ChassisMovement {
 //        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x);
 //        follower.update();
     }
-
-    public void moveWithPedro(Gamepad g) {
-        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x * 0.6);
-        follower.update();
-    }
-
-    public void moveWithPedroReverse(Gamepad g) {
-        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, -g.right_stick_x * 0.6);
-        follower.update();
-    }
+//
+//    public void moveWithPedro(Gamepad g) {
+//        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x * 0.6);
+//        follower.update();
+//    }
+//
+//    public void moveWithPedroReverse(Gamepad g) {
+//        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, -g.right_stick_x * 0.6);
+//        follower.update();
+//    }
 
     public void updateMovementSlowRotationReverse(Gamepad g){
         leftFrontMotor.setPower((g.left_stick_y - g.left_stick_x + g.right_stick_x * 0.3) * speed);

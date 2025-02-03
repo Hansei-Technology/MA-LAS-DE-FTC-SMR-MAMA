@@ -27,7 +27,7 @@ public class TeleOp2 extends LinearOpMode {
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
     HangSystem hang;
-    boolean pedroDrive = true;
+    boolean pedroDrive = false;
     boolean reverseDrive = false;
 //    ChassisFollower chassisFollower;
 
@@ -60,15 +60,8 @@ public class TeleOp2 extends LinearOpMode {
         while (opModeIsActive()) {
             hang.setPower(gamepad2.right_stick_y);
 
-            if(pedroDrive) {
-                if(reverseDrive) {
-                    chassisMovement.moveWithPedroReverse(gamepad1);
-                } else {
-                    chassisMovement.moveWithPedro(gamepad1);
-                }
-            } else {
-                chassisMovement.updateMovementSlowRotation(gamepad1);
-            }
+
+            chassisMovement.updateMovementSlowRotation(gamepad1);
 
             if(gamepad1.touchpad) {
                 reverseDrive = false;

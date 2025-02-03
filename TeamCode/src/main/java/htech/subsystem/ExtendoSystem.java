@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import htech.classes.PIDController;
 import htech.config.Motors;
@@ -25,7 +26,9 @@ public class ExtendoSystem {
         motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         motor.setDirection(DcMotorEx.Direction.REVERSE);
         pidController = new PIDController(PositionsExtendo.kP, PositionsExtendo.kI, PositionsExtendo.kD);
-
+        MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+        motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        motor.setMotorType(motorConfigurationType);
         pidController.targetValue = target_position;
         pidController.maxOutput = 1;
     }

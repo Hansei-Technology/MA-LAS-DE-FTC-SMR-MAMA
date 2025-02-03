@@ -74,4 +74,9 @@ public class IntakeBar {
         barServo2.setPosition(currentPosition);
     }
 
+    public void goToCollectSub() {
+        barServo.setPosition(PositionsIntake.collectSubPositionBar + PositionsIntake.offsetBar);
+        barServo2.setPosition(PositionsIntake.collectSubPositionBar);
+        currentPosition = PositionsIntake.collectSubPositionBar;
+    }
 }

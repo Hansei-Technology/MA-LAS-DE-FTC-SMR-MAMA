@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import htech.classes.PIDController;
 import htech.config.Motors;
@@ -38,6 +39,14 @@ public class LiftSystem {
 
         right.setDirection(DcMotorEx.Direction.REVERSE);
         left.setDirection(DcMotorEx.Direction.FORWARD);
+
+        MotorConfigurationType leftConfigurationType = left.getMotorType().clone();
+        leftConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        left.setMotorType(leftConfigurationType);
+
+        MotorConfigurationType rightConfigurationType = right.getMotorType().clone();
+        rightConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        right.setMotorType(rightConfigurationType);
 
         pidController = new PIDController(PositionsLift.kP, PositionsLift.kI, PositionsLift.kD);
         pidController.targetValue = target_position;
