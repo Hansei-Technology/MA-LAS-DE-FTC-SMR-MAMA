@@ -584,47 +584,55 @@ public class AutoBasketSubmersible extends OpMode {
                 if(extendo.isAtPosition() || timer.milliseconds() > timeGlis) {
                     intakeSubsystem.collect(true);
                     TIME_TO_WAIT = timeToCheckCollect;
-                    CS = STATES.WAITING;
                     NS = STATES.CHECK_COLLECT_SUBMERSIBLE;
                 }
                 break;
 
-            case CHECK_COLLECT_SUBMERSIBLE:
-                SUBMERSIBLE_Y = SUBMERSIBLE2_Y;
-                SUBMERSIBLE2_Y += 1;
-                if(intakeSubsystem.hasElement()) {
-                    //robotSystems.startTransfer(false);
 
-                    goToBasketFromSub = new Path(
-                            new BezierCurve(
-                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN),
-                                    new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
-                                    new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN)
-                            )
-                    );
-                    goToBasketFromSub.setLinearHeadingInterpolation(Math.toRadians(SUBMERSIBLE_ANGLE), Math.toRadians(BASKET3_ANGLE));
-                    follower.followPath(goToBasketFromSub, true);
-                    CS = STATES.TRANSFERING;
-                    NS = STATES.BASKET3;
-                } else {
-                    goToSubmersible2 = new Path(
-                            new BezierCurve(
-                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN),
-                                    new Point(SUBMERSIBLE2_X, SUBMERSIBLE2_Y, Point.CARTESIAN)
-                            )
-                    );
-                    goToSubmersible2.setConstantHeadingInterpolation(Math.toRadians(SUBMERSIBLE2_ANGLE));
-                    intakeSubsystem.goDown();
-                    intakeSubsystem.rotation.goToFlipped();
-                    follower.followPath(goToSubmersible2, true);
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SUBMERSIBLE;
+            case CHECK_COLLECT_SUBMERSIBLE:
+                if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP) {
+                    SUBMERSIBLE_Y = SUBMERSIBLE2_Y;
+                    SUBMERSIBLE2_Y += 1;
+                    if(intakeSubsystem.hasElement()) {
+                        //robotSystems.startTransfer(false);
+
+                        goToBasketFromSub = new Path(
+                                new BezierCurve(
+                                        new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN),
+                                        new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
+                                        new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN)
+                                )
+                        );
+                        goToBasketFromSub.setLinearHeadingInterpolation(Math.toRadians(SUBMERSIBLE_ANGLE), Math.toRadians(BASKET3_ANGLE));
+
+                        goToSubmersible = new Path(
+                                new BezierCurve(
+                                        new Point(BASKET3_X, BASKET3_Y, Point.CARTESIAN),
+                                        new Point(SAFE_X, SAFE_Y, Point.CARTESIAN),
+                                        new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN)
+                                )
+                        );
+                        goToSubmersible.setLinearHeadingInterpolation(Math.toRadians(BASKET3_ANGLE), Math.toRadians(SUBMERSIBLE_ANGLE));
+
+                        follower.followPath(goToBasketFromSub, true);
+                        CS = STATES.TRANSFERING;
+                        NS = STATES.BASKET3;
+                    } else {
+                        goToSubmersible2 = new Path(
+                                new BezierCurve(
+                                        new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN),
+                                        new Point(SUBMERSIBLE2_X, SUBMERSIBLE2_Y, Point.CARTESIAN)
+                                )
+                        );
+                        goToSubmersible2.setConstantHeadingInterpolation(Math.toRadians(SUBMERSIBLE2_ANGLE));
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.rotation.goToFlipped();
+                        follower.followPath(goToSubmersible2, true);
+                        CS = STATES.MOVING;
+                        NS = STATES.COLLECTING_SUBMERSIBLE;
+                    }
                 }
                 break;
-
-
-
-
 
         }
 
