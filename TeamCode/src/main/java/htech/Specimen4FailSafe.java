@@ -76,9 +76,9 @@ public class Specimen4FailSafe extends LinearOpMode {
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
     public static double human2X = -26, human2Y = 45, human2H = 0;
 
-    public static double safeSample3X = -20, safeSample3Y = 30;
+    public static double safeSample3X = -20, safeSample3Y = 40;
     public static double sample3X = -48, sample3Y = 52, sample3H = 0;
-    public static double specimen1X = -9.3, specimen1Y = 52, specimen1H = 0;
+    public static double specimen1X = -8.5, specimen1Y = 52, specimen1H = 0;
 
     public static double score1X = -25.3, score1Y = -4, scoreH = 0;
     public static double score2X = -25.3, score2Y = -5;
@@ -93,9 +93,11 @@ public class Specimen4FailSafe extends LinearOpMode {
     public static double parkX = -10, parkY = 30, parkH = 80;
 
 
+    public static double time_to_start = 110;
     public static double timeToTransfer = 700;
+    public static double timeToTransfer1 = 200;
     public static double timeToCollect = 100;
-    public static double timeToScoreSpecimen = 550;
+    public static double timeToScoreSpecimen = 650;
     public double timeToWait = 0;
 
     public static double maxSpeed = 1;
@@ -302,7 +304,7 @@ public class Specimen4FailSafe extends LinearOpMode {
         scoreSpecimen2.setConstantHeadingInterpolation(preloadH);
 
         follower.setMaxPower(mediumSpeed);
-        follower.followPath(preload);
+        lift.goToHighChamber();
 
         waitForStart();
 
@@ -311,15 +313,21 @@ public class Specimen4FailSafe extends LinearOpMode {
             switch (CS){
 
                 case IDLE:
+                    if(timer.milliseconds() > time_to_start) {
+                        follower.followPath(preload);
+                        CS = STATES.SPECIMEN;
+                    }
                     CS = STATES.SPECIMEN;
                     outtakeSubsystem.goToSpecimenScore();
                     break;
 
                 case SPECIMEN:
-                    lift.goToHighChamber();
-                    //outtakeSubsystem.goToSpecimenScore();
-                    CS = STATES.MOVING;
-                    NS = STATES.SCORING_SPECIMEN;
+                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.CATCHING) {
+                        lift.goToHighChamber();
+                        //outtakeSubsystem.goToSpecimenScore();
+                        CS = STATES.MOVING;
+                        NS = STATES.SCORING_SPECIMEN;
+                    }
                     break;
 
                 case SCORING_SPECIMEN:
@@ -417,18 +425,23 @@ public class Specimen4FailSafe extends LinearOpMode {
                 case TRANSFER:
                     robotSystems.startTransfer(false);
                     timer.reset();
-                    timeToWait = timeToTransfer;
+                    if(SCORING_CS == SCORING_STATES.SCORE1) {
+                        timeToWait = timeToTransfer1;
+                    } else {
+                        timeToWait = timeToTransfer;
+                    }
+
                     CS = STATES.WAITING;
                     NS = STATES.SCORE;
                     break;
 
                 case SCORE:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
+                    if(SCORING_CS == SCORING_STATES.SCORE1) {
+                        follower.followPath(score1);
+                        CS = STATES.SPECIMEN;
+                    } else if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
                         follower.setMaxPower(maxSpeed);
                         switch (SCORING_CS){
-                            case SCORE1:
-                                follower.followPath(score1);
-                                break;
                             case SCORE2:
                                 follower.followPath(score2);
                                 break;
@@ -441,14 +454,16 @@ public class Specimen4FailSafe extends LinearOpMode {
                         }
                         CS = STATES.SPECIMEN;
                     }
+
+
                     break;
 
                 case WALL:
                     follower.setMaxPower(mediumSpeed);
-                    follower.followPath(wall);
+                    follower.followPath(wall, false);
                     lift.goToGround();
                     outtakeSubsystem.claw.open();
-                    switch (SCORING_CS){
+                    switch (SCORING_CS) {
                         case SCORE1:
                             SCORING_CS = SCORING_STATES.SCORE2;
                             break;
@@ -466,7 +481,7 @@ public class Specimen4FailSafe extends LinearOpMode {
 
                 case PARK:
                     follower.setMaxPower(maxSpeed);
-                    follower.followPath(park);
+                    follower.followPath(park, false);
                     lift.goToGround();
                     outtakeSubsystem.claw.open();
                     extendo.goToGround();

@@ -20,7 +20,7 @@ import htech.subsystem.RobotSystems;
 @TeleOp(name = "Limelight Test", group = "Tests")
 @Config
 public class LimelightTest extends LinearOpMode {
-    public static int extendoLime = 40;
+    public static int extendoLime = 30;
     public static int timeGlis = 550;
     boolean isretracting = false;
     boolean isDown = false;
@@ -40,6 +40,13 @@ public class LimelightTest extends LinearOpMode {
     private RobotSystems robot;
     private LiftSystem lift;
     private OuttakeSubsystem outtake;
+    public static double a=0.000223, b=0.281, c=89.11;
+    private int loopCount=0;
+
+    public int getExtendoPos(double x){
+        return (int) ((int) a*Math.pow(x, 2) + b*x + c);
+    }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -80,28 +87,32 @@ public class LimelightTest extends LinearOpMode {
                     break;
                 case EXTENDING:
                     extendo.moveFree(0.3);
-
-
                     LLResult result = limelight.getLatestResult();
                     double[] pythonOutput = result.getPythonOutput();
                     int validContours = (int) pythonOutput[0];  // 1 dacă există contururi, 0 altfel
-                    double heading = pythonOutput[1] % 180;// Unghiul conturului
-
-                    if(Math.abs(heading - 90) < 5) {
-                        heading = 0;
-                    } else if(Math.abs (heading - 0) < 5 || Math.abs(heading - 180) < 5) {
-                        heading = 90;
-                    }
-
-                    if(validContours == 1) {
-                        intake.rotation.rotateToAngle((int)heading);
-                        extendo.goToPos(extendo.currentPos - extendoLime);
+//                    double heading = Math.atan(Math.tan(Math.toRadians(pythonOutput[5])));// Unghiul conturului
+                    double heading= pythonOutput[5];
+                    if(validContours == 1 && loopCount==10) {
+                        intake.rotation.rotateToAngle(90-(int) heading);
+                        extendo.goToPos(extendo.currentPos + extendoLime);
                         subCS = SubmersibleState.COLLECTING;
                         timer.reset();
                     }
                     break;
                 case COLLECTING:
-                    if(extendo.isAtPosition() || timer.milliseconds() > timeGlis) {
+                    result = limelight.getLatestResult();
+                    pythonOutput = result.getPythonOutput();
+                    validContours = (int) pythonOutput[0];  // 1 dacă există contururi, 0 altfel
+//                    heading = Math.atan(Math.tan(Math.toRadians(pythonOutput[1])));// Unghiul conturului
+                    heading = pythonOutput[5];
+                    telemetry.addData("Heading", pythonOutput[5]);
+
+
+                    if(validContours == 1 && !extendo.isAtPosition()) {
+                        intake.rotation.rotateToAngle(90-(int) heading);
+                    }
+
+                    if(extendo.isAtPosition() && timer.milliseconds() > timeGlis) {
                         intake.collect(true);
                         subCS = SubmersibleState.TRANSFERING;
 
@@ -115,6 +126,11 @@ public class LimelightTest extends LinearOpMode {
             robot.update();
             telemetry.addData("State", subCS);
             telemetry.update();
+            if(loopCount==10){
+                loopCount=0;
+            } else {
+                loopCount++;
+            }
         }
     }
 }

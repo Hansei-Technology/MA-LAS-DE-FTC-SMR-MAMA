@@ -81,6 +81,7 @@ public class IntakeRotation {
     }
 
     public void rotateToAngle(int angle) {
+
         rotationServo.setPosition(PositionsIntake.flippedNormalRotation - angle * PositionsIntake.ticksPerDegree);
         currentPosition = PositionsIntake.flippedNormalRotation - angle * PositionsIntake.ticksPerDegree;
     }
