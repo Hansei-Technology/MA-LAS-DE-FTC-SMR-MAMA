@@ -157,4 +157,11 @@ public class IntakeSubsystem {
         bar.goToCollectSub();
         intakeState = intakeState.DOWN;
     }
+
+    public void goToSpecialTransfer() {
+        joint.goToSpecialTransfer();
+        bar.goToSpecialTransfer();
+        intakeState = intakeState.TRANSFER;
+    }
 }
+

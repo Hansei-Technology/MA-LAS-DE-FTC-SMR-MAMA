@@ -59,8 +59,8 @@ public class AutoBasketSubmersible extends OpMode {
     //public static double SAFE_X = -13, SAFE_Y = -20, SAFE_ANGLE;
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
     public static double SAMPLE1_X = -18.3, SAMPLE1_Y = 15.3, SAMPLE1_ANGLE = 90;
-    public static double SAMPLE2_X = -26.3, SAMPLE2_Y = 22, SAMPLE2_ANGLE = 90;
-    public static double SAMPLE3_X = -27.4, SAMPLE3_Y = 20.2, SAMPLE3_ANGLE = 115;
+    public static double SAMPLE2_X = -26.3, SAMPLE2_Y = 21.8, SAMPLE2_ANGLE = 90;
+    public static double SAMPLE3_X = -27.4, SAMPLE3_Y = 20, SAMPLE3_ANGLE = 115;
     public static double BASKET1_X = -21.5, BASKET1_Y = 9.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -21.5, BASKET2_Y = 9.5, BASKET2_ANGLE = 45;
     public static double BASKET3_X = -21, BASKET3_Y = 9.5, BASKET3_ANGLE = 45;
@@ -75,9 +75,9 @@ public class AutoBasketSubmersible extends OpMode {
 
     public static int timeToPreload = 0;
     public static int timeToSample = 0;
-    public static int timeToCollect1 = 700;
-    public static int timeToCollect2 = 600;
-    public static int timeToCollect3 = 700;
+    public static int timeToCollect1 = 800;
+    public static int timeToCollect2 = 800;
+    public static int timeToCollect3 = 800;
     public static int time_to_transfer = 1000;
     public static int time_to_lift = 580;
     public static int time_to_drop = 650;
@@ -93,8 +93,8 @@ public class AutoBasketSubmersible extends OpMode {
 
 
     public static int extendoPoz1 = 330;
-    public static int extendoPoz2 = 160;
-    public static int extendoPoz3 = 280;
+    public static int extendoPoz2 = 155;
+    public static int extendoPoz3 = 265;
 
     Path goTo1Sample;
     Path goTo2Sample;

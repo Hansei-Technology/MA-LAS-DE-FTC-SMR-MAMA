@@ -129,6 +129,15 @@ public class LiftSystem {
 
 
 
+    public void goToPos(int position) {
+        target_position = position;
+        pidController.targetValue = target_position;
+    }
+
+    public void goToSpecimenVertical() {
+        target_position = PositionsLift.specimenVertical;
+        pidController.targetValue = target_position;
+    }
 
     public boolean isAtPosition() {
         return Math.abs(currentPos - target_position) < 18;

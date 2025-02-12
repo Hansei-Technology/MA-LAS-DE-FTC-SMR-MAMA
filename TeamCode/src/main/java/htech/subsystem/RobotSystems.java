@@ -3,6 +3,8 @@ package htech.subsystem;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import htech.config.PositionsExtendo;
+import htech.config.PositionsLift;
 import htech.config.RobotSettings;
 
 public class RobotSystems {
@@ -32,7 +34,13 @@ public class RobotSystems {
         intakeSubsystem.update();
         updateTranfer();
         updateCollect();
+        updateVertical();
 //        updateHopPeSpate();
+
+
+
+        if(!extendoSystem.pidEnabled && extendoSystem.currentPos > 150 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDownWithoutResetRotation();
+        else if(extendoSystem.pidEnabled && extendoSystem.target_position == PositionsExtendo.max && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDown();
     }
 
     public void startTransfer(boolean sample) {
@@ -72,6 +80,41 @@ public class RobotSystems {
 
     public boolean firstTime = true;
     public boolean transferingSample = true;
+
+    public enum placingVerticalStates {
+        IDLE,
+        GOING_DOWN_TO_MAGIC,
+        WAITING,
+        GOING_DOWN_TO_GROUND
+    }
+    public placingVerticalStates placingVerticalCS = placingVerticalStates.IDLE;
+
+
+    public void updateVertical() {
+        switch (placingVerticalCS) {
+            case IDLE:
+                break;
+            case GOING_DOWN_TO_MAGIC:
+                liftSystem.goToMagicPos();
+                if(liftSystem.isAtPosition()) {
+                    placingVerticalCS = placingVerticalStates.WAITING;
+                    outtakeSubsystem.claw.open();
+                    timer.reset();
+                }
+                break;
+            case WAITING:
+                if(timer.milliseconds() > RobotSettings.timeToSpecimenVertical) {
+                    placingVerticalCS = placingVerticalStates.GOING_DOWN_TO_GROUND;
+                    liftSystem.goToGround();
+                }
+                break;
+            case GOING_DOWN_TO_GROUND:
+                if(liftSystem.isDown()) {
+                    placingVerticalCS = placingVerticalStates.IDLE;
+                }
+                break;
+        }
+    }
 
     void updateCollect() {
         switch (intakeSubsystem.intakeState) {
@@ -255,26 +298,8 @@ public class RobotSystems {
         return transferState != TransferStates.IDLE;
     }
 
-//    public void updateHopPeSpate(){
-//        switch (hopPeSpateState) {
-//            case IDLE:
-//                break;
-//
-//            case CASE1:
-//                outtakeSubsystem.joint.catapultarePos();
-//                extendoSystem.goToGround();
-//                intakeSubsystem.goToReady();
-//                hopPeSpateState = HopPeSpateStates.CASE2;
-//                timer.reset();
-//                break;
-//
-//            case CASE2:
-//                if(timer.milliseconds() > RobotSettings.timeToHopPeSpate) {
-//                    intakeSubsystem.claw.open();
-//                    hopPeSpateState = HopPeSpateStates.IDLE;
-//                }
-//                break;
-//        }
-//
-//    }
+    public void placeVertical() {
+        placingVerticalCS = placingVerticalStates.GOING_DOWN_TO_MAGIC;
+    }
+
 }

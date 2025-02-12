@@ -32,7 +32,7 @@ public class OuttakeSubsystem {
 
     public void init() {
         joint.goToTransfer();
-        claw.open();
+        claw.close();
     }
 
     public void goToTransferSample() {
@@ -43,6 +43,11 @@ public class OuttakeSubsystem {
     public void goToTransfer() {
         joint.goToTransfer();
         claw.open();
+    }
+
+    public void goToSpecimenVertical() {
+        joint.goToSpecimenVertical();
+        //claw.close();
     }
 
     public boolean hasElement() {

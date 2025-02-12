@@ -67,7 +67,7 @@ public class ExtendoSystem {
     public void moveFree(double power) {
         if(Math.abs(power) > 0.2) {
             pidEnabled = false;
-            if(currentPos >= PositionsExtendo.max && power > 0) {
+            if(currentPos >= PositionsExtendo.max - 50 && power > 0) {
                 power = 0;
             }
             if (currentPos <= PositionsExtendo.ground && power < 0) {

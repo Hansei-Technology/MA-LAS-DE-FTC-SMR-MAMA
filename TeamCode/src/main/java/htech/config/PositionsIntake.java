@@ -46,8 +46,11 @@ public abstract class PositionsIntake {
     public static double readyPositionJointSample = 0.73;
 
     public static float colorSensorGain = 2;
-    public static float thresholdRed = 0.02f;
+    public static float thresholdRed = 0.025f;
     public static float thresholdGreen = 0.04f;
-    public static float thresholdBlue = 0.02f;
+    public static float thresholdBlue = 0.025f;
 
+
+    public static double specialTranferBar = 0.9;
+    public static double specialTransferJoint = 0.45;
 }

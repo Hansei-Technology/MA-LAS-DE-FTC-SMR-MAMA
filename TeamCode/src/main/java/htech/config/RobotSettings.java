@@ -32,6 +32,7 @@ public abstract class RobotSettings {
     public static int timeToCollectGoingDownFast = 400;
     public static int timeToCollectGoingUp = 150;
     public static int timeToCollectFast = 200;
+    public static int timeToSpecimenVertical = 500;
 
     public static int time_to_specimen = 200;
 

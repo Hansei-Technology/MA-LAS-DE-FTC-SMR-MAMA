@@ -2,9 +2,12 @@ package htech;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.List;
 
 import htech.classes.StickyGamepad;
 import htech.subsystem.ChassisMovement;
@@ -14,6 +17,7 @@ import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
 import htech.subsystem.RobotSystems;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @TeleOp(name = "[TELEOP] 2", group = "HTech")
 public class TeleOp2 extends LinearOpMode {
@@ -30,6 +34,7 @@ public class TeleOp2 extends LinearOpMode {
     boolean pedroDrive = false;
     boolean reverseDrive = false;
 //    ChassisFollower chassisFollower;
+private VoltageSensor batteryVoltageSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -45,11 +50,11 @@ public class TeleOp2 extends LinearOpMode {
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 //        chassisFollower = new ChassisFollower(hardwareMap);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // CLASSES //
         StickyGamepad stickyGamepad2 = new StickyGamepad(gamepad2, this);
         StickyGamepad stickyGamepad1 = new StickyGamepad(gamepad1, this);
-
         waitForStart();
 
         intakeSubsystem.init();
@@ -132,6 +137,13 @@ public class TeleOp2 extends LinearOpMode {
 
             if(gamepad2.right_bumper) outtakeSubsystem.claw.open();
 
+            if(gamepad2.left_bumper) robotSystems.placeVertical();
+
+            if(gamepad2.right_stick_button) {
+                lift.goToSpecimenVertical();
+                outtakeSubsystem.goToSpecimenVertical();
+            }
+
 
             stickyGamepad2.update();
             stickyGamepad1.update();
@@ -168,6 +180,10 @@ public class TeleOp2 extends LinearOpMode {
             telemetry.addData("extendoPID", extendo.pidEnabled);
             telemetry.addData("outtakeRot", robotSystems.outtakeSubsystem.joint.getRot());
             telemetry.addData("intakeRot", intakeSubsystem.rotation.rotLevel);
+
+            double voltage = batteryVoltageSensor.getVoltage();
+            telemetry.addData("Battery Voltage", voltage);
+
            // telemetry.addData("BreakBeam", intakeSubsystem.breakBeam.hasElement());
 
             telemetry.update();

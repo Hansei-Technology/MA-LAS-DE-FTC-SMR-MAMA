@@ -52,6 +52,11 @@ public class IntakeJoint {
         currentPosition = PositionsIntake.collectPositionJoint;
     }
 
+    public void goToSpecialTransfer() {
+        jointServo.setPosition(PositionsIntake.specialTransferJoint);
+        currentPosition = PositionsIntake.specialTransferJoint;
+    }
+
 
     public void update() {
         jointServo.setPosition(currentPosition);
