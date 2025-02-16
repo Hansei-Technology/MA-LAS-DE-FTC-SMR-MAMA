@@ -73,19 +73,19 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double safeSample2X = -48, safeSample2Y = 30;
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -24, human2Y = 45, human2H = 0;
+    public static double human2X = -27, human2Y = 45, human2H = 0;
 
     public static double safeSample3X = -30, safeSample3Y = 40;
     public static double sample3X = -48, sample3Y = 53, sample3H = 0;
-    public static double specimen1X = -8.5, specimen1Y = 52.7, specimen1H = 0;
+    public static double specimen1X = -8.9, specimen1Y = 52.7, specimen1H = 0;
 
-    public static double score1X = -24.2, score1Y = 1, scoreH = 0;
-    public static double score2X = -24.2, score2Y = 0;
-    public static double score3X = -24.2, score3Y = -1;
-    public static double score4X = -24.2, score4Y = -2;
+    public static double score1X = -25.2, score1Y = 1, scoreH = 0;
+    public static double score2X = -25.2, score2Y = -1;
+    public static double score3X = -24.5, score3Y = -3;
+    public static double score4X = -25.2, score4Y = -5;
     public static double safeScoreX = -14, safeScoreY = 0;
 
-    public static double specimenX = -9.5, specimenY = 30, specimenH = 0;
+    public static double specimenX = -11.2, specimenY = 30, specimenH = 0;
     public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
     public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
 
@@ -94,7 +94,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double time_to_start = 0;
     public static double timeToTransfer = 700;
-    public static double timeToTransfer1 = 200;
+    public static double timeToTransfer1 = 400;
     public static double timeToCollect = 100;
     public static double timeToScoreSpecimen = 600;
     public static double timeToScoreSpecimenVertical = 380;

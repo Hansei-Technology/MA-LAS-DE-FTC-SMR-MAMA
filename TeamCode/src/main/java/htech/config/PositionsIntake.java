@@ -29,7 +29,7 @@ public abstract class PositionsIntake {
     public static double wallPositionBar = 0.52;
     public static double transferPositionBar = 0.765; // maybe change this
     public static double readyPositionBar = 0.725;
-    public static double collectPositionBar = 0.428; // collect position = lower than ground
+    public static double collectPositionBar = 0.41; // collect position = lower than ground
     public static double offsetBar = 0; //difference between the two bars
 
     // INTAKE JOINT //

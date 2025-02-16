@@ -40,6 +40,7 @@ public class LimeLightPinkTest extends LinearOpMode {
     public enum SubmersibleState {
         IDLE,
         EXTENDING,
+        WAITING,
         TRANSFERING,
         COLLECTING
     }
@@ -91,6 +92,7 @@ public class LimeLightPinkTest extends LinearOpMode {
         while (opModeIsActive()) {
             if(subCS == SubmersibleState.IDLE) {
                 if (limelight.valid && gamepad1.a) {
+                    follower.setPose(new Pose(0, 0, Math.toRadians(0)));
                     path = new Path(
                             new BezierLine(
                                     new Point(0, 0, Point.CARTESIAN),
@@ -102,14 +104,29 @@ public class LimeLightPinkTest extends LinearOpMode {
                     follower.followPath(path, true);
                     intake.goDown();
                     extendo.goToPos((int)limelight.Y);
+                    if(Math.abs(limelight.HEADING - 90) < 15) intake.rotation.rotateToAngle(90);
+                    else intake.rotation.goToFlipped();
+                            //intake.rotation.rotateToAngle(-(int) limelight.HEADING);
                     subCS = SubmersibleState.EXTENDING;
                 } else {
                     limelight.update();
                 }
-            } else {
+            } else if(subCS == SubmersibleState.EXTENDING) {
+                if(follower.getCurrentTValue() > 0.99 && extendo.isAtPosition()) {
+                    timer.reset();
+                    subCS = SubmersibleState.WAITING;
+                }
+            } else if(subCS == SubmersibleState.WAITING) {
+                if(timer.milliseconds() > 200) {
+                    subCS = SubmersibleState.COLLECTING;
+                    intake.collect(true);
+                }
+
+            }else {
                 if(gamepad1.b) {
                     subCS = SubmersibleState.IDLE;
                     extendo.goToGround();
+                    outtake.claw.open();
                     intake.goToLimeLight();
                 }
             }
@@ -118,11 +135,13 @@ public class LimeLightPinkTest extends LinearOpMode {
             telemetry.addData("pythonOutput2", limelight.pythonOutput[2]);
             telemetry.addData("pythonOutput3", limelight.pythonOutput[3]);
             telemetry.addData("extendopos", extendo.currentPos);
-            telemetry.addData("limelight_X", limelight.X);
-            telemetry.addData("limelight_heading", limelight.HEADING);
+            telemetry.addData("subCS", subCS);
+            telemetry.addData("X", limelight.X);
+            telemetry.addData("Y", limelight.Y);
+            telemetry.addData("HEADING", limelight.HEADING);
             telemetry.update();
             follower.update();
-            extendo.update();
+            robot.update();
         }
     }
 }
