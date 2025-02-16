@@ -71,10 +71,6 @@ public class AllButtonsTeleOp extends LinearOpMode {
                 outtakeSubsystem.goToSampleScore();
             }
 
-
-            if(gamepad2.a) lift.goToGround();
-            if(gamepad2.y) lift.goToHighChamber();
-
             if(gamepad2.dpad_down) extendo.goToGround();
             if(gamepad2.dpad_up) extendo.goToMax();
 

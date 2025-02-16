@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 import htech.subsystem.ChassisMovement;
 
 @Config
@@ -29,9 +31,10 @@ public class MotorTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("[STATUS]", "MotorTest Teleop is running.");
+            telemetry.addData("Current", testedMotor.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("[INFO]", testedMotor.getCurrentPosition());
 
-            testedMotor.setPower(gamepad1.right_trigger);
+            testedMotor.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
             telemetry.update();
         }

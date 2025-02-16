@@ -85,4 +85,10 @@ public class IntakeBar {
         barServo2.setPosition(PositionsIntake.specialTranferBar);
         currentPosition = PositionsIntake.specialTranferBar;
     }
+
+    public void goToLimeLight() {
+        barServo.setPosition(PositionsIntake.limeLightPositionBar + PositionsIntake.offsetBar);
+        barServo2.setPosition(PositionsIntake.limeLightPositionBar);
+        currentPosition = PositionsIntake.limeLightPositionBar;
+    }
 }

@@ -48,6 +48,13 @@ public class IntakeSubsystem {
         joint = new IntakeJoint(hardwareMap);
     }
 
+    public void goToLimeLight() {
+        joint.goToWall();
+        bar.goToLimeLight();
+        rotation.goToFlipped();
+        claw.open();
+    }
+
     public void init() {
         joint.goToPickup();
         bar.goToGround();
@@ -161,6 +168,7 @@ public class IntakeSubsystem {
     public void goToSpecialTransfer() {
         joint.goToSpecialTransfer();
         bar.goToSpecialTransfer();
+        rotation.goToNormal();
         intakeState = intakeState.TRANSFER;
     }
 }

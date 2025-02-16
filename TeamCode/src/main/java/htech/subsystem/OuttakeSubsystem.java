@@ -65,4 +65,8 @@ public class OuttakeSubsystem {
     public void goToAfterTransfer() {
         joint.goToAfterTransfer();
     }
+
+    public void goToSpecialTransfer() {
+        joint.goToSpecialTransfer();
+    }
 }

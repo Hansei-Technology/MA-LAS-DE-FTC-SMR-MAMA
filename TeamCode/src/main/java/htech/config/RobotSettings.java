@@ -16,9 +16,9 @@ public abstract class RobotSettings {
 
     //timers are in milliseconds
     public static int timeToCloseClaw = 150;
-    public static int timeDown_Transfer = 720;
-    public static int timeWall_Transfer = 600; //550
-    public static int timeReady_Transfer = 420;
+    public static int timeDown_Transfer = 320;
+    public static int timeWall_Transfer = 300; //550
+    public static int timeReady_Transfer = 200;
     public static int timeToCatch = 250;
     public static int timeWaitingToCatch = 300;
     public static int timeToLastPosTransfer = 150;
@@ -30,10 +30,12 @@ public abstract class RobotSettings {
     public static int timeToCollect = 300;
     public static int timeToCollectGoingDown = 175;
     public static int timeToCollectGoingDownFast = 400;
-    public static int timeToCollectGoingUp = 150;
+    public static int timeToCollectGoingUp = 200;
     public static int timeToCollectFast = 200;
     public static int timeToSpecimenVertical = 500;
 
     public static int time_to_specimen = 200;
+
+    public static double limeLightXMultiplyer = 0.05;
 
 }

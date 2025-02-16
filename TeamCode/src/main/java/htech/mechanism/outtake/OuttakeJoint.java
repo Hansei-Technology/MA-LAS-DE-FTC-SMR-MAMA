@@ -114,4 +114,12 @@ public class OuttakeJoint {
         currentPositionLeft = PositionsOuttake.jointSpecimenVerticalLeft;
         currentPositionRight = PositionsOuttake.jointSpecimenVerticalRight;
     }
+
+    public void goToSpecialTransfer() {
+        servoLeft.setPosition(PositionsOuttake.specialTransferLeft - PositionsOuttake.jointRotation90 * rotLevel);
+        servoRight.setPosition(PositionsOuttake.specialTransferRight + PositionsOuttake.jointRotation90 * rotLevel);
+
+        currentPositionLeft = PositionsOuttake.specialTransferLeft;
+        currentPositionRight = PositionsOuttake.specialTransferRight;
+    }
 }

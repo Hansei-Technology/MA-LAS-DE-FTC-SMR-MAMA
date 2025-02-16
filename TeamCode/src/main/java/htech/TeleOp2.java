@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.List;
 
 import htech.classes.StickyGamepad;
+import htech.config.PositionsLift;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
 import htech.subsystem.HangSystem;
@@ -85,7 +86,10 @@ private VoltageSensor batteryVoltageSensor;
 
             //intake
             if(stickyGamepad1.right_bumper) {
-                outtakeSubsystem.claw.open();
+                if(lift.target_position == PositionsLift.highBasket)
+                    outtakeSubsystem.claw.open();
+                else if(lift.target_position == PositionsLift.highChamber)
+                    robotSystems.placeVertical();
                 intakeSubsystem.collect(false);
             }
 
