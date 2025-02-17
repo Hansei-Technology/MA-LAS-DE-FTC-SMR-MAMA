@@ -281,7 +281,7 @@ public class RobotSystems {
                     timer.reset();
                     intakeSubsystem.goToWall();
                     if(autoSample) outtakeSubsystem.goToAfterTransfer();
-                    else outtakeSubsystem.goToSpecimenScore();
+                    else outtakeSubsystem.goToSpecimenVertical();
                     transferState = TransferStates.TRANSFER_READY;
                 }
                 break;

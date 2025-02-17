@@ -27,8 +27,8 @@ public abstract class RobotSettings {
     public static int timeDown_Transfer_SAMPLE = 800;
     public static int magicTransferTime = 350;
 
-    public static int timeToCollect = 300;
-    public static int timeToCollectGoingDown = 175;
+    public static int timeToCollect = 350;
+    public static int timeToCollectGoingDown = 210;
     public static int timeToCollectGoingDownFast = 400;
     public static int timeToCollectGoingUp = 200;
     public static int timeToCollectFast = 200;

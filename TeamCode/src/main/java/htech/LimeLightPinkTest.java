@@ -122,7 +122,7 @@ public class LimeLightPinkTest extends LinearOpMode {
                     intake.collect(true);
                 }
 
-            }else {
+            } else {
                 if(gamepad1.b) {
                     subCS = SubmersibleState.IDLE;
                     extendo.goToGround();

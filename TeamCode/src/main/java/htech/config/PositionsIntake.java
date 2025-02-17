@@ -26,7 +26,7 @@ public abstract class PositionsIntake {
     // INTAKE BAR //
     public static double groundPositionBar = 0.48; // over the samples
     public static double collectSubPositionBar = 0.45;
-    public static double wallPositionBar = 0.52;
+    public static double wallPositionBar = 0.51;
     public static double transferPositionBar = 0.765; // maybe change this
     public static double readyPositionBar = 0.725;
     public static double collectPositionBar = 0.41; // collect position = lower than ground

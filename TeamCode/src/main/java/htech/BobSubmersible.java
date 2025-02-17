@@ -29,8 +29,8 @@ import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
 @Config
-@Autonomous (name = "sampleFromSUbmersible2", group = "HTECH")
-public class AutoBasketSubmersible2 extends OpMode {
+@Autonomous (name = "bob", group = "HTECH")
+public class BobSubmersible extends OpMode {
     ChassisMovement chassisMovement;
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
@@ -64,7 +64,7 @@ public class AutoBasketSubmersible2 extends OpMode {
     public static double BASKET1_X = -21.5, BASKET1_Y = 9.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -21.5, BASKET2_Y = 9.5, BASKET2_ANGLE = 45;
     public static double BASKET3_X = -21, BASKET3_Y = 9.5, BASKET3_ANGLE = 45;
-//    public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
+    //    public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
 //    public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double SAFE_X = -22, SAFE_Y = 60, SAFE_ANGLE;
     public static double SUBMERSIBLE_X = 5, SUBMERSIBLE_Y = 60, SUBMERSIBLE_ANGLE = 0;
@@ -135,7 +135,8 @@ public class AutoBasketSubmersible2 extends OpMode {
         COLLECTING_SUBMERSIBLE2,
         CHECK_COLLECT_SUBMERSIBLE,
         GO_TO_BASKET_FROM_SUB,
-        plm
+        plm,
+        plt
     }
     public STATES CS = STATES.PRELOAD, NS = STATES.MOVING;
     public int TIME_TO_WAIT = 0;
@@ -355,9 +356,9 @@ public class AutoBasketSubmersible2 extends OpMode {
 
             case TRANSFERING:
                 if(robotSystems.transferState == RobotSystems.TransferStates.IDLE) {
-                        lift.goToHighBasket();
-                        firstTime = true;
-                        CS = STATES.MOVING;
+                    lift.goToHighBasket();
+                    firstTime = true;
+                    CS = STATES.MOVING;
                 }
                 break;
 
@@ -612,6 +613,7 @@ public class AutoBasketSubmersible2 extends OpMode {
                 break;
 
             case plm:
+                intakeSubsystem.goToLimeLight();
                 TIME_TO_WAIT = timeToStartCollect;
                 CS = STATES.WAITING;
                 NS = STATES.COLLECTING_SUBMERSIBLE;
@@ -683,12 +685,13 @@ public class AutoBasketSubmersible2 extends OpMode {
                         extendo.goToGround();
                         intakeSubsystem.rotation.goToFlipped();
                         //follower.followPath(goToSubmersible2, true);
-                        CS = STATES.plm;
-                        NS = STATES.COLLECTING_SUBMERSIBLE;
+                        CS = STATES.WAITING;
+                        NS = STATES.plm;
+                        TIME_TO_WAIT = 3000;
+                        timer.reset();
                     }
                 }
                 break;
-
         }
 
         telemetry.addData("Match Time", matchTimer.seconds());

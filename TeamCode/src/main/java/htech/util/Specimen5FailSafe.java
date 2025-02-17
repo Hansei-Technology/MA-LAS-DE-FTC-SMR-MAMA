@@ -63,7 +63,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     SCORING_STATES SCORING_CS = SCORING_STATES.IDLE;
 
     public static double startX = 0, startY = 0, startH = 0;
-    public static double preloadX = -26.5, preloadY = -2.7, preloadH = startH;
+    public static double preloadX = -26, preloadY = -2.7, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
@@ -73,16 +73,16 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double safeSample2X = -48, safeSample2Y = 30;
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -27, human2Y = 45, human2H = 0;
+    public static double human2X = -25.5, human2Y = 45, human2H = 0;
 
-    public static double safeSample3X = -30, safeSample3Y = 40;
+    public static double safeSample3X = -35, safeSample3Y = 42;
     public static double sample3X = -48, sample3Y = 53, sample3H = 0;
     public static double specimen1X = -8.9, specimen1Y = 52.7, specimen1H = 0;
 
-    public static double score1X = -25.2, score1Y = 1, scoreH = 0;
-    public static double score2X = -25.2, score2Y = -1;
-    public static double score3X = -24.5, score3Y = -3;
-    public static double score4X = -25.2, score4Y = -5;
+    public static double score1X = -25.6, score1Y = 1, scoreH = 0;
+    public static double score2X = -25.4, score2Y = -1;
+    public static double score3X = -25.6, score3Y = -3;
+    public static double score4X = -25.6, score4Y = -5;
     public static double safeScoreX = -14, safeScoreY = 0;
 
     public static double specimenX = -11.2, specimenY = 30, specimenH = 0;
@@ -94,7 +94,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double time_to_start = 0;
     public static double timeToTransfer = 700;
-    public static double timeToTransfer1 = 400;
+    public static double timeToTransfer1 = 700;
     public static double timeToCollect = 100;
     public static double timeToScoreSpecimen = 600;
     public static double timeToScoreSpecimenVertical = 380;
@@ -326,11 +326,8 @@ public class Specimen5FailSafe extends LinearOpMode {
 
                 case SPECIMEN:
                     if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.CATCHING) {
-                        if(SCORING_CS == SCORING_STATES.IDLE) {
-                            lift.goToSpecimenVertical();
-                        } else {
-                            lift.goToPos(PositionsLift.highChamber + 7);
-                        }
+
+                        lift.goToSpecimenVertical();
 
                         //outtakeSubsystem.goToSpecimenScore();
                         CS = STATES.MOVING;
@@ -340,44 +337,24 @@ public class Specimen5FailSafe extends LinearOpMode {
 
                 case SCORING_SPECIMEN:
                     follower.setMaxPower(maxSpeed);
-                    CS = STATES.MOVING;
+                    timeToWait = timeToScoreSpecimenVertical;
+                    CS = STATES.WAITING;
                     timer.reset();
-                    timeToWait = timeToScoreSpecimen;
+                    robotSystems.placeVertical();
                     switch (SCORING_CS){
                         case IDLE:
-                            timeToWait = timeToScoreSpecimenVertical;
-                            robotSystems.placeVertical();
-                            CS = STATES.WAITING;
                             NS = STATES.COLLECTING_SAMPLES;
                             break;
                         case SCORE1:
-                            lift.goToHighChamber();
-                            follower.followPath(scoreSpecimen);
-                            timeToWait = timeToScoreSpecimen;
-                            CS = STATES.WAITING;
                             NS = STATES.WALL;
                             break;
                         case SCORE2:
-                            lift.goToHighChamber();
-                            follower.followPath(scoreSpecimen);
-                            timeToWait = timeToScoreSpecimen;
-                            CS = STATES.WAITING;
                             NS = STATES.WALL;
                             break;
                         case SCORE3:
-                            lift.goToHighChamber();
-                            follower.followPath(scoreSpecimen2);
-                            timer.reset();
-                            timeToWait = timeToScoreSpecimen;
-                            CS = STATES.WAITING;
                             NS = STATES.WALL;
                             break;
                         case SCORE4:
-                            lift.goToHighChamber();
-                            follower.followPath(scoreSpecimen2);
-                            CS = STATES.WAITING;
-                            timer.reset();
-                            timeToWait = timeToScoreSpecimen;
                             NS = STATES.PARK;
                             break;
                     }
@@ -449,11 +426,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 case TRANSFER:
                     robotSystems.startTransfer(false);
                     timer.reset();
-                    if(SCORING_CS == SCORING_STATES.SCORE4) {
-                        timeToWait = timeToTransfer1;
-                    } else {
-                        timeToWait = timeToTransfer;
-                    }
+                    timeToWait = timeToTransfer;
 
                     CS = STATES.WAITING;
                     NS = STATES.SCORE;
