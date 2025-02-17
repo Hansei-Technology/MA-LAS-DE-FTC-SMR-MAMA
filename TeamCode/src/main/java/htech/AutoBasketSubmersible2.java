@@ -73,7 +73,7 @@ public class AutoBasketSubmersible2 extends OpMode {
     public static double liftMagic = 1300;
     boolean offf = false;
 
-    public static int timeToStartCollect = 500;
+    public static int timeToStartCollect = 800;
     public static int timeToPreload = 0;
     public static int timeToSample = 0;
     public static int timeToCollect1 = 800;
@@ -612,13 +612,17 @@ public class AutoBasketSubmersible2 extends OpMode {
                 break;
 
             case plm:
+                timer.reset();
                 TIME_TO_WAIT = timeToStartCollect;
                 CS = STATES.WAITING;
                 NS = STATES.COLLECTING_SUBMERSIBLE;
                 break;
 
             case COLLECTING_SUBMERSIBLE:
-                if(firstTime) limelight.update();
+                if(firstTime) {
+                    limelight.update();
+                    firstTime = false;
+                }
                 if (limelight.valid) {
                     path = new Path(
                             new BezierLine(
@@ -647,12 +651,13 @@ public class AutoBasketSubmersible2 extends OpMode {
 
             case COLLECTING_SUBMERSIBLE2:
                 intakeSubsystem.collect(true);
+                timer.reset();
                 CS = STATES.CHECK_COLLECT_SUBMERSIBLE;
                 break;
 
 
             case CHECK_COLLECT_SUBMERSIBLE:
-                if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP) {
+                if(intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.COLECT_GOING_UP || timer.milliseconds() > timeTryingToCollect) {
                     if(intakeSubsystem.hasElement()) {
                         //robotSystems.startTransfer(false);
 
@@ -679,6 +684,7 @@ public class AutoBasketSubmersible2 extends OpMode {
                         NS = STATES.BASKET3;
                     } else {
 
+                        intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.WALL;
                         intakeSubsystem.goToLimeLight();
                         extendo.goToGround();
                         intakeSubsystem.rotation.goToFlipped();
