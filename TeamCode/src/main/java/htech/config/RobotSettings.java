@@ -36,6 +36,6 @@ public abstract class RobotSettings {
 
     public static int time_to_specimen = 200;
 
-    public static double limeLightXMultiplyer = 0.05;
+    public static double limeLightXMultiplyer = 1;
 
 }

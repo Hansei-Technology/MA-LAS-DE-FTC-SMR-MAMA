@@ -81,7 +81,7 @@ public class LimeLightWrapper {
         if (valid) {
             X = (pythonOutput[1] - 318) * getMultiplyerValueforX(pythonOutput[2]);
             Y = getIntervalValueforY(pythonOutput[2]);
-            HEADING = pythonOutput[3];
+            HEADING = pythonOutput[3] <= 90? pythonOutput[3] : 180 - pythonOutput[3];
         }
     }
 

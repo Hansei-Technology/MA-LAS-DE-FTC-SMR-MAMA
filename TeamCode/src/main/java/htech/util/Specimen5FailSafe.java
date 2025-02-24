@@ -31,6 +31,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     ExtendoSystem extendo;
     RobotSystems robotSystems;
     ElapsedTime timer;
+    ElapsedTime matchTimer;
     Follower follower;
 
     Path preload;
@@ -39,6 +40,8 @@ public class Specimen5FailSafe extends LinearOpMode {
     Path wall;
     Path park;
     Path scoreSpecimen, scoreSpecimen2;
+
+
 
     public enum STATES{
         IDLE,
@@ -75,17 +78,17 @@ public class Specimen5FailSafe extends LinearOpMode {
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
     public static double human2X = -25.5, human2Y = 45, human2H = 0;
 
-    public static double safeSample3X = -35, safeSample3Y = 42;
-    public static double sample3X = -48, sample3Y = 53, sample3H = 0;
-    public static double specimen1X = -8.9, specimen1Y = 52.7, specimen1H = 0;
+    public static double safeSample3X = -35, safeSample3Y = 37;
+    public static double sample3X = -48, sample3Y = 52.7, sample3H = 0;
+    public static double specimen1X = -8.8, specimen1Y = 52.7, specimen1H = 0;
 
-    public static double score1X = -25.6, score1Y = 1, scoreH = 0;
-    public static double score2X = -25.4, score2Y = -1;
-    public static double score3X = -25.6, score3Y = -3;
-    public static double score4X = -25.6, score4Y = -5;
+    public static double score1X = -26, score1Y = 1, scoreH = 0;
+    public static double score2X = -26, score2Y = -1;
+    public static double score3X = -26, score3Y = -6;
+    public static double score4X = -26, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = 0;
 
-    public static double specimenX = -11.2, specimenY = 30, specimenH = 0;
+    public static double specimenX = -11.5, specimenY = 30, specimenH = 0;
     public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
     public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
 
@@ -96,6 +99,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     public static double timeToTransfer = 700;
     public static double timeToTransfer1 = 700;
     public static double timeToCollect = 100;
+    public static double timeToCheck = 0;
     public static double timeToScoreSpecimen = 600;
     public static double timeToScoreSpecimenVertical = 380;
     public double timeToWait = 0;
@@ -123,6 +127,7 @@ public class Specimen5FailSafe extends LinearOpMode {
         extendo = new ExtendoSystem(hardwareMap);
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         timer = new ElapsedTime();
+        matchTimer = new ElapsedTime();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
@@ -188,7 +193,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
                 .setPathEndTimeoutConstraint(0)
                 .addPath(
-                        new BezierLine(
+                        new BezierCurve(
                                 new Point(sample3X, sample3Y, Point.CARTESIAN),
                                 new Point(specimen1X, specimen1Y, Point.CARTESIAN)
                         )
@@ -256,7 +261,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                                new Point(specimen1X + 1, specimen1Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -275,7 +280,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(specimenX - 5, specimenY, Point.CARTESIAN),
-                                new Point(specimenX, specimenY, Point.CARTESIAN)
+                                new Point(specimenX + 1, specimenY, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -312,7 +317,9 @@ public class Specimen5FailSafe extends LinearOpMode {
 
         waitForStart();
 
-        while(opModeIsActive()){
+
+        matchTimer.reset();
+        while(opModeIsActive() && matchTimer.seconds() < 30.5){
 
             switch (CS){
 
@@ -370,6 +377,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 case WAITING:
                     if(timer.milliseconds() > timeToWait){
                         CS = NS;
+                        timer.reset();
                     }
                     break;
 
@@ -395,16 +403,20 @@ public class Specimen5FailSafe extends LinearOpMode {
                     break;
 
                 case CHECK_SPECIMEN:
-                    if(intakeSubsystem.hasElement()){
-                        CS = STATES.TRANSFER;
+                    if(timer.milliseconds() > timeToCheck) {
+                        if(intakeSubsystem.hasElement()){
+                            CS = STATES.TRANSFER;
+                            robotSystems.startTransfer(false);
+                        }
+                        else{
+                            intakeSubsystem.claw.open();
+                            timer.reset();
+                            timeToWait = 100;
+                            CS = STATES.WAITING;
+                            NS = STATES.FAIL_SAFE;
+                        }
                     }
-                    else{
-                        intakeSubsystem.claw.open();
-                        timer.reset();
-                        timeToWait = 100;
-                        CS = STATES.WAITING;
-                        NS = STATES.FAIL_SAFE;
-                    }
+
                     break;
 
                 case FAIL_SAFE:
@@ -424,38 +436,34 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
                 case TRANSFER:
-                    robotSystems.startTransfer(false);
-                    timer.reset();
-                    timeToWait = timeToTransfer;
-
-                    CS = STATES.WAITING;
-                    NS = STATES.SCORE;
+                    if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH) {
+                        CS = STATES.SCORE;
+                    } else if(!intakeSubsystem.hasElement() && !outtakeSubsystem.hasElement()) {
+                        intakeSubsystem.claw.open();
+                        timer.reset();
+                        timeToWait = 100;
+                        CS = STATES.WAITING;
+                        NS = STATES.FAIL_SAFE;
+                    }
                     break;
 
                 case SCORE:
-                    if(SCORING_CS == SCORING_STATES.SCORE4) {
-                        follower.followPath(score4);
-                        CS = STATES.SPECIMEN;
-                    } else if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
-                        follower.setMaxPower(maxSpeed);
-                        switch (SCORING_CS){
-                            case SCORE1:
-                                follower.followPath(score1);
-                                break;
-                            case SCORE2:
-                                follower.followPath(score2);
-                                break;
-                            case SCORE3:
-                                follower.followPath(score3);
-                                break;
-//                            case SCORE4:
-//                                follower.followPath(score4);
-//                                break;
-                        }
-                        CS = STATES.SPECIMEN;
+                    follower.setMaxPower(maxSpeed);
+                    switch (SCORING_CS){
+                        case SCORE1:
+                            follower.followPath(score1);
+                            break;
+                        case SCORE2:
+                            follower.followPath(score2);
+                            break;
+                        case SCORE3:
+                            follower.followPath(score3);
+                            break;
+                        case SCORE4:
+                            follower.followPath(score4);
+                            break;
                     }
-
-
+                    CS = STATES.SPECIMEN;
                     break;
 
                 case WALL:
@@ -495,6 +503,9 @@ public class Specimen5FailSafe extends LinearOpMode {
 
             follower.update();
             robotSystems.update();
+            telemetry.addData("STATE", CS);
+            telemetry.addData("TIMER", timer.milliseconds());
+            telemetry.update();
         }
     }
 }

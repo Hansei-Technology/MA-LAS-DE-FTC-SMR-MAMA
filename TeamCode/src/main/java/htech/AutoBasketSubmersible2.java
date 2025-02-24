@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import htech.config.RobotSettings;
 import htech.mechanism.LimeLightWrapper;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
@@ -60,15 +61,15 @@ public class AutoBasketSubmersible2 extends OpMode {
     //public static double SAFE_BASKET_X = -20, SAFE_BASKET_Y = -10, SAFE_BASKET_ANGLE;
     public static double SAMPLE1_X = -18.3, SAMPLE1_Y = 15.3, SAMPLE1_ANGLE = 90;
     public static double SAMPLE2_X = -26.3, SAMPLE2_Y = 21.8, SAMPLE2_ANGLE = 90;
-    public static double SAMPLE3_X = -27.4, SAMPLE3_Y = 20, SAMPLE3_ANGLE = 115;
+    public static double SAMPLE3_X = -27.4, SAMPLE3_Y = 19.8, SAMPLE3_ANGLE = 115;
     public static double BASKET1_X = -21.5, BASKET1_Y = 9.5, BASKET1_ANGLE = 45;
     public static double BASKET2_X = -21.5, BASKET2_Y = 9.5, BASKET2_ANGLE = 45;
-    public static double BASKET3_X = -21, BASKET3_Y = 9.5, BASKET3_ANGLE = 45;
+    public static double BASKET3_X = -22, BASKET3_Y = 11, BASKET3_ANGLE = 45;
 //    public static double PARK_X = 7.5, PARK_Y = 60, PARK_ANGLE = 180;
 //    public static double SAFE_PARK_X = -10, SAFE_PARK_Y = 52, SAFE_PARK_ANGLE;
     public static double SAFE_X = -22, SAFE_Y = 60, SAFE_ANGLE;
-    public static double SUBMERSIBLE_X = 5, SUBMERSIBLE_Y = 60, SUBMERSIBLE_ANGLE = 0;
-    public static double SUBMERSIBLE2_X = 5, SUBMERSIBLE2_Y = 60, SUBMERSIBLE2_ANGLE = 0;
+    public static double SUBMERSIBLE_X = 9, SUBMERSIBLE_Y = 60, SUBMERSIBLE_ANGLE = 0;
+    public static double SUBMERSIBLE2_X = 9, SUBMERSIBLE2_Y = 60, SUBMERSIBLE2_ANGLE = 0;
 
     public static double liftMagic = 1300;
     boolean offf = false;
@@ -83,7 +84,7 @@ public class AutoBasketSubmersible2 extends OpMode {
     public static int time_to_lift = 590;
     public static int time_to_drop = 670;
     public static int timeGlis = 500;
-    public static int timeToCheckCollect = 400;
+    public static int timeToCheckCollect = 850;
     public static int timeTryingToCollect = 1500;
 
 
@@ -93,7 +94,7 @@ public class AutoBasketSubmersible2 extends OpMode {
     public static double ValueTForLowerLiftSub = 0.07;
 
 
-    public static int extendoPoz1 = 330;
+    public static int extendoPoz1 = 305;
     public static int extendoPoz2 = 155;
     public static int extendoPoz3 = 265;
 
@@ -108,7 +109,7 @@ public class AutoBasketSubmersible2 extends OpMode {
     Path goToSample2From1;
     Path goTosample3From2;
     Path goToBasketFromSub;
-    Path path;
+    Path path, path2;
 
 
     int validContours;
@@ -349,6 +350,7 @@ public class AutoBasketSubmersible2 extends OpMode {
 
             case WAITING:
                 if(timer.milliseconds() > TIME_TO_WAIT) {
+                    firstTime = true;
                     CS = NS;
                 }
                 break;
@@ -627,16 +629,31 @@ public class AutoBasketSubmersible2 extends OpMode {
                     path = new Path(
                             new BezierLine(
                                     new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN),
-                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y - (limelight.X * 0.3937), Point.CARTESIAN)
+                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y - (limelight.X * 0.3937 * RobotSettings.limeLightXMultiplyer), Point.CARTESIAN)
                             )
                     );
                     path.setConstantHeadingInterpolation(Math.toRadians(SUBMERSIBLE_ANGLE));
 
+                    path2 = new Path(
+                            new BezierLine(
+                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y - (limelight.X * 0.3937 * RobotSettings.limeLightXMultiplyer), Point.CARTESIAN),
+                                    new Point(SUBMERSIBLE_X, SUBMERSIBLE_Y, Point.CARTESIAN)
+                            )
+                    );
+                    path2.setConstantHeadingInterpolation(Math.toRadians(SUBMERSIBLE_ANGLE));
+
                     follower.followPath(path, true);
                     intakeSubsystem.goDown();
-                    extendo.goToPos((int)limelight.Y);
-                    if(Math.abs(limelight.HEADING - 90) < 15) intakeSubsystem.rotation.rotateToAngle(90);
-                    else intakeSubsystem.rotation.goToFlipped();
+
+                    if(Math.abs(limelight.HEADING - 90) < 20) {
+                        extendo.goToPos((int)limelight.Y - 7);
+                        intakeSubsystem.rotation.rotateToAngle(90);
+                    }
+                    else {
+                        extendo.goToPos((int)limelight.Y);
+                        intakeSubsystem.rotation.goToFlipped();
+                    }
+
 
                     CS = STATES.MOVING;
                     NS = STATES.COLLECTING_SUBMERSIBLE2;
@@ -652,7 +669,9 @@ public class AutoBasketSubmersible2 extends OpMode {
             case COLLECTING_SUBMERSIBLE2:
                 intakeSubsystem.collect(true);
                 timer.reset();
-                CS = STATES.CHECK_COLLECT_SUBMERSIBLE;
+                TIME_TO_WAIT = timeToCheckCollect;
+                CS = STATES.WAITING;
+                NS = STATES.CHECK_COLLECT_SUBMERSIBLE;
                 break;
 
 
@@ -688,9 +707,10 @@ public class AutoBasketSubmersible2 extends OpMode {
                         intakeSubsystem.goToLimeLight();
                         extendo.goToGround();
                         intakeSubsystem.rotation.goToFlipped();
-                        //follower.followPath(goToSubmersible2, true);
-                        CS = STATES.plm;
-                        NS = STATES.COLLECTING_SUBMERSIBLE;
+                        follower.followPath(path2, true);
+
+                        CS = STATES.MOVING;
+                        NS = STATES.plm;
                     }
                 }
                 break;

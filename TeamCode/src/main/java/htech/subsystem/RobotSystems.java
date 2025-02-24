@@ -171,9 +171,7 @@ public class RobotSystems {
                     intakeSubsystem.goDownWithoutResetRotation();
                     extendoSystem.pidEnabled = false;
                 }
-                if(timer.milliseconds() > RobotSettings.timeToCollectGoingUp) {
-
-                }
+                if(intakeSubsystem.fastCollect) intakeSubsystem.goToWall();
                 break;
         }
     }
