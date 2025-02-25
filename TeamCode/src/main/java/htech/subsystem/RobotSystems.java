@@ -17,6 +17,7 @@ public class RobotSystems {
     public ElapsedTime timerSpecimen;
 
     public boolean autoSample = false;
+    public boolean fastCollect = false;
 
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
         this.extendoSystem = extendoSystem;
@@ -52,6 +53,8 @@ public class RobotSystems {
             transferState = TransferStates.LIFT_GOING_DOWN;
         }
     }
+
+
 
     public enum TransferStates {
         IDLE,
@@ -171,11 +174,13 @@ public class RobotSystems {
                     intakeSubsystem.goDownWithoutResetRotation();
                     extendoSystem.pidEnabled = false;
                 }
+                else if(fastCollect){
+                    transferState = TransferStates.LIFT_GOING_DOWN;
+                }
                 if(intakeSubsystem.fastCollect) intakeSubsystem.goToWall();
                 break;
         }
     }
-
 
     void updateTranfer() {
         switch (transferState) {
