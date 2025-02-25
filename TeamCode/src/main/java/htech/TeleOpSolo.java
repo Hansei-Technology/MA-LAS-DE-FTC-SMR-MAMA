@@ -80,6 +80,10 @@ public class TeleOpSolo extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                intakeSubsystem.rotation.handleRotation(gamepad1);
+            }
+
             stickyGamepad1.update();
             stickyGamepad2.update();
             robotSystems.update();
@@ -203,7 +207,7 @@ public class TeleOpSolo extends LinearOpMode {
                 }
 
             }
-            
+
 
             //reset lift
             if(gamepad1.dpad_down) {
