@@ -40,6 +40,8 @@ public class Specimen5FailSafe extends LinearOpMode {
     Path wall;
     Path park;
     Path scoreSpecimen, scoreSpecimen2;
+    Path thirdSample;
+    Path collectSampleBasket, goToBasket;
 
 
 
@@ -52,8 +54,11 @@ public class Specimen5FailSafe extends LinearOpMode {
         PARK,
         PARKED,
         MOVING, WAITING, TRANSFER,
-        CHECK_SPECIMEN, FAIL_SAFE;
-        //FAIL_SAFE
+        CHECK_SPECIMEN, FAIL_SAFE,
+        THIRD_SAMPLE,
+        COLLECTING_SAMPLE,
+        COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
+        SCORE_BASKET, SCORE_BASKET2
     }
     public enum SCORING_STATES{
         IDLE,
@@ -76,11 +81,11 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double safeSample2X = -48, safeSample2Y = 30;
     public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -25.5, human2Y = 45, human2H = 0;
+    public static double human2X = -24.5, human2Y = 45, human2H = 0;
 
-    public static double safeSample3X = -35, safeSample3Y = 37;
-    public static double sample3X = -48, sample3Y = 52.7, sample3H = 0;
-    public static double specimen1X = -8.8, specimen1Y = 52.7, specimen1H = 0;
+    public static double safeSample3X = -32.5, safeSample3Y = 37;
+    public static double sample3X = -48, sample3Y = 50.3, sample3H = 0;
+    public static double specimen1X = -8.4, specimen1Y = 50.3, specimen1H = 0;
 
     public static double score1X = -26, score1Y = 1, scoreH = 0;
     public static double score2X = -26, score2Y = -1;
@@ -88,18 +93,20 @@ public class Specimen5FailSafe extends LinearOpMode {
     public static double score4X = -26, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = 0;
 
-    public static double specimenX = -11.5, specimenY = 30, specimenH = 0;
+    public static double specimenX = -11.1, specimenY = 30, specimenH = 0;
     public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
     public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
 
     public static double parkX = -10, parkY = 30, parkH = 80;
 
+    public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 50;
+    public static double basketX = -10, basketY = -25, basketH = 90;
 
     public static double time_to_start = 0;
     public static double timeToTransfer = 700;
     public static double timeToTransfer1 = 700;
     public static double timeToCollect = 100;
-    public static double timeToCheck = 0;
+    public static double timeToCheck = 100;
     public static double timeToScoreSpecimen = 600;
     public static double timeToScoreSpecimenVertical = 380;
     public double timeToWait = 0;
@@ -117,6 +124,8 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double magicScore = 1;
     public static double magicScore2 = 0.5;
+
+    boolean basket = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -191,16 +200,16 @@ public class Specimen5FailSafe extends LinearOpMode {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
-                .setPathEndTimeoutConstraint(0)
-                .addPath(
-                        new BezierCurve(
-                                new Point(sample3X, sample3Y, Point.CARTESIAN),
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(specimen1H))
-                .setPathEndTimeoutConstraint(0)
                 .build();
+
+        thirdSample = new Path(
+                new BezierLine(
+                        new Point(sample3X, sample3Y, Point.CARTESIAN),
+                        new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                )
+        );
+        thirdSample.setPathEndTValueConstraint(0.95);
+        thirdSample.setConstantHeadingInterpolation(sample3H);
 
         score1 = new Path(
                 new BezierCurve(
@@ -295,21 +304,37 @@ public class Specimen5FailSafe extends LinearOpMode {
         );
         park.setLinearHeadingInterpolation(Math.toRadians(scoreH), Math.toRadians(parkH));
 
-        scoreSpecimen = new Path(
+//        scoreSpecimen = new Path(
+//                new BezierLine(
+//                        new Point(preloadX, preloadY, Point.CARTESIAN),
+//                        new Point(preloadX + magicScore, preloadY, Point.CARTESIAN)
+//                )
+//        );
+//        scoreSpecimen.setConstantHeadingInterpolation(preloadH);
+
+//        scoreSpecimen2 = new Path(
+//                new BezierLine(
+//                        new Point(score3X, score3Y, Point.CARTESIAN),
+//                        new Point(score3X + magicScore2, score3Y, Point.CARTESIAN)
+//                )
+//        );
+//        scoreSpecimen2.setConstantHeadingInterpolation(preloadH);
+
+        collectSampleBasket = new Path(
                 new BezierLine(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
-                        new Point(preloadX + magicScore, preloadY, Point.CARTESIAN)
+                        new Point(sampleBasketX, sampleBasketY, Point.CARTESIAN)
                 )
         );
-        scoreSpecimen.setConstantHeadingInterpolation(preloadH);
+        collectSampleBasket.setLinearHeadingInterpolation(Math.toRadians(scoreH), Math.toRadians(sampleBasketH));
 
-        scoreSpecimen2 = new Path(
+        goToBasket = new Path(
                 new BezierLine(
-                        new Point(score3X, score3Y, Point.CARTESIAN),
-                        new Point(score3X + magicScore2, score3Y, Point.CARTESIAN)
+                        new Point(sampleBasketX, sampleBasketY, Point.CARTESIAN),
+                        new Point(basketX, basketY, Point.CARTESIAN)
                 )
         );
-        scoreSpecimen2.setConstantHeadingInterpolation(preloadH);
+        goToBasket.setLinearHeadingInterpolation(Math.toRadians(sampleBasketH), Math.toRadians(basketH));
 
 
         follower.setMaxPower(maxSpeed);
@@ -319,7 +344,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
         matchTimer.reset();
-        while(opModeIsActive() && matchTimer.seconds() < 30.5){
+        while(opModeIsActive() /*&& matchTimer.seconds() < 30.5*/){
 
             switch (CS){
 
@@ -362,7 +387,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                             NS = STATES.WALL;
                             break;
                         case SCORE4:
-                            NS = STATES.PARK;
+                            NS = STATES.COLLECTING_SAMPLE;
                             break;
                     }
                     break;
@@ -370,7 +395,20 @@ public class Specimen5FailSafe extends LinearOpMode {
 
                 case MOVING:
                     if(!follower.isBusy()){
-                        CS = NS;
+                        if(basket){
+                            if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
+                                CS = NS;
+                                lift.goToHighBasket();
+                                outtakeSubsystem.goToTransfer();
+                                timer.reset();
+                                basket = false;
+                            }
+                        }
+                        else{
+                            CS = NS;
+                            timer.reset();
+                        }
+
                     }
                     break;
 
@@ -388,10 +426,17 @@ public class Specimen5FailSafe extends LinearOpMode {
                     lift.goToGround();
                     outtakeSubsystem.claw.open();
                     CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
+                    NS = STATES.THIRD_SAMPLE;
                     intakeSubsystem.goToWall();
                     intakeSubsystem.claw.open();
                     SCORING_CS = SCORING_STATES.SCORE1;
+                    break;
+
+                case THIRD_SAMPLE:
+                    follower.setMaxPower(1);
+                    follower.followPath(thirdSample);
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SPECIMEN;
                     break;
 
                 case COLLECTING_SPECIMEN:
@@ -488,14 +533,54 @@ public class Specimen5FailSafe extends LinearOpMode {
                     NS = STATES.COLLECTING_SPECIMEN;
                     break;
 
-                case PARK:
-                    follower.setMaxPower(maxSpeed);
-                    follower.followPath(park, false);
+                case COLLECTING_SAMPLE:
+                    follower.setMaxPower(1);
+                    follower.followPath(collectSampleBasket);
+                    extendo.goToPos(380);
+                    intakeSubsystem.goDown();
                     lift.goToGround();
-                    outtakeSubsystem.claw.open();
-                    extendo.goToGround();
-                    CS = STATES.PARKED;
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SAMPLE2;
                     break;
+                case COLLECTING_SAMPLE2:
+                    if(timer.milliseconds() > 1000){
+                        timer.reset();
+                        intakeSubsystem.collect(true);
+                        if(timer.milliseconds() > 1000){
+                            CS = STATES.SCORE_BASKET;
+                        }
+                    }
+                    break;
+
+                case COLLECTING_SAMPLE3:
+                    robotSystems.startTransfer(true);
+                    CS = STATES.SCORE_BASKET;
+                    break;
+
+                case SCORE_BASKET:
+                    follower.setMaxPower(1);
+                    follower.followPath(goToBasket);
+                    CS = STATES.MOVING;
+                    NS = STATES.SCORE_BASKET2;
+                    basket = true;
+                    break;
+
+                case SCORE_BASKET2:
+                    if(lift.isAtPosition()){
+                        timer.reset();
+                        outtakeSubsystem.goToSampleScore();
+                        if(timer.milliseconds() > 150){
+                            outtakeSubsystem.claw.open();
+                            if(!outtakeSubsystem.hasElement()){
+                                timer.reset();
+                                outtakeSubsystem.goToTransfer();
+                                if(timer.milliseconds() > 150){
+                                    lift.goToGround();
+                                    CS = STATES.PARKED;
+                                }
+                            }
+                        }
+                    }
 
                 case PARKED:
                     break;

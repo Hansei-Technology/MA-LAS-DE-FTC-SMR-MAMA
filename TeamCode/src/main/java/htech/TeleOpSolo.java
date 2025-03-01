@@ -93,6 +93,7 @@ public class TeleOpSolo extends LinearOpMode {
             if(gamepad1.touchpad){
                 sample = !sample;
                 robotSystems.fastCollect = !robotSystems.fastCollect;
+                gamepad1.rumble(150);
             }
 
             if(sample){

@@ -20,13 +20,13 @@ public abstract class PositionsIntake {
     public static double ticksPerDegree = 0.0031;
 
     public static double rotation30Deg = 0.095;
-    public static double rotSpeed = 0.1;
+    public static double rotSpeed = 0.25;
     public static double rotationAuto = 0.77;
 
     // INTAKE BAR //
     public static double groundPositionBar = 0.48; // over the samples
     public static double collectSubPositionBar = 0.45;
-    public static double wallPositionBar = 0.445;
+    public static double wallPositionBar = 0.465;
     public static double transferPositionBar = 0.765; // maybe change this
     public static double readyPositionBar = 0.725;
     public static double collectPositionBar = 0.41; // collect position = lower than ground

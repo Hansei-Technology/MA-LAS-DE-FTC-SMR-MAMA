@@ -77,7 +77,7 @@ private VoltageSensor batteryVoltageSensor;
             }
 
             //extendo
-            extendo.moveFree(gamepad1.right_trigger - gamepad1.left_trigger);
+//            extendo.moveFree(gamepad1.right_trigger - gamepad1.left_trigger);
 //            if(gamepad2.dpad_up) {
 //                extendo.goToPos(230);
 //                intakeSubsystem.goDown();
@@ -104,7 +104,7 @@ private VoltageSensor batteryVoltageSensor;
 
             //rotations(both of them)
             if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                intakeSubsystem.rotation.handleRotation(gamepad2);
+                intakeSubsystem.rotation.handleRotation(gamepad1);
             }
 
             if(stickyGamepad2.dpad_left) {
