@@ -58,7 +58,7 @@ public class Specimen5FailSafe extends LinearOpMode {
         THIRD_SAMPLE,
         COLLECTING_SAMPLE,
         COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
-        SCORE_BASKET, SCORE_BASKET2
+        SCORE_BASKET, SCORE_BASKET2, SCORE_BASKET3
     }
     public enum SCORING_STATES{
         IDLE,
@@ -88,7 +88,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     public static double specimen1X = -8.4, specimen1Y = 50.3, specimen1H = 0;
 
     public static double score1X = -26, score1Y = 1, scoreH = 0;
-    public static double score2X = -26, score2Y = -1;
+    public static double score2X = -26, score2Y = -2;
     public static double score3X = -26, score3Y = -6;
     public static double score4X = -26, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = 0;
@@ -99,8 +99,8 @@ public class Specimen5FailSafe extends LinearOpMode {
 
     public static double parkX = -10, parkY = 30, parkH = 80;
 
-    public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 50;
-    public static double basketX = -10, basketY = -25, basketH = 90;
+    public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 25;
+    public static double basketX = -2.7, basketY = -62.5, basketH = 90;
 
     public static double time_to_start = 0;
     public static double timeToTransfer = 700;
@@ -270,7 +270,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X + 1, specimen1Y, Point.CARTESIAN)
+                                new Point(specimen1X + 0.5, specimen1Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -289,7 +289,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(specimenX - 5, specimenY, Point.CARTESIAN),
-                                new Point(specimenX + 1, specimenY, Point.CARTESIAN)
+                                new Point(specimenX + 0.5, specimenY, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -344,7 +344,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
         matchTimer.reset();
-        while(opModeIsActive() /*&& matchTimer.seconds() < 30.5*/){
+        while(opModeIsActive() && matchTimer.seconds() < 31){
 
             switch (CS){
 
@@ -396,11 +396,9 @@ public class Specimen5FailSafe extends LinearOpMode {
                 case MOVING:
                     if(!follower.isBusy()){
                         if(basket){
-                            if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH){
+                            if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
                                 CS = NS;
                                 lift.goToHighBasket();
-                                outtakeSubsystem.goToTransfer();
-                                timer.reset();
                                 basket = false;
                             }
                         }
@@ -543,12 +541,13 @@ public class Specimen5FailSafe extends LinearOpMode {
                     NS = STATES.COLLECTING_SAMPLE2;
                     break;
                 case COLLECTING_SAMPLE2:
-                    if(timer.milliseconds() > 1000){
+                    if(timer.milliseconds() > 400){
                         timer.reset();
                         intakeSubsystem.collect(true);
-                        if(timer.milliseconds() > 1000){
-                            CS = STATES.SCORE_BASKET;
-                        }
+                        CS = STATES.WAITING;
+                        NS = STATES.SCORE_BASKET;
+                        timer.reset();
+                        timeToWait = 250;
                     }
                     break;
 
@@ -569,18 +568,24 @@ public class Specimen5FailSafe extends LinearOpMode {
                     if(lift.isAtPosition()){
                         timer.reset();
                         outtakeSubsystem.goToSampleScore();
-                        if(timer.milliseconds() > 150){
-                            outtakeSubsystem.claw.open();
-                            if(!outtakeSubsystem.hasElement()){
-                                timer.reset();
-                                outtakeSubsystem.goToTransfer();
-                                if(timer.milliseconds() > 150){
-                                    lift.goToGround();
-                                    CS = STATES.PARKED;
-                                }
-                            }
+                        outtakeSubsystem.claw.open();
+                        if(!outtakeSubsystem.hasElement()){
+                            timer.reset();
+                            CS = STATES.WAITING;
+                            NS = STATES.SCORE_BASKET3;
+                            timeToWait = 100;
                         }
+
                     }
+                    break;
+
+                case SCORE_BASKET3:
+                    outtakeSubsystem.goToTransfer();
+                    if(timer.milliseconds() > 100){
+                        lift.goToGround();
+                        CS = STATES.PARKED;
+                    }
+                    break;
 
                 case PARKED:
                     break;
