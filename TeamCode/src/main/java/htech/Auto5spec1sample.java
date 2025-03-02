@@ -1,4 +1,4 @@
-package htech.util;
+package htech;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -24,7 +24,7 @@ import pedroPathing.constants.LConstants;
 
 @Config
 @Autonomous(name = "[AUTO] 5+0 Fail Safe", group = "HTECH")
-public class Specimen5FailSafe extends LinearOpMode {
+public class Auto5spec1sample extends LinearOpMode {
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
     LiftSystem lift;
@@ -72,7 +72,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     SCORING_STATES SCORING_CS = SCORING_STATES.IDLE;
 
     public static double startX = 0, startY = 0, startH = 0;
-    public static double preloadX = -26, preloadY = -2.7, preloadH = startH;
+    public static double preloadX = -25.5, preloadY = -2.7, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
@@ -104,7 +104,7 @@ public class Specimen5FailSafe extends LinearOpMode {
     public static double basketX = -2.7, basketY = -62.5, basketH = 90;
 
     public static double time_to_start = 0;
-    public static double timeToTransfer = 700;
+    public static double timeToTransfer = 800;
     public static double timeToTransfer1 = 700;
     public static double timeToCollect = 100;
     public static double timeToCheck = 100;
@@ -345,9 +345,9 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
         matchTimer.reset();
-        while(opModeIsActive() && matchTimer.seconds() < 31){
+        while(opModeIsActive() && matchTimer.seconds() < 30.5) {
 
-            switch (CS){
+            switch (CS) {
 
                 case IDLE:
                     if(timer.milliseconds() > time_to_start) {
@@ -402,9 +402,9 @@ public class Specimen5FailSafe extends LinearOpMode {
                         }
                     }
                     if(!follower.isBusy()){
-                            CS = NS;
-                            timer.reset();
-                        }
+                        CS = NS;
+                        timer.reset();
+                    }
                     break;
 
                 case WAITING:
@@ -476,7 +476,8 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
                 case TRANSFER:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH) {
+                    //if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH) {
+                    if(timer.milliseconds() > timeToTransfer) {
                         CS = STATES.SCORE;
                     } else if(!intakeSubsystem.hasElement() && !outtakeSubsystem.hasElement()) {
                         intakeSubsystem.claw.open();
