@@ -108,10 +108,7 @@ public class IntakeSubsystem {
         intakeState = intakeState.TRANSFER;
     }
 
-    public void collect(boolean fast) {
-        if(fast){
-            fastCollect = true;//if the intake is already down collect a pixel, if not go down
-        }
+    public void collect() {
         if(intakeState == intakeState.DOWN) {
             joint.goToCollect();
             bar.goToCollect();

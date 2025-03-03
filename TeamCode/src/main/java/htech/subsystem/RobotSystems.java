@@ -38,7 +38,8 @@ public class RobotSystems {
         updateTransfer();
         updateCollectSpecimen();
         updateScoreSpecimen();
-
+        updateScoreSpecimen();
+        updateCollect();
 
         if(!extendoSystem.pidEnabled && extendoSystem.currentPos > 150 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDownWithoutResetRotation();
         else if(extendoSystem.pidEnabled && extendoSystem.target_position == PositionsExtendo.max && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDown();
@@ -167,7 +168,7 @@ public class RobotSystems {
 
             case GETTING_IN_POSITION:
                 liftSystem.goToGround();
-                outtakeSubsystem.goToCollectSpecimen();
+                outtakeSubsystem.goToPreCollectSpecimen();
                 collectSpecimenState = collectSpecimenStates.CLOSING_CLAW;
                 break;
 
@@ -221,6 +222,33 @@ public class RobotSystems {
                 break;
         }
 
+    }
+
+    public void updateCollect() {
+        switch (intakeSubsystem.intakeState) {
+            case COLLECT_GOING_DOWN:
+                if(!intakeSubsystem.claw.isOpen) {
+                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
+                    timer.reset();
+
+                }
+                break;
+            case COLLECTING:
+                if(timer.milliseconds() > RobotSettings.intake_claw_open) {
+                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
+                    intakeSubsystem.goDown();
+                    timer.reset();
+                }
+                break;
+            case COLECT_GOING_UP:
+                if(timer.milliseconds() > RobotSettings.intake_move_collect) {
+                    if(intakeSubsystem.hasElement()) {
+                        transfer();
+                    } else {
+                        intakeSubsystem.collect();
+                    }
+                }
+        }
     }
 
     public void scoreSpecimen(){

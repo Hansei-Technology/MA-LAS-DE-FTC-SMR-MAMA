@@ -119,7 +119,7 @@ public class LimeLightPinkTest extends LinearOpMode {
             } else if(subCS == SubmersibleState.WAITING) {
                 if(timer.milliseconds() > 200) {
                     subCS = SubmersibleState.COLLECTING;
-                    intake.collect(true);
+                    intake.collect(); //fast collect
                 }
 
             } else {

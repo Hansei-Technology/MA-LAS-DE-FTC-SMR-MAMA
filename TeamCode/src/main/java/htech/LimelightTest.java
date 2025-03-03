@@ -113,7 +113,7 @@ public class LimelightTest extends LinearOpMode {
                     }
 
                     if(extendo.isAtPosition() && timer.milliseconds() > timeGlis) {
-                        intake.collect(true);
+                        intake.collect(); //fast collect
                         subCS = SubmersibleState.TRANSFERING;
 
                     }

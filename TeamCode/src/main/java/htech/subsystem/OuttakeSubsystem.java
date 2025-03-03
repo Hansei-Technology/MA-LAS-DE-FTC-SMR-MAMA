@@ -66,10 +66,16 @@ public class OuttakeSubsystem {
         funny.retract();
     }
 
-    public void goToCollectSpecimen() { //
+    public void goToPreCollectSpecimen() { //
         bar.goToSpecimenCollect();
         funny.halfExtend();
         claw.open();
+    }
+
+    public void goToCollectSpecimen(){ //gen cand se retrage glisiera ca sa prinda specmenu de pe perete
+        bar.goToSpecimenCollect();
+        funny.retract();
+        claw.close();
     }
 
     public void retractFunny() {
