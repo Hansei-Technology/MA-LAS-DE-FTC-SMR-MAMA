@@ -61,72 +61,12 @@ public class ChassisMovement {
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
         }
-
-
-
-//        follower.startTeleopDrive();
     }
 
-    public void move(Gamepad g) {
-        if(g.right_trigger > 0.05 && g.left_trigger > 0.05) {
-            updateMovementSlowRotationReverse(g);
-        } else if(g.right_trigger > 0.05) {
-            updateMovementReverse(g);
-        } else if (g.left_trigger > 0.05) {
-            updateMovementSlowRotation(g);
-        } else {
-            updateMovement(g);
-        }
-    }
-
-    public void hangChassis(Gamepad g) {
-        leftRearMotor.setPower(-g.left_stick_y);
-        rightRearMotor.setPower(-g.left_stick_y);
-    }
-
-    public void updateMovement(Gamepad g) {
-        leftFrontMotor.setPower((-g.left_stick_y + g.left_stick_x + g.right_stick_x * rotationSpeed) * speed);
-        rightFrontMotor.setPower((-g.left_stick_y - g.left_stick_x - g.right_stick_x * rotationSpeed) * speed);
-        leftRearMotor.setPower((-g.left_stick_y - g.left_stick_x + g.right_stick_x * rotationSpeed) * speed);
-        rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * rotationSpeed) * speed);
-//        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x);
-//        follower.update();
-    }
-
-    public void updateMovementReverse(Gamepad g){
-        leftFrontMotor.setPower((g.left_stick_y - g.left_stick_x + g.right_stick_x * rotationSpeed) * speed);
-        rightFrontMotor.setPower((g.left_stick_y + g.left_stick_x - g.right_stick_x * rotationSpeed) * speed);
-        leftRearMotor.setPower((g.left_stick_y + g.left_stick_x + g.right_stick_x * rotationSpeed) * speed);
-        rightRearMotor.setPower((g.left_stick_y - g.left_stick_x - g.right_stick_x * rotationSpeed) * speed);
-//        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, g.right_stick_x);
-//        follower.update();
-    }
-
-    public void updateMovementSlowRotation(Gamepad g){
-        leftFrontMotor.setPower((-g.left_stick_y + g.left_stick_x + g.right_stick_x * 0.6) * speed);
-        rightFrontMotor.setPower((-g.left_stick_y - g.left_stick_x - g.right_stick_x * 0.6) * speed);
-        leftRearMotor.setPower((-g.left_stick_y - g.left_stick_x + g.right_stick_x * 0.6) * speed);
-        rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * 0.6) * speed);
-//        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x);
-//        follower.update();
-    }
-//
-//    public void moveWithPedro(Gamepad g) {
-//        follower.setTeleOpMovementVectors(-g.left_stick_y, -g.left_stick_x, -g.right_stick_x * 0.6);
-//        follower.update();
-//    }
-//
-//    public void moveWithPedroReverse(Gamepad g) {
-//        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, -g.right_stick_x * 0.6);
-//        follower.update();
-//    }
-
-    public void updateMovementSlowRotationReverse(Gamepad g){
-        leftFrontMotor.setPower((g.left_stick_y - g.left_stick_x + g.right_stick_x * 0.3) * speed);
-        rightFrontMotor.setPower((g.left_stick_y + g.left_stick_x - g.right_stick_x * 0.3) * speed);
-        leftRearMotor.setPower((g.left_stick_y + g.left_stick_x + g.right_stick_x * 0.3) * speed);
-        rightRearMotor.setPower((g.left_stick_y - g.left_stick_x - g.right_stick_x * 0.3) * speed);
-//        follower.setTeleOpMovementVectors(g.left_stick_y, g.left_stick_x, g.right_stick_x);
-//        follower.update();
+    public void updateMovementSlowRotation(Gamepad g) {
+        leftFrontMotor.setPower((-g.left_stick_y + g.left_stick_x + g.right_stick_x * 0.75) * speed);
+        rightFrontMotor.setPower((-g.left_stick_y - g.left_stick_x - g.right_stick_x * 0.75) * speed);
+        leftRearMotor.setPower((-g.left_stick_y - g.left_stick_x + g.right_stick_x * 0.75) * speed);
+        rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * 0.75) * speed);
     }
 }

@@ -161,7 +161,7 @@ public class RobotSystems {
 
     public void updateCollectSpecimen(){
 
-        switch (collectSpecimenState){
+        switch (collectSpecimenState) {
 
             case IDLE:
                 break;

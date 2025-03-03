@@ -35,7 +35,7 @@ public class TeleOp2 extends LinearOpMode {
     boolean pedroDrive = false;
     boolean reverseDrive = false;
 //    ChassisFollower chassisFollower;
-private VoltageSensor batteryVoltageSensor;
+    private VoltageSensor batteryVoltageSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -69,28 +69,16 @@ private VoltageSensor batteryVoltageSensor;
 
             chassisMovement.updateMovementSlowRotation(gamepad1);
 
-            if(gamepad1.touchpad) {
-                reverseDrive = false;
-            }
-            if(gamepad1.right_stick_button && gamepad1.left_stick_button) {
-                reverseDrive = true;
-            }
-
-            //extendo
-//            extendo.moveFree(gamepad1.right_trigger - gamepad1.left_trigger);
-//            if(gamepad2.dpad_up) {
-//                extendo.goToPos(230);
-//                intakeSubsystem.goDown();
-//            }
-
-
             //intake
             if(stickyGamepad1.right_bumper) {
                 if(lift.target_position == PositionsLift.highBasket)
                     outtakeSubsystem.claw.open();
-                else if(lift.target_position == PositionsLift.highChamber)
-//                    robotSystems.placeVertical();
-                intakeSubsystem.collect();
+                else if(lift.target_position == PositionsLift.highChamber) {
+                    robotSystems.scoreSpecimen();
+                } else {
+                    intakeSubsystem.collect();
+                }
+
             }
 
             if(stickyGamepad1.x){
@@ -100,13 +88,19 @@ private VoltageSensor batteryVoltageSensor;
                 robotSystems.transfer(); //for sample
             }
 
-            if (stickyGamepad1.left_bumper) intakeSubsystem.claw.toggle();
+            if (stickyGamepad1.left_bumper) {
+                if(robotSystems.collectSpecimenState == RobotSystems.collectSpecimenStates.CLOSING_CLAW) {
+                    outtakeSubsystem.claw.close();
+                    outtakeSubsystem.goToCollectSpecimen();
+                } else {
+                    intakeSubsystem.claw.toggle();
+                }
+            }
 
             //rotations(both of them)
             if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
                 intakeSubsystem.rotation.handleRotation(gamepad1);
             }
-
 
 
             if(gamepad2.dpad_down)  {
@@ -115,8 +109,6 @@ private VoltageSensor batteryVoltageSensor;
             }
             if(gamepad2.dpad_up && lift.isDown()) {
                 extendo.goToMax();
-                //intakeSubsystem.goDown();
-//                intakeSubsystem.goDown();
             }
 
             //lift
