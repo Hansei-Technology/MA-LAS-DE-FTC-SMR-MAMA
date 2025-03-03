@@ -9,7 +9,7 @@ import htech.config.Servos;
 
 public class OuttakeClaw {
     private final Servo clawServo;
-    private boolean isOpen = false;
+    public boolean isOpen = false;
 
     public OuttakeClaw(HardwareMap hardwareMap) {
         clawServo = hardwareMap.get(Servo.class, Servos.outtakeClaw);

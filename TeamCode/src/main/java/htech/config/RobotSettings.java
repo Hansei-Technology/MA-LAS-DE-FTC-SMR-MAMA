@@ -19,6 +19,9 @@ public abstract class RobotSettings {
     public static int intake_claw_open = 200;
     public static int going_after_transfer = 200;
 
+
+    //collecting specimen timers
+
     //intake collect timers
 
     //specimen collect timers

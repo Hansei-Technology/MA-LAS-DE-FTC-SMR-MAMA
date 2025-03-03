@@ -3,7 +3,6 @@ package htech.subsystem;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import htech.mechanism.outtake.LimitSwitch;
 import htech.mechanism.outtake.OuttakeBar;
 import htech.mechanism.outtake.OuttakeClaw;
 import htech.mechanism.outtake.OuttakeFunny;
@@ -54,7 +53,11 @@ public class OuttakeSubsystem {
     }
 
     public void goToSpecimenScore() {
-        bar.goToSpecimen();
+        bar.goToSpecimenScore();
+    }
+
+    public void goToSpecimenPrescore(){
+        bar.goToSpecimenPrescore();
         funny.extend();
     }
 
@@ -64,8 +67,9 @@ public class OuttakeSubsystem {
     }
 
     public void goToCollectSpecimen() { //
-        bar.goToSpecimen();
+        bar.goToSpecimenCollect();
         funny.halfExtend();
+        claw.open();
     }
 
     public void retractFunny() {

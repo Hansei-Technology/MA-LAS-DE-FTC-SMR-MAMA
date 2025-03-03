@@ -34,12 +34,20 @@ public class OuttakeBar {
         currentPositionRight = PositionsOuttake.transferBar;
     }
 
-    public void goToSpecimen() {
+    public void goToSpecimenScore() {
         servoLeft.setPosition(PositionsOuttake.specimenBar);
         servoRight.setPosition(PositionsOuttake.specimenBar);
 
         currentPositionLeft = PositionsOuttake.specimenBar;
         currentPositionRight = PositionsOuttake.specimenBar;
+    }
+
+    public void goToSpecimenPrescore(){
+        servoLeft.setPosition(PositionsOuttake.specimenPrescoreBar);
+        servoRight.setPosition(PositionsOuttake.specimenPrescoreBar);
+
+        currentPositionLeft = PositionsOuttake.specimenPrescoreBar;
+        currentPositionRight = PositionsOuttake.specimenPrescoreBar;
     }
 
     public void goToSample() {
@@ -65,4 +73,5 @@ public class OuttakeBar {
         currentPositionLeft = PositionsOuttake.afterTransferBar;
         currentPositionRight = PositionsOuttake.afterTransferBar;
     }
+
 }
