@@ -12,29 +12,16 @@ public abstract class RobotSettings {
     public static double speed = 1;
     public static double rotationSpeed = 0.8;
 
-    public static double hangPower = 1;
+    //transfer timers
+    public static int outtake_going_to_transfer = 200;
+    public static int rotation_max_time = 200;
+    public static int outtake_claw_close = 200;
+    public static int intake_claw_open = 200;
+    public static int going_after_transfer = 200;
 
-    //timers are in milliseconds
-    public static int timeToCloseClaw = 150;
-    public static int timeDown_Transfer = 320;
-    public static int timeWall_Transfer = 300; //550
-    public static int timeReady_Transfer = 200;
-    public static int timeToCatch = 250;
-    public static int timeWaitingToCatch = 300;
-    public static int timeToLastPosTransfer = 150;
-    public static int timeFailedToCloseLift = 1000;
-    public static int timeToHopPeSpate = 350;
-    public static int timeDown_Transfer_SAMPLE = 800;
-    public static int magicTransferTime = 350;
+    //intake collect timers
 
-    public static int timeToCollect = 350;
-    public static int timeToCollectGoingDown = 210;
-    public static int timeToCollectGoingDownFast = 400;
-    public static int timeToCollectGoingUp = 200;
-    public static int timeToCollectFast = 200;
-    public static int timeToSpecimenVertical = 500;
-
-    public static int time_to_specimen = 200;
+    //specimen collect timers
 
     public static double limeLightXMultiplyer = 1;
 

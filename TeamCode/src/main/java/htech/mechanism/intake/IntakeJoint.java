@@ -25,7 +25,7 @@ public class IntakeJoint {
         jointServo.setPosition(PositionsIntake.wallPickupPositionJoint);
         currentPosition = PositionsIntake.wallPickupPositionJoint;
     }
-    public void goToPreTransfer() {
+    public void goToReady() {
         jointServo.setPosition(PositionsIntake.prepTransferPositionJoint);
         currentPosition = PositionsIntake.prepTransferPositionJoint;
     }

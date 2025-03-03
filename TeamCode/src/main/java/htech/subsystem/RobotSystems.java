@@ -15,6 +15,9 @@ public class RobotSystems {
     public ElapsedTime timer;
     public ElapsedTime timerCollect;
     public ElapsedTime timerSpecimen;
+    public ElapsedTime timerTransfer;
+
+    public boolean transferFirstTime = true;
 
     public boolean autoSample = false;
     public boolean fastCollect = false;
@@ -27,6 +30,7 @@ public class RobotSystems {
         timer = new ElapsedTime();
         timerCollect = new ElapsedTime();
         timerSpecimen = new ElapsedTime();
+        timerTransfer = new ElapsedTime();
     }
 
     public void update() {
@@ -35,8 +39,8 @@ public class RobotSystems {
         intakeSubsystem.update();
         updateTranfer();
         updateCollect();
-        updateVertical();
-//        updateHopPeSpate();
+        updateSpecimenCollect();
+        updateSpecimenScore();
 
 
 
@@ -44,265 +48,95 @@ public class RobotSystems {
         else if(extendoSystem.pidEnabled && extendoSystem.target_position == PositionsExtendo.max && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDown();
     }
 
-    public void startTransfer(boolean sample) {
-        transferingSample = sample;
-        if(intakeSubsystem.claw.isOpen) {
-            intakeSubsystem.claw.close();
-            transferState = TransferStates.CLOSING_CLAW;
-        } else {
-            transferState = TransferStates.LIFT_GOING_DOWN;
-        }
-    }
-
-
-
     public enum TransferStates {
         IDLE,
-        CLOSING_CLAW,
         LIFT_GOING_DOWN,
-        INTAKE_DOWN,
-        INTAKE_WALL,
-        READY_TO_TRANSFER,
-        READY_TO_TRANSFER_SAMPLE,
-        CATCHING,
-        WAITING_TO_CATCH,
-        TRANSFER_READY,
-        LIFT_GOING_UP,
+        WAITING_FOR_INTAKE_ROTATION,
+        EXTENDO_CLOSING,
+        OUTTAKE_CLAW_CLOSING,
+        INTAKE_CLAW_OPENING,
+        GOING_TO_AFTER_TRANSFER
     }
+
     public TransferStates transferState = TransferStates.IDLE;
 
-//    public enum HopPeSpateStates {
-//        IDLE,
-//        CASE1,
-//        CASE2,
-//        CASE3,
-//        CASE4,
-//        CASE5
-//    }
-//    public HopPeSpateStates hopPeSpateState = HopPeSpateStates.IDLE;
-
-    public boolean firstTime = true;
-    public boolean transferingSample = true;
-
-    public enum placingVerticalStates {
-        IDLE,
-        GOING_DOWN_TO_MAGIC,
-        WAITING,
-        GOING_DOWN_TO_GROUND
-    }
-    public placingVerticalStates placingVerticalCS = placingVerticalStates.IDLE;
-
-
-    public void updateVertical() {
-        switch (placingVerticalCS) {
-            case IDLE:
-                break;
-            case GOING_DOWN_TO_MAGIC:
-                liftSystem.goToMagicPos();
-                if(liftSystem.isAtPosition()) {
-                    placingVerticalCS = placingVerticalStates.WAITING;
-                    outtakeSubsystem.claw.open();
-                    timer.reset();
-                }
-                break;
-            case WAITING:
-                if(timer.milliseconds() > RobotSettings.timeToSpecimenVertical) {
-                    placingVerticalCS = placingVerticalStates.GOING_DOWN_TO_GROUND;
-                    liftSystem.goToGround();
-                }
-                break;
-            case GOING_DOWN_TO_GROUND:
-                if(liftSystem.isDown()) {
-                    placingVerticalCS = placingVerticalStates.IDLE;
-                }
-                break;
-        }
+    public void transfer() {
+        transferState = TransferStates.LIFT_GOING_DOWN;
+        transferFirstTime = true;
+        timerTransfer.reset();
     }
 
-    void updateCollect() {
-        switch (intakeSubsystem.intakeState) {
-            case COLLECT_GOING_DOWN:
-                if(firstTime) {
-                    timerCollect.reset();
-                    firstTime = false;
-                }
-                if(timerCollect.milliseconds() > RobotSettings.timeToCollectGoingDownFast && intakeSubsystem.fastCollect) {
-                    intakeSubsystem.claw.close();
-                    outtakeSubsystem.joint.goToTransfer();
-                    timerCollect.reset();
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
-                }
-                if(timerCollect.milliseconds() > RobotSettings.timeToCollectGoingDown && !intakeSubsystem.claw.isOpen) {
-                    //intakeSubsystem.claw.close();
-                    liftSystem.setPower(-0.3);
-                    timerCollect.reset();
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
-                }
-                break;
-            case COLLECTING:
-                firstTime = true;
-                if(!intakeSubsystem.hopPeSpate && intakeSubsystem.fastCollect && timerCollect.milliseconds() > RobotSettings.timeToCollect) {
-                    transferState = TransferStates.LIFT_GOING_DOWN;
-                    transferingSample = false;
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
-                    timerCollect.reset();
-                    intakeSubsystem.fastCollect = false;
-                }
-
-                if(intakeSubsystem.hopPeSpate && intakeSubsystem.fastCollect && timerCollect.milliseconds() > RobotSettings.timeToCollect) {
-//                    hopPeSpateState = HopPeSpateStates.CASE1;
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.DOWN;
-                    timerCollect.reset();
-                    intakeSubsystem.fastCollect = false;
-                    intakeSubsystem.hopPeSpate = false;
-                }
-
-                if(timerCollect.milliseconds() > RobotSettings.timeToCollect) {
-                    if(intakeSubsystem.hasElement()) {
-                        liftSystem.reset();
-                        intakeSubsystem.goToWall();
-                        extendoSystem.goToGround();
-                    } else {
-                        intakeSubsystem.goDownWithoutResetRotation();
-                    }
-                    timer.reset();
-                    intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
-                }
-                break;
-            case COLECT_GOING_UP:
-                if(!intakeSubsystem.hasElement()) {
-                    intakeSubsystem.goDownWithoutResetRotation();
-                    extendoSystem.pidEnabled = false;
-                }
-                else if(fastCollect){
-                    transferState = TransferStates.LIFT_GOING_DOWN;
-                }
-                if(intakeSubsystem.fastCollect) intakeSubsystem.goToWall();
-                break;
-        }
-    }
-
-    void updateTranfer() {
+    public void updateTranfer() {
         switch (transferState) {
-            case IDLE:
-                break;
-
-            case CLOSING_CLAW:
-                if(timer.milliseconds() > RobotSettings.timeToCloseClaw) {
-                    timer.reset();
-                    transferState = TransferStates.LIFT_GOING_DOWN;
-                }
-                break;
-
             case LIFT_GOING_DOWN:
-                //on entry
-                liftSystem.goToGround();
-                extendoSystem.goToGround();
-                if(transferingSample) outtakeSubsystem.goToTransferSample();
-                else outtakeSubsystem.goToTransfer();
-
-                outtakeSubsystem.claw.open();
-                timer.reset();
-
-                //condition to exit
-
-
-                if(intakeSubsystem.hasElement()) {
-                    if(transferingSample) {
-                        intakeSubsystem.goToTransfer(true);
-                        timer.reset();
-                        transferState = TransferStates.READY_TO_TRANSFER_SAMPLE;
+                if(transferFirstTime) {
+                    liftSystem.goToGround();
+                    outtakeSubsystem.goToTransfer();
+                    intakeSubsystem.goToTransfer();
+                    transferFirstTime = false;
+                }
+                if(liftSystem.isDown() && timerTransfer.milliseconds() > RobotSettings.outtake_going_to_transfer) {
+                    if(intakeSubsystem.rotation.rotLevel > 3) {
+                        transferState = TransferStates.WAITING_FOR_INTAKE_ROTATION;
                     } else {
-                        if (intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.DOWN) {
-                            intakeSubsystem.goToReady(transferingSample);
-                            transferState = TransferStates.INTAKE_DOWN;
-                        } else {
-                            intakeSubsystem.goToReady(transferingSample);
-                            transferState = TransferStates.INTAKE_WALL;
-                        }
+                        transferState = TransferStates.EXTENDO_CLOSING;
                     }
-                } else {
+                    transferFirstTime = true;
+                    timerTransfer.reset();
+                }
+                break;
+            case WAITING_FOR_INTAKE_ROTATION:
+                if(timerTransfer.milliseconds() > RobotSettings.rotation_max_time) {
+                    transferState = TransferStates.EXTENDO_CLOSING;
+                    timerTransfer.reset();
+                    transferFirstTime = true;
+                }
+                break;
+            case EXTENDO_CLOSING:
+                if(transferFirstTime) {
+                    extendoSystem.goToTransfer();
+                    transferFirstTime = false;
+                }
+                if(extendoSystem.isAtPosition()) {
+                    transferState = TransferStates.OUTTAKE_CLAW_CLOSING;
+                    timerTransfer.reset();
+                    transferFirstTime = true;
+                }
+                break;
+            case OUTTAKE_CLAW_CLOSING:
+                if(transferFirstTime) {
+                    outtakeSubsystem.claw.close();
+                    transferFirstTime = false;
+                }
+                if(timerTransfer.milliseconds() > RobotSettings.outtake_claw_close) {
+                    transferState = TransferStates.INTAKE_CLAW_OPENING;
+                    timerTransfer.reset();
+                    transferFirstTime = true;
+                }
+                break;
+            case INTAKE_CLAW_OPENING:
+                if(transferFirstTime) {
                     intakeSubsystem.claw.open();
-                    transferState = TransferStates.IDLE;
+                    transferFirstTime = false;
                 }
-
-
-                break;
-
-            case INTAKE_DOWN:
-                if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeDown_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
-                    intakeSubsystem.goToTransfer(transferingSample);
-                    timer.reset();
-                    transferState = TransferStates.READY_TO_TRANSFER;
-                }
-
-                break;
-
-            case INTAKE_WALL:
-                if ((liftSystem.isDown() && extendoSystem.isDown() && timer.milliseconds() > RobotSettings.timeWall_Transfer) || timer.milliseconds() > RobotSettings.timeFailedToCloseLift) {
-                    intakeSubsystem.goToTransfer(transferingSample);
-                    //intakeSubsystem.claw.goToSliding();
-                    timer.reset();
-                    transferState = TransferStates.READY_TO_TRANSFER;
-                }
-
-                break;
-
-            case READY_TO_TRANSFER_SAMPLE:
-                if(timer.milliseconds() > RobotSettings.magicTransferTime) intakeSubsystem.claw.goToSliding();
-
-
-                if (timer.milliseconds() > RobotSettings.timeDown_Transfer_SAMPLE) {
-                    timer.reset();
-                    outtakeSubsystem.claw.close();
-                    transferState = TransferStates.CATCHING;
-                }
-
-                break;
-
-            case READY_TO_TRANSFER:
-                if (timer.milliseconds() > RobotSettings.timeReady_Transfer) {
-                    timer.reset();
-                    outtakeSubsystem.claw.close();
-                    transferState = TransferStates.CATCHING;
+                if(timerTransfer.milliseconds() > RobotSettings.intake_claw_open) {
+                    transferState = TransferStates.GOING_TO_AFTER_TRANSFER;
+                    timerTransfer.reset();
+                    transferFirstTime = true;
                 }
                 break;
-            case CATCHING:
-                if(timer.milliseconds() > RobotSettings.timeToCatch /* && intakeSubsystem.isAtPos()*/) {
-                    timer.reset();
-                    if(outtakeSubsystem.hasElement()) {
-                        intakeSubsystem.claw.open();
-                        transferState = TransferStates.WAITING_TO_CATCH;
-                    } else {
-                        intakeSubsystem.goToWall();
-                        transferState = TransferStates.LIFT_GOING_DOWN;
-                    }
+            case GOING_TO_AFTER_TRANSFER:
+                if(transferFirstTime) {
+                    outtakeSubsystem.goToAfterTransfer();
+                    intakeSubsystem.goToReady();
+                    transferFirstTime = false;
                 }
-                break;
-            case WAITING_TO_CATCH:
-                if (timer.milliseconds() > RobotSettings.timeWaitingToCatch) {
-                    timer.reset();
-                    intakeSubsystem.goToWall();
-                    if(autoSample) outtakeSubsystem.goToAfterTransfer();
-                    else outtakeSubsystem.goToSpecimenVertical();
-                    transferState = TransferStates.TRANSFER_READY;
-                }
-                break;
-            case TRANSFER_READY:
-                if (timer.milliseconds() > RobotSettings.timeToLastPosTransfer) {
-                    timer.reset();
+                if(timerTransfer.milliseconds() > RobotSettings.going_after_transfer) {
                     transferState = TransferStates.IDLE;
                 }
                 break;
         }
     }
 
-    public boolean isTransfering() {
-        return transferState != TransferStates.IDLE;
-    }
-
-    public void placeVertical() {
-        placingVerticalCS = placingVerticalStates.GOING_DOWN_TO_MAGIC;
-    }
 
 }

@@ -141,13 +141,6 @@ private VoltageSensor batteryVoltageSensor;
 
             if(gamepad2.right_bumper) outtakeSubsystem.claw.open();
 
-            if(gamepad2.left_bumper) robotSystems.placeVertical();
-
-            if(gamepad2.right_stick_button) {
-                lift.goToSpecimenVertical();
-                outtakeSubsystem.goToSpecimenVertical();
-            }
-
 
             stickyGamepad2.update();
             stickyGamepad1.update();

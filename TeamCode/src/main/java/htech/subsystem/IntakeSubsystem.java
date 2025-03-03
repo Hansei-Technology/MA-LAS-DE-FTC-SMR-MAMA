@@ -2,12 +2,9 @@ package htech.subsystem;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import htech.mechanism.intake.BreakBeam;
 import htech.mechanism.intake.ColorSensor;
 import htech.mechanism.intake.IntakeBar;
-import htech.mechanism.intake.IntakeBarMotionProfile;
 import htech.mechanism.intake.IntakeClaw;
 import htech.mechanism.intake.IntakeJoint;
 import htech.mechanism.intake.IntakeRotation;
@@ -22,7 +19,6 @@ public class IntakeSubsystem {
     public final ColorSensor colorSensor;
 
     boolean fastCollect = false;
-    boolean hopPeSpate = false;
 
     public enum IntakeState {
         DOWN,
@@ -68,7 +64,7 @@ public class IntakeSubsystem {
     }
 
     public void initAuto() {
-        joint.goToPreTransfer();
+        joint.goToReady();
         bar.goToTransfer();
         rotation.goToFlipped();
         claw.open();
@@ -98,30 +94,17 @@ public class IntakeSubsystem {
         intakeState = intakeState.WALL;
     }
 
-    public void goToReady(boolean sample) {
-        if(sample)
-        {
-            rotation.goToFlipped();
-            joint.goToPreTransferSample();
-            bar.goToReadySample();
-        } else {
-            joint.goToPreTransfer();
-            bar.goToReady();
-            rotation.goToNormal();
-        }
+    public void goToReady() {
+        joint.goToReady();
+        bar.goToReady();
+        rotation.goToNormal();
         intakeState = intakeState.READY;
     }
 
-    public void goToTransfer(boolean sample) {
-        if(sample) {
-            rotation.goToFlipped();
-            joint.goToTransferSample();
-            bar.goToTransferSample();
-        } else {
-            joint.goToTransfer();
-            bar.goToTransfer();
-            rotation.goToNormal();
-        }
+    public void goToTransfer() {
+        joint.goToTransfer();
+        bar.goToTransfer();
+        rotation.goToNormal();
         intakeState = intakeState.TRANSFER;
     }
 
@@ -136,20 +119,6 @@ public class IntakeSubsystem {
         }
         else if(intakeState == IntakeState.WALL) goDown();
         else goDownWithoutResetRotation();
-    }
-
-    public void hopPeSpateCollect(){
-        joint.goToCollect();
-        bar.goToCollect();
-        intakeState = intakeState.COLLECT_GOING_DOWN;
-        fastCollect = true;
-        hopPeSpate = true;
-    }
-
-
-    public void collectFast() {
-//        fastCollect = true;
-//        collect();
     }
 
     public void update() {

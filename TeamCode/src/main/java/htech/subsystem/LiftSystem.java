@@ -73,27 +73,10 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
-    public void goToLowChamber() {
-        PIDON = true;
-        target_position = PositionsLift.lowChamber;
-        pidController.targetValue = target_position;
-    }
-
-    public void goToLowBasket() {
-        PIDON = true;
-        target_position = PositionsLift.lowBasket;
-        pidController.targetValue = target_position;
-    }
 
     public void goToHighBasket() {
         PIDON = true;
         target_position = PositionsLift.highBasket;
-        pidController.targetValue = target_position;
-    }
-
-    public void goToMagicPos() {
-        PIDON = true;
-        target_position = PositionsLift.magic;
         pidController.targetValue = target_position;
     }
 
@@ -131,11 +114,6 @@ public class LiftSystem {
 
     public void goToPos(int position) {
         target_position = position;
-        pidController.targetValue = target_position;
-    }
-
-    public void goToSpecimenVertical() {
-        target_position = PositionsLift.specimenVertical;
         pidController.targetValue = target_position;
     }
 

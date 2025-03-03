@@ -12,37 +12,15 @@ public abstract class PositionsOuttake {
     public static double closedClaw = 0.34;
     public static double openedClaw = 0.15;
 
-    // OUTTAKE BAR 
-//    public static double transfer = 0.5;
-//    public static double specimen = 0.5;
-//    public static double score = 0.5;
+    // OUTTAKE BAR
+    public static double specimenBar = 0.5;
+    public static double transferBar = 0.8;
+    public static double sampleBar = 0.3;
+    public static double specimenCollectBar = 0.6;
+    public static double afterTransferBar = 0.7;
 
-    // OUTTAKE JOINT
-
-    public static double jointSpecimenLeft = 0.35;
-    public static double jointSpecimenRight = 0.35;
-    public static double jointTransferLeft = 0.17; //+0.083
-    public static double jointTransferRight = 0.17; // +0.073
-    public static double jointBasketLeft = 0.37;
-    public static double jointBasketRight = 0.37;
-    public static double jointDropLeft = 0.725;
-    public static double jointDropRight = 0.385;
-    public static double jointCatapultareLeft = 0.619;
-    public static double jointCatapultareRight = 0.651;
-
-    public static double jointTransferSampleLeft = 0.48;
-    public static double jointTransferSampleRight = 0.58;
-
-    public static double afterTransferLeft = 0.21;
-    public static double afterTransferRight = 0.21;
-
-    public static double jointRotation90 = 0.23;
-
-
-    public static double jointSpecimenVerticalLeft = 0.34;
-    public static double jointSpecimenVerticalRight = 0.34;
-
-
-    public static double specialTransferLeft = 0.08;
-    public static double specialTransferRight = 0.38;
+    // OUTTAKE FUNNY
+    public static double extendedFunny = 0.5;
+    public static double retractedFunny = 0.8;
+    public static double halfExtendedFunny = 0.65;
 }

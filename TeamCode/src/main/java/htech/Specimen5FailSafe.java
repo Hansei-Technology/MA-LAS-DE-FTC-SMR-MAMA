@@ -1,4 +1,4 @@
-package htech.util;
+package htech;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import htech.config.PositionsLift;
 import htech.subsystem.ExtendoSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
@@ -358,7 +357,7 @@ public class Specimen5FailSafe extends LinearOpMode {
                     break;
 
                 case SPECIMEN:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.CATCHING) {
+                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
                         lift.goToSpecimenVertical();
 
@@ -396,7 +395,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
                 case MOVING:
                     if(basket){
-                        if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                        if(robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
                             lift.goToHighBasket();
                             basket = false;
                         }
@@ -476,7 +475,7 @@ public class Specimen5FailSafe extends LinearOpMode {
 
 
                 case TRANSFER:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH) {
+                    if(robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
                         CS = STATES.SCORE;
                     } else if(!intakeSubsystem.hasElement() && !outtakeSubsystem.hasElement()) {
                         intakeSubsystem.claw.open();

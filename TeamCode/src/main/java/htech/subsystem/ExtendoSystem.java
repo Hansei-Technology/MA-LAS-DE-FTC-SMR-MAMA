@@ -52,9 +52,9 @@ public class ExtendoSystem {
         pidController.targetValue = target_position;
     }
 
-    public void goToMaxAuto(){
+    public void goToTransfer(){
         pidEnabled = true;
-        target_position = PositionsExtendo.maxAuto;
+        target_position = PositionsExtendo.transfer;
         pidController.targetValue = target_position;
     }
 

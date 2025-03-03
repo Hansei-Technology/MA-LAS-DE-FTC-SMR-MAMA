@@ -358,7 +358,7 @@ public class Auto5spec1sample extends LinearOpMode {
                     break;
 
                 case SPECIMEN:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.CATCHING) {
+                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
                         lift.goToSpecimenVertical();
 
@@ -396,7 +396,7 @@ public class Auto5spec1sample extends LinearOpMode {
 
                 case MOVING:
                     if(basket){
-                        if(robotSystems.transferState == RobotSystems.TransferStates.WAITING_TO_CATCH || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                        if(robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
                             lift.goToHighBasket();
                             basket = false;
                         }

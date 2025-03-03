@@ -9,8 +9,7 @@ import com.acmerobotics.dashboard.config.Config;
 public abstract class Servos {
     public static String outtakeLeft = "s2e";
     public static String outtakeRight = "s3e";
-//    public static String outtakeJointLeft = "";
-//    public static String outtakeJointRight = "";
+
     public static String outtakeClaw = "s1e";
 
     public static String intakeBarServoLeft = "s1";
@@ -24,6 +23,5 @@ public abstract class Servos {
     public static String hangLeftServo = "s5";
     public static String hangRightServo = "s0";
 
-    public static String ptoLeftServo = "s4";
-    public static String ptoRightServo = "s0e";
+    public static String outtakeFunny = "s4";
 }

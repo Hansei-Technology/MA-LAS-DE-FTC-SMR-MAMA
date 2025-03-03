@@ -5,16 +5,10 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class PositionsLift {
     public static int ground = 0;
-    public static int specialTransfer = 130;
     public static int park = 340;
     public static int transfer = 0;
-    public static int lowChamber = 300;
     public static int highChamber = 620;
-    public static int lowBasket = 600;
     public static int highBasket = 1250;
-    public static int magic = 380; //this is the position just under the high chamber for scoring the specimen
-
-    public static int specimenVertical = 570;
 
     public static double kP = 0.01;
     public static double kI = 0;

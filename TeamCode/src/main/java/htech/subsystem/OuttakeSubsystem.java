@@ -3,15 +3,17 @@ package htech.subsystem;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import htech.mechanism.intake.IntakeBar;
 import htech.mechanism.outtake.LimitSwitch;
+import htech.mechanism.outtake.OuttakeBar;
 import htech.mechanism.outtake.OuttakeClaw;
-import htech.mechanism.outtake.OuttakeJoint;
+import htech.mechanism.outtake.OuttakeFunny;
+
 @Config
 public class OuttakeSubsystem {
     public final OuttakeClaw claw;
-    public final OuttakeJoint joint;
-    public final LimitSwitch limitSwitch;
+    public final OuttakeBar bar;
+    public final OuttakeFunny funny;
+    //public final LimitSwitch limitSwitch;
 
     public enum outtakeStates {
         SPECIMEN,
@@ -19,54 +21,54 @@ public class OuttakeSubsystem {
         TRANSFER
     }
     public outtakeStates CS = outtakeStates.TRANSFER;
-    //timers are in milliseconds
-    public static int timeToMove = 100;
 
 
     public OuttakeSubsystem(HardwareMap hardwareMap) {
-        limitSwitch = new LimitSwitch(hardwareMap);
         // MECHANISM //
         claw = new OuttakeClaw(hardwareMap);
-        joint = new OuttakeJoint(hardwareMap);
+        bar = new OuttakeBar(hardwareMap);
+        funny = new OuttakeFunny(hardwareMap);
     }
 
     public void init() {
-        joint.goToTransfer();
+        bar.goToTransfer();
         claw.close();
+        funny.retract();
     }
 
     public void goToTransferSample() {
-        joint.goToTransferSample();
+        bar.goToSample();
+        funny.retract();
         claw.open();
     }
 
     public void goToTransfer() {
-        joint.goToTransfer();
+        bar.goToTransfer();
+        funny.retract();
         claw.open();
     }
 
-    public void goToSpecimenVertical() {
-        joint.goToSpecimenVertical();
-        //claw.close();
-    }
-
-    public boolean hasElement() {
-        return limitSwitch.isPressed();
-    }
-
     public void goToSampleScore() {
-        joint.goToBasketScore();
+        bar.goToSample();
+        funny.retract();
     }
 
     public void goToSpecimenScore() {
-        joint.goToSpecimenScore();
+        bar.goToSpecimen();
+        funny.extend();
     }
 
     public void goToAfterTransfer() {
-        joint.goToAfterTransfer();
+        bar.goToAfterTransfer();
+        funny.retract();
     }
 
-    public void goToSpecialTransfer() {
-        joint.goToSpecialTransfer();
+    public void goToCollectSpecimen() { //
+        bar.goToSpecimen();
+        funny.halfExtend();
+    }
+
+    public void retractFunny() {
+        funny.retract();
     }
 }
