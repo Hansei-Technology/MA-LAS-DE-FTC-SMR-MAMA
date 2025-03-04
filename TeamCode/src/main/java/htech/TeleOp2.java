@@ -105,7 +105,7 @@ public class TeleOp2 extends LinearOpMode {
 
             //rotations(both of them)
             if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                intakeSubsystem.rotation.handleRotation(gamepad1);
+                intakeSubsystem.rotation.handleRotation(gamepad2);
             }
 
 
@@ -115,6 +115,7 @@ public class TeleOp2 extends LinearOpMode {
             }
             if(gamepad2.dpad_up && lift.isDown()) {
                 extendo.goToMax();
+                robotSystems.collectSpecimenState = RobotSystems.collectSpecimenStates.IDLE;
             }
 
             //lift

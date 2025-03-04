@@ -20,7 +20,7 @@ public abstract class PositionsIntake {
     public static double ticksPerDegree = 0.0031;
 
     public static double rotation30Deg = 0.095;
-    public static double rotSpeed = 0.25;
+    public static double rotSpeed = 0.15;
     public static double rotationAuto = 0.77;
 
     // INTAKE BAR //
@@ -36,7 +36,7 @@ public abstract class PositionsIntake {
     public static double groundPositionJoint = 0.24;
     public static double wallPickupPositionJoint = 0.44;
     public static double prepTransferPositionJoint = 0.68;
-    public static double transferPositionJoint = 0.8;
+    public static double transferPositionJoint = 0.78;
     public static double collectPositionJoint = 0.24;
 
     //sample positions for joint

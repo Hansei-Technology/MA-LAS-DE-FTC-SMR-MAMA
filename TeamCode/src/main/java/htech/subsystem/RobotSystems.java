@@ -42,7 +42,7 @@ public class RobotSystems {
         updateCollect();
 
         if(!extendoSystem.pidEnabled && extendoSystem.currentPos > 150 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDownWithoutResetRotation();
-        else if(extendoSystem.pidEnabled && extendoSystem.target_position == PositionsExtendo.max && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDown();
+        else if(extendoSystem.pidEnabled && extendoSystem.target_position == PositionsExtendo.max && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL && extendoSystem.currentPos > 200) intakeSubsystem.goDown();
     }
 
     public enum TransferStates {
@@ -70,7 +70,8 @@ public class RobotSystems {
         IDLE,
         GO_TO_SCORE,
         WAITING_TO_SCORE,
-        OPEN_CLAW
+        OPEN_CLAW,
+        WAITING_TO_OPEN_CLAW
     }
     public scoreSpecimenStates scoreSpecimenState = scoreSpecimenStates.IDLE;
 
@@ -206,12 +207,13 @@ public class RobotSystems {
 
             case GO_TO_SCORE:
                 outtakeSubsystem.goToSpecimenScore();
+                liftSystem.goToScoreSpecimen();
                 scoreSpecimenState = scoreSpecimenStates.WAITING_TO_SCORE;
                 timerScore.reset();
                 break;
 
             case WAITING_TO_SCORE:
-                if(timerScore.milliseconds() > 200){
+                if(timerScore.milliseconds() > RobotSettings.outtake_score){
                     scoreSpecimenState = scoreSpecimenStates.OPEN_CLAW;
                 }
                 break;
@@ -219,6 +221,7 @@ public class RobotSystems {
             case OPEN_CLAW:
                 outtakeSubsystem.claw.open();
                 scoreSpecimenState = scoreSpecimenStates.IDLE;
+                collectSpecimenState = collectSpecimenStates.GETTING_IN_POSITION;
                 break;
         }
 
@@ -243,7 +246,8 @@ public class RobotSystems {
             case COLECT_GOING_UP:
                 if(timer.milliseconds() > RobotSettings.intake_move_collect) {
                     if(intakeSubsystem.hasElement()) {
-                        transfer();
+                        intakeSubsystem.goToWall();
+                        extendoSystem.goToPos(PositionsExtendo.beforeTransfer);
                     } else {
                         intakeSubsystem.goDown();
                     }

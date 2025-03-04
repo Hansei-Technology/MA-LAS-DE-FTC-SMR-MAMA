@@ -73,6 +73,12 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
+    public void goToScoreSpecimen() {
+        PIDON = true;
+        target_position = PositionsLift.scoreSpecimen;
+        pidController.targetValue = target_position;
+    }
+
 
     public void goToHighBasket() {
         PIDON = true;
