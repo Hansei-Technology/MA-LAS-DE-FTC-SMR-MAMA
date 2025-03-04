@@ -144,7 +144,7 @@ public class RobotSystems {
             case GOING_TO_AFTER_TRANSFER:
                 if(transferFirstTime) {
                     outtakeSubsystem.goToAfterTransfer();
-                    intakeSubsystem.goToReady();
+                    intakeSubsystem.goToWall();
                     transferFirstTime = false;
                 }
                 if(timerTransfer.milliseconds() > RobotSettings.going_after_transfer) {
@@ -236,7 +236,7 @@ public class RobotSystems {
             case COLLECTING:
                 if(timer.milliseconds() > RobotSettings.intake_claw_open) {
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLECT_GOING_UP;
-                    intakeSubsystem.goDown();
+                    intakeSubsystem.bar.goToGround();
                     timer.reset();
                 }
                 break;
@@ -245,7 +245,7 @@ public class RobotSystems {
                     if(intakeSubsystem.hasElement()) {
                         transfer();
                     } else {
-                        intakeSubsystem.collect();
+                        intakeSubsystem.goDown();
                     }
                 }
         }
@@ -253,6 +253,7 @@ public class RobotSystems {
 
     public void scoreSpecimen(){
         scoreSpecimenState = scoreSpecimenStates.GO_TO_SCORE;
+        collectSpecimenState = collectSpecimenStates.IDLE;
     }
 
 

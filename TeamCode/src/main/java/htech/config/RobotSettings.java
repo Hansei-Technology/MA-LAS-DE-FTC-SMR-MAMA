@@ -13,7 +13,7 @@ public abstract class RobotSettings {
     public static double rotationSpeed = 0.8;
 
     //transfer timers
-    public static int outtake_going_to_transfer = 200;
+    public static int outtake_going_to_transfer = 440;
     public static int rotation_max_time = 200;
     public static int outtake_claw_close = 200;
     public static int intake_claw_open = 200;

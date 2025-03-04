@@ -17,7 +17,7 @@ public class ChassisTester extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            chassis.updateMovement(gamepad1);
+            chassis.updateMovementSlowRotation(gamepad1);
             telemetry.addData("[STATUS]", "ChassisTester Teleop is running.");
             telemetry.update();
         }
