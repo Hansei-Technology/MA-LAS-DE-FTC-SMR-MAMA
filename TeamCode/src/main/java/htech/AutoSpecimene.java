@@ -70,40 +70,45 @@ public class AutoSpecimene extends LinearOpMode {
 
 
     //Coordinates
-    public static double startX = 0, startY = 0, startH = 0;
-    public static double preloadX = -20, preloadY = -2.7, preloadH = startH;
+    public static double startX = 0, startY = 0, startH = 180;
+    public static double preloadX = -29.5, preloadY = -5.5, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
     public static double safe3Sample1X = -60, safe3Sample1Y = 37;
-    public static double sample1X = -48, sample1Y = 37, sample1H = 0;
-    public static double human1X = -23, human1Y = 37, human1H = 0;
+    public static double sample1X = -48, sample1Y = 37, sample1H = 180;
+    public static double human1X = -23, human1Y = 37, human1H = 180;
 
     public static double safeSample2X = -48, safeSample2Y = 30;
-    public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -24.5, human2Y = 45, human2H = 0;
+    public static double sample2X = -48, sample2Y = 45, sample2H = 180;
+    public static double human2X = -24.5, human2Y = 45, human2H = 180;
 
     public static double safeSample3X = -32.5, safeSample3Y = 37;
-    public static double sample3X = -48, sample3Y = 50.3, sample3H = 0;
+    public static double sample3X = -48, sample3Y = 50, sample3H = 180;
     public static double specimen1X = -5, specimen1Y = 50.3;
 
-    public static double score1X = -20, score1Y = 1, scoreH = 0;
-    public static double score2X = -20, score2Y = -2;
-    public static double score3X = -20, score3Y = -6;
-    public static double score4X = -20, score4Y = -8;
-    public static double safeScoreX = -14, safeScoreY = 0;
+    public static double score1X = -30, score1Y = -2, scoreH = 180;
+    public static double score2X = -31, score2Y = -4;
+    public static double score3X = -31, score3Y = -6;
+    public static double score4X = -31, score4Y = -8;
+    public static double safeScoreX = -14, safeScoreY = -7;
 
-    public static double specimenX = -7, specimenY = 30, specimenH = 0;
-    public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
-    public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
+    public static double specimenX = -3, specimenY = 30, specimenH = 180;
+    public static double safe1SpecimenX = -15, safe1SpecimenY = -5;
+    public static double safe2SpecimenX = -15, safe2SpecimenY = 30;
 
-    public static double parkX = -10, parkY = 30, parkH = 230;
+    public static double parkX = -10, parkY = 30, parkH = 65;
 
 
+    boolean firstTime = true;
     //Timers
     public static double timeToCollect = 100;
     public static double matchTime = 30;
+    public static double timeToScore = 200;
     public double timeToWait = 0;
+
+
+    public static double speed = 1;
 
 
 
@@ -121,9 +126,9 @@ public class AutoSpecimene extends LinearOpMode {
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(new Pose(startX, startY, startH));
+        follower.setStartingPose(new Pose(startX, startY, Math.toRadians(startH)));
 
-        intakeSubsystem.initAuto();
+        intakeSubsystem.goToWall();
         outtakeSubsystem.init();
         outtakeSubsystem.claw.close();
         extendo.pidEnabled = true;
@@ -134,7 +139,7 @@ public class AutoSpecimene extends LinearOpMode {
                         new Point(preloadX, preloadY, Point.CARTESIAN)
                 )
         );
-        preload.setConstantHeadingInterpolation(preloadH);
+        preload.setConstantHeadingInterpolation(Math.toRadians(preloadH));
 
         collectSamples = follower.pathBuilder()
                 .addPath(
@@ -276,14 +281,16 @@ public class AutoSpecimene extends LinearOpMode {
                 .build();
 
         park = new Path(
-                new BezierLine(
+                new BezierCurve(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(safe1SpecimenX, safe1SpecimenY, Point.CARTESIAN),
                         new Point(parkX, parkY, Point.CARTESIAN)
                 )
         );
         park.setLinearHeadingInterpolation(Math.toRadians(scoreH), Math.toRadians(parkH));
 
-        follower.setMaxPower(1);
+        follower.setMaxPower(speed);
+        follower.followPath(preload);
 
         waitForStart();
 
@@ -294,23 +301,29 @@ public class AutoSpecimene extends LinearOpMode {
             switch (CS){
 
                 case IDLE:
-                    follower.followPath(preload);
                     CS = STATES.SPECIMEN;
                     break;
 
                 case SPECIMEN:
                     if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
-                        lift.goToHighBasket();
-                        outtakeSubsystem.goToSpecimenPrescore();
+                        lift.goToHighChamber();
+                        outtakeSubsystem.goToSpecimenScore();
+                        outtakeSubsystem.funny.extend();
 
                         CS = STATES.MOVING;
                         NS = STATES.SCORING_SPECIMEN;
+                        firstTime = true;
                     }
                     break;
 
                 case SCORING_SPECIMEN:
-                    robotSystems.scoreSpecimen();
+                    if(firstTime) {
+                        robotSystems.scoreSpecimen();
+                        firstTime = false;
+                    }
+
+                    timer.reset();
                     if(robotSystems.scoreSpecimenState == RobotSystems.scoreSpecimenStates.IDLE){
                         switch (SCORING_CS){
                             case IDLE:
@@ -336,6 +349,8 @@ public class AutoSpecimene extends LinearOpMode {
                     if(!follower.isBusy()){
                         CS = NS;
                         timer.reset();
+                        firstTime = true;
+
                     }
                     break;
 
@@ -343,6 +358,7 @@ public class AutoSpecimene extends LinearOpMode {
                     if(timer.milliseconds() > timeToWait){
                         CS = NS;
                         timer.reset();
+                        firstTime = true;
                     }
                     break;
 
@@ -350,7 +366,8 @@ public class AutoSpecimene extends LinearOpMode {
                     timer.reset();
                     follower.followPath(collectSamples);
                     lift.goToGround();
-                    outtakeSubsystem.goToCollectSpecimen();
+                    robotSystems.collectSpecimen();
+                    outtakeSubsystem.funny.retract();
                     intakeSubsystem.goToWall();
                     CS = STATES.MOVING;
                     NS = STATES.COLLECTING_SPECIMEN;
@@ -417,8 +434,9 @@ public class AutoSpecimene extends LinearOpMode {
 
                 case WALL:
                     follower.followPath(wall, false);
+                    robotSystems.collectSpecimen();
                     lift.goToGround();
-                    outtakeSubsystem.goToCollectSpecimen();
+
                     switch (SCORING_CS) {
                         case SCORE1:
                             SCORING_CS = SCORING_STATES.SCORE2;
@@ -450,6 +468,7 @@ public class AutoSpecimene extends LinearOpMode {
             robotSystems.update();
             telemetry.addData("STATE", CS);
             telemetry.addData("TIMER", timer.milliseconds());
+            telemetry.addData("MATCH TIMER", matchTimer.seconds());
             telemetry.update();
 
         }

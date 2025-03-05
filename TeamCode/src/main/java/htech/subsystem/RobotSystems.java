@@ -38,7 +38,6 @@ public class RobotSystems {
         updateTransfer();
         updateCollectSpecimen();
         updateScoreSpecimen();
-        updateScoreSpecimen();
         updateCollect();
 
         if(!extendoSystem.pidEnabled && extendoSystem.currentPos > 150 && intakeSubsystem.intakeState == IntakeSubsystem.IntakeState.WALL) intakeSubsystem.goDownWithoutResetRotation();

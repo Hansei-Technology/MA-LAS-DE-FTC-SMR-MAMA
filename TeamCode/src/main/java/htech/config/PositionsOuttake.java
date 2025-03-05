@@ -13,7 +13,7 @@ public abstract class PositionsOuttake {
     public static double openedClaw = 1;
 
     // OUTTAKE BAR
-    public static double specimenBar = 0.46;
+    public static double specimenBar = 0.8;
     public static double transferBar = 0.64;
     public static double sampleBar = 0.25;
     public static double specimenCollectBar = 0.08;
