@@ -44,6 +44,7 @@ public class AutoSpecimene extends LinearOpMode {
     Path score1, score2, score3, score4;
     Path wall;
     Path park;
+    Path checkpoint, wall1;
 
 
     //States
@@ -57,6 +58,7 @@ public class AutoSpecimene extends LinearOpMode {
         PARKED,
         MOVING, WAITING, TRANSFER,
         CHECK_SPECIMEN, FAIL_SAFE,
+        CHECKPOINT, WALL1
     }
     public enum SCORING_STATES{
         IDLE,
@@ -84,8 +86,10 @@ public class AutoSpecimene extends LinearOpMode {
     public static double human2X = -24.5, human2Y = 45, human2H = 180;
 
     public static double safeSample3X = -32.5, safeSample3Y = 37;
-    public static double sample3X = -48, sample3Y = 50, sample3H = 180;
-    public static double specimen1X = -5, specimen1Y = 50.3;
+    public static double sample3X = -48, sample3Y = 52, sample3H = 180;
+    public static double human3X = -23, human3Y = 50;
+
+    public static double checkpointX = -23, checkpointY = 30, checkpointH = 180;
 
     public static double score1X = -30, score1Y = -2, scoreH = 180;
     public static double score2X = -31, score2Y = -4;
@@ -189,15 +193,31 @@ public class AutoSpecimene extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(sample3X, sample3Y, Point.CARTESIAN),
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
                 .build();
 
+        checkpoint = new Path(
+                new BezierLine(
+                        new Point(human3X, human3Y, Point.CARTESIAN),
+                        new Point(checkpointX, checkpointY, Point.CARTESIAN)
+                )
+        );
+        checkpoint.setConstantHeadingInterpolation(Math.toRadians(checkpointH));
+
+        wall1 = new Path(
+                new BezierLine(
+                        new Point(checkpointX, checkpointY, Point.CARTESIAN),
+                        new Point(specimenX, specimenY, Point.CARTESIAN)
+                )
+        );
+        wall1.setConstantHeadingInterpolation(Math.toRadians(180));
+
         score1 = new Path(
                 new BezierCurve(
-                        new Point(specimen1X, specimen1Y, Point.CARTESIAN),
+                        new Point(human3X, human3Y, Point.CARTESIAN),
                         new Point(safeScoreX, safeScoreY, Point.CARTESIAN),
                         new Point(score1X, score1Y, Point.CARTESIAN)
                 )
@@ -245,16 +265,16 @@ public class AutoSpecimene extends LinearOpMode {
         failSafe1 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X, human3Y, Point.CARTESIAN),
+                                new Point(human3X - 5, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
                 .setPathEndTimeoutConstraint(200)
                 .addPath(
                         new BezierLine(
-                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X + 0.5, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X - 5, human3Y, Point.CARTESIAN),
+                                new Point(human3X + 0.5, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -367,11 +387,22 @@ public class AutoSpecimene extends LinearOpMode {
                     follower.followPath(collectSamples);
                     lift.goToGround();
                     robotSystems.collectSpecimen();
-                    outtakeSubsystem.funny.retract();
                     intakeSubsystem.goToWall();
                     CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
+                    NS = STATES.CHECKPOINT;
                     SCORING_CS = SCORING_STATES.SCORE1;
+                    break;
+
+                case CHECKPOINT:
+                    follower.followPath(checkpoint);
+                    CS = STATES.MOVING;
+                    NS = STATES.WALL1;
+                    break;
+
+                case WALL1:
+                    follower.followPath(wall1);
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SPECIMEN;
                     break;
 
                 case COLLECTING_SPECIMEN:

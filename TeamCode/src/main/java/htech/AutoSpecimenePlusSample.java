@@ -44,6 +44,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     Path score1, score2, score3, score4;
     Path wall;
     Path park;
+    Path checkpoint, wall1;
     Path collectSampleBasket, goToBasket;
 
 
@@ -58,10 +59,11 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         PARKED,
         MOVING, WAITING, TRANSFER,
         CHECK_SPECIMEN, FAIL_SAFE,
+        CHECKPOINT, WALL1,
         COLLECTING_SAMPLE,
         COLLECTING_SAMPLE1,
         COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
-        SCORE_BASKET, SCORE_BASKET2, SCORE_BASKET3
+        SCORE_BASKET, SCORE_BASKET2,
     }
     public enum SCORING_STATES{
         IDLE,
@@ -75,48 +77,57 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
 
     //Coordinates
-    public static double startX = 0, startY = 0, startH = 0;
-    public static double preloadX = -20, preloadY = -2.7, preloadH = startH;
+    public static double startX = 0, startY = 0, startH = 180;
+    public static double preloadX = -29.5, preloadY = -5.5, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
     public static double safe3Sample1X = -60, safe3Sample1Y = 37;
-    public static double sample1X = -48, sample1Y = 37, sample1H = 0;
-    public static double human1X = -23, human1Y = 37, human1H = 0;
+    public static double sample1X = -48, sample1Y = 37, sample1H = 180;
+    public static double human1X = -23, human1Y = 37, human1H = 180;
 
     public static double safeSample2X = -48, safeSample2Y = 30;
-    public static double sample2X = -48, sample2Y = 45, sample2H = 0;
-    public static double human2X = -24.5, human2Y = 45, human2H = 0;
+    public static double sample2X = -48, sample2Y = 45, sample2H = 180;
+    public static double human2X = -24.5, human2Y = 45, human2H = 180;
 
     public static double safeSample3X = -32.5, safeSample3Y = 37;
-    public static double sample3X = -48, sample3Y = 50.3, sample3H = 0;
-    public static double specimen1X = -5, specimen1Y = 50.3;
+    public static double sample3X = -48, sample3Y = 52, sample3H = 180;
+    public static double human3X = -23, human3Y = 50;
 
-    public static double score1X = -20, score1Y = 1, scoreH = 0;
-    public static double score2X = -20, score2Y = -2;
-    public static double score3X = -20, score3Y = -6;
-    public static double score4X = -20, score4Y = -8;
-    public static double safeScoreX = -14, safeScoreY = 0;
+    public static double checkpointX = -23, checkpointY = 30, checkpointH = 180;
 
-    public static double specimenX = -7, specimenY = 30, specimenH = 0;
-    public static double safe1SpecimenX = -20, safe1SpecimenY = 5;
-    public static double safe2SpecimenX = -20, safe2SpecimenY = 30;
+    public static double score1X = -30, score1Y = -2, scoreH = 180;
+    public static double score2X = -31, score2Y = -4;
+    public static double score3X = -31, score3Y = -6;
+    public static double score4X = -31, score4Y = -8;
+    public static double safeScoreX = -14, safeScoreY = -7;
 
-    public static double parkX = -3, parkY = 20, parkH = 270;
+    public static double specimenX = -3, specimenY = 30, specimenH = 180;
+    public static double safe1SpecimenX = -15, safe1SpecimenY = -5;
+    public static double safe2SpecimenX = -15, safe2SpecimenY = 30;
+
+    public static double parkX = -10, parkY = 30, parkH = 65;
 
     public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 200;
     public static double basketX = -2.7, basketY = -62, basketH = 270;
 
+    //Booleans
+    boolean basket = false;
+    boolean parking = false;
+    boolean firstTime = true;
 
     //Timers
     public static double timeToCollect = 100;
     public static double matchTime = 30;
+    public static double timeToScore = 200;
     public static double timeToCollectSample = 200;
     public double timeToWait = 0;
 
-    //Booleans
-    boolean basket = false;
-    boolean parking = false;
+
+    //Speed
+    public static double speed = 1;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -132,9 +143,9 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
-        follower.setStartingPose(new Pose(startX, startY, startH));
+        follower.setStartingPose(new Pose(startX, startY, Math.toRadians(startH)));
 
-        intakeSubsystem.initAuto();
+        intakeSubsystem.goToWall();
         outtakeSubsystem.init();
         outtakeSubsystem.claw.close();
         extendo.pidEnabled = true;
@@ -145,7 +156,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                         new Point(preloadX, preloadY, Point.CARTESIAN)
                 )
         );
-        preload.setConstantHeadingInterpolation(preloadH);
+        preload.setConstantHeadingInterpolation(Math.toRadians(preloadH));
 
         collectSamples = follower.pathBuilder()
                 .addPath(
@@ -195,15 +206,31 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(sample3X, sample3Y, Point.CARTESIAN),
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
                 .build();
 
+        checkpoint = new Path(
+                new BezierLine(
+                        new Point(human3X, human3Y, Point.CARTESIAN),
+                        new Point(checkpointX, checkpointY, Point.CARTESIAN)
+                )
+        );
+        checkpoint.setConstantHeadingInterpolation(Math.toRadians(checkpointH));
+
+        wall1 = new Path(
+                new BezierLine(
+                        new Point(checkpointX, checkpointY, Point.CARTESIAN),
+                        new Point(specimenX, specimenY, Point.CARTESIAN)
+                )
+        );
+        wall1.setConstantHeadingInterpolation(Math.toRadians(180));
+
         score1 = new Path(
                 new BezierCurve(
-                        new Point(specimen1X, specimen1Y, Point.CARTESIAN),
+                        new Point(human3X, human3Y, Point.CARTESIAN),
                         new Point(safeScoreX, safeScoreY, Point.CARTESIAN),
                         new Point(score1X, score1Y, Point.CARTESIAN)
                 )
@@ -251,16 +278,16 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         failSafe1 = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(specimen1X, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X, human3Y, Point.CARTESIAN),
+                                new Point(human3X - 5, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
                 .setPathEndTimeoutConstraint(200)
                 .addPath(
                         new BezierLine(
-                                new Point(specimen1X - 5, specimen1Y, Point.CARTESIAN),
-                                new Point(specimen1X + 0.5, specimen1Y, Point.CARTESIAN)
+                                new Point(human3X - 5, human3Y, Point.CARTESIAN),
+                                new Point(human3X + 0.5, human3Y, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(preloadH)
@@ -287,8 +314,9 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                 .build();
 
         park = new Path(
-                new BezierLine(
+                new BezierCurve(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(safe1SpecimenX, safe1SpecimenY, Point.CARTESIAN),
                         new Point(parkX, parkY, Point.CARTESIAN)
                 )
         );
@@ -310,7 +338,8 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         );
         goToBasket.setLinearHeadingInterpolation(Math.toRadians(sampleBasketH), Math.toRadians(basketH));
 
-        follower.setMaxPower(1);
+        follower.setMaxPower(speed);
+        follower.followPath(preload);
 
         waitForStart();
 
@@ -321,23 +350,29 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
             switch (CS){
 
                 case IDLE:
-                    follower.followPath(preload);
                     CS = STATES.SPECIMEN;
                     break;
 
                 case SPECIMEN:
                     if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
-                        lift.goToHighBasket();
-                        outtakeSubsystem.goToSpecimenPrescore();
+                        lift.goToHighChamber();
+                        outtakeSubsystem.goToSpecimenScore();
+                        outtakeSubsystem.funny.extend();
 
                         CS = STATES.MOVING;
                         NS = STATES.SCORING_SPECIMEN;
+                        firstTime = true;
                     }
                     break;
 
                 case SCORING_SPECIMEN:
-                    robotSystems.scoreSpecimen();
+                    if(firstTime) {
+                        robotSystems.scoreSpecimen();
+                        firstTime = false;
+                    }
+
+                    timer.reset();
                     if(robotSystems.scoreSpecimenState == RobotSystems.scoreSpecimenStates.IDLE){
                         switch (SCORING_CS){
                             case IDLE:
@@ -360,26 +395,11 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     break;
 
                 case MOVING:
-                    if(basket){
-                        if(robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER || robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                            lift.goToHighBasket();
-                            basket = false;
-                        }
-                    }
-                    if(parking){
-                        if(follower.getCurrentTValue() > 0.3){
-                            lift.goToGround();
-                            outtakeSubsystem.goToTransfer();
-                            if(follower.getCurrentTValue() > 0.8){
-                                extendo.goToMax();
-                                intakeSubsystem.goDown();
-                                parking = false;
-                            }
-                        }
-                    }
                     if(!follower.isBusy()){
                         CS = NS;
                         timer.reset();
+                        firstTime = true;
+
                     }
                     break;
 
@@ -387,6 +407,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     if(timer.milliseconds() > timeToWait){
                         CS = NS;
                         timer.reset();
+                        firstTime = true;
                     }
                     break;
 
@@ -394,11 +415,23 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     timer.reset();
                     follower.followPath(collectSamples);
                     lift.goToGround();
-                    outtakeSubsystem.goToCollectSpecimen();
+                    robotSystems.collectSpecimen();
                     intakeSubsystem.goToWall();
                     CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
+                    NS = STATES.CHECKPOINT;
                     SCORING_CS = SCORING_STATES.SCORE1;
+                    break;
+
+                case CHECKPOINT:
+                    follower.followPath(checkpoint);
+                    CS = STATES.MOVING;
+                    NS = STATES.WALL1;
+                    break;
+
+                case WALL1:
+                    follower.followPath(wall1);
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SPECIMEN;
                     break;
 
                 case COLLECTING_SPECIMEN:
@@ -461,8 +494,9 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
                 case WALL:
                     follower.followPath(wall, false);
+                    robotSystems.collectSpecimen();
                     lift.goToGround();
-                    outtakeSubsystem.goToCollectSpecimen();
+
                     switch (SCORING_CS) {
                         case SCORE1:
                             SCORING_CS = SCORING_STATES.SCORE2;
@@ -549,6 +583,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
             robotSystems.update();
             telemetry.addData("STATE", CS);
             telemetry.addData("TIMER", timer.milliseconds());
+            telemetry.addData("MATCH TIMER", matchTimer.seconds());
             telemetry.update();
 
         }
