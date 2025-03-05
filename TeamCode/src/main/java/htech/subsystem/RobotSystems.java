@@ -49,7 +49,7 @@ public class RobotSystems {
         IDLE,
         LIFT_GOING_DOWN,
         WAITING_FOR_INTAKE_ROTATION,
-        EXTENDO_CLOSING,
+        INTAKE_GOING_TO_POSITION,
         OUTTAKE_CLAW_CLOSING,
         INTAKE_CLAW_OPENING,
         GOING_TO_AFTER_TRANSFER
@@ -79,6 +79,8 @@ public class RobotSystems {
 
     public void transfer() {
         transferState = TransferStates.LIFT_GOING_DOWN;
+        collectSpecimenState = collectSpecimenStates.IDLE;
+        scoreSpecimenState = scoreSpecimenStates.IDLE;
         transferFirstTime = true;
         timerTransfer.reset();
     }
@@ -88,15 +90,17 @@ public class RobotSystems {
             case LIFT_GOING_DOWN:
                 if(transferFirstTime) {
                     liftSystem.goToGround();
+                    extendoSystem.goToGround();
                     outtakeSubsystem.goToTransfer();
-                    intakeSubsystem.goToTransfer();
+                    intakeSubsystem.goToWall();
+                    intakeSubsystem.rotation.goToNormal();
                     transferFirstTime = false;
                 }
-                if(liftSystem.isDown() && timerTransfer.milliseconds() > RobotSettings.outtake_going_to_transfer) {
+                if(liftSystem.isDown() && timerTransfer.milliseconds() > RobotSettings.outtake_going_to_transfer && extendoSystem.currentPos < 100) {
                     if(intakeSubsystem.rotation.rotLevel > 3) {
                         transferState = TransferStates.WAITING_FOR_INTAKE_ROTATION;
                     } else {
-                        transferState = TransferStates.EXTENDO_CLOSING;
+                        transferState = TransferStates.INTAKE_GOING_TO_POSITION;
                     }
                     transferFirstTime = true;
                     timerTransfer.reset();
@@ -104,25 +108,26 @@ public class RobotSystems {
                 break;
             case WAITING_FOR_INTAKE_ROTATION:
                 if(timerTransfer.milliseconds() > RobotSettings.rotation_max_time) {
-                    transferState = TransferStates.EXTENDO_CLOSING;
+                    transferState = TransferStates.INTAKE_GOING_TO_POSITION;
                     timerTransfer.reset();
                     transferFirstTime = true;
                 }
                 break;
-            case EXTENDO_CLOSING:
+            case INTAKE_GOING_TO_POSITION:
                 if(transferFirstTime) {
-                    extendoSystem.goToTransfer();
+                    intakeSubsystem.goToTransfer();
                     transferFirstTime = false;
                 }
-                if(extendoSystem.isAtPosition()) {
+                if(timerTransfer.milliseconds() > RobotSettings.moving_intake) {
                     transferState = TransferStates.OUTTAKE_CLAW_CLOSING;
                     timerTransfer.reset();
                     transferFirstTime = true;
                 }
                 break;
             case OUTTAKE_CLAW_CLOSING:
+                outtakeSubsystem.claw.close();
                 if(transferFirstTime) {
-                    outtakeSubsystem.claw.close();
+
                     transferFirstTime = false;
                 }
                 if(timerTransfer.milliseconds() > RobotSettings.outtake_claw_close) {
@@ -249,7 +254,7 @@ public class RobotSystems {
                         intakeSubsystem.goToWall();
                         extendoSystem.goToPos(PositionsExtendo.beforeTransfer);
                     } else {
-                        intakeSubsystem.goDown();
+                        intakeSubsystem.goDownWithoutResetRotation();
                     }
                 }
         }

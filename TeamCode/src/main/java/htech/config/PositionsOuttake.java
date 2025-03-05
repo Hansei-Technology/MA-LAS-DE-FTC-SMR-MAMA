@@ -13,15 +13,15 @@ public abstract class PositionsOuttake {
     public static double openedClaw = 1;
 
     // OUTTAKE BAR
-    public static double specimenBar = 0.5;
-    public static double transferBar = 0.26;
-    public static double sampleBar = 0.86;
-    public static double specimenCollectBar = 0.99;
-    public static double afterTransferBar = 0.4;
-    public static double specimenPrescoreBar = 0.26;
+    public static double specimenBar = 0.46;
+    public static double transferBar = 0.64;
+    public static double sampleBar = 0.25;
+    public static double specimenCollectBar = 0.08;
+    public static double afterTransferBar = 0.5;
+    public static double specimenPrescoreBar = 0.78;
 
     // OUTTAKE FUNNY
-    public static double extendedFunny = 1;
-    public static double retractedFunny = 0.87;
-    public static double halfExtendedFunny = 0.82;
+    public static double extendedFunny = 0.6;
+    public static double retractedFunny = 0.33;
+    public static double halfExtendedFunny = 0.47;
 }

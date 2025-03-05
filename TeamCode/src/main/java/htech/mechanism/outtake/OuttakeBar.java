@@ -18,12 +18,12 @@ public class OuttakeBar {
     public OuttakeBar(HardwareMap hardwareMap) {
         servoLeft = hardwareMap.get(Servo.class, Servos.outtakeLeft);
         servoRight = hardwareMap.get(Servo.class, Servos.outtakeRight);
-
-        servoLeft.setPosition(PositionsOuttake.transferBar);
-        servoRight.setPosition(PositionsOuttake.transferBar);
-
-        currentPositionLeft = PositionsOuttake.transferBar;
-        currentPositionRight = PositionsOuttake.transferBar;
+//
+//        servoLeft.setPosition(PositionsOuttake.transferBar);
+//        servoRight.setPosition(PositionsOuttake.transferBar);
+//
+//        currentPositionLeft = PositionsOuttake.transferBar;
+//        currentPositionRight = PositionsOuttake.transferBar;
     }
 
     public void goToTransfer() {

@@ -75,11 +75,11 @@ public class TeleOp2 extends LinearOpMode {
                     outtakeSubsystem.claw.open();
                 else if(lift.target_position == PositionsLift.highChamber) {
                     robotSystems.scoreSpecimen();
-
-                } else {
+                } else if(robotSystems.scoreSpecimenState == RobotSystems.scoreSpecimenStates.IDLE) {
                     intakeSubsystem.collect();
+                    robotSystems.collectSpecimenState = RobotSystems.collectSpecimenStates.IDLE;
+                    outtakeSubsystem.goToTransfer();
                 }
-
             }
 
             if(stickyGamepad1.x){

@@ -8,7 +8,7 @@ public abstract class PositionsLift {
     public static int park = 340;
     public static int transfer = 0;
     public static int highChamber = 550;
-    public static int scoreSpecimen = 660;
+    public static int scoreSpecimen = 720;
     public static int highBasket = 1250;
 
     public static double kP = 0.01;
