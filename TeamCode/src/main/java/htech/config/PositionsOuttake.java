@@ -21,7 +21,7 @@ public abstract class PositionsOuttake {
     public static double specimenPrescoreBar = 0.78;
 
     // OUTTAKE FUNNY
-    public static double extendedFunny = 0.6;
-    public static double retractedFunny = 0.33;
-    public static double halfExtendedFunny = 0.47;
+    public static double extendedFunny = 0.62;
+    public static double retractedFunny = 0.41;
+    public static double halfExtendedFunny = 0.48;
 }
