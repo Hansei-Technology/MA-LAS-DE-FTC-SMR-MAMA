@@ -63,7 +63,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         COLLECTING_SAMPLE,
         COLLECTING_SAMPLE1,
         COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
-        SCORE_BASKET, SCORE_BASKET2,
+        SCORE_BASKET, SCORE_BASKET2, SCORE_BASKET3
     }
     public enum SCORING_STATES{
         IDLE,
@@ -78,7 +78,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
     //Coordinates
     public static double startX = 0, startY = 0, startH = 180;
-    public static double preloadX = -29.5, preloadY = -5.5, preloadH = startH;
+    public static double preloadX = -30.5, preloadY = -5.5, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
@@ -91,25 +91,25 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     public static double human2X = -24.5, human2Y = 45, human2H = 180;
 
     public static double safeSample3X = -32.5, safeSample3Y = 37;
-    public static double sample3X = -48, sample3Y = 52, sample3H = 180;
-    public static double human3X = -23, human3Y = 50;
+    public static double sample3X = -48, sample3Y = 51.5, sample3H = 180;
+    public static double human3X = -3, human3Y = 51.5;
 
     public static double checkpointX = -23, checkpointY = 30, checkpointH = 180;
 
-    public static double score1X = -30, score1Y = -2, scoreH = 180;
-    public static double score2X = -31, score2Y = -4;
-    public static double score3X = -31, score3Y = -6;
-    public static double score4X = -31, score4Y = -8;
+    public static double score1X = -31.5, score1Y = -2, scoreH = 180;
+    public static double score2X = -31.5, score2Y = -4;
+    public static double score3X = -31.5, score3Y = -7;
+    public static double score4X = -31.5, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = -7;
 
     public static double specimenX = -3, specimenY = 30, specimenH = 180;
     public static double safe1SpecimenX = -15, safe1SpecimenY = -5;
     public static double safe2SpecimenX = -15, safe2SpecimenY = 30;
 
-    public static double parkX = -10, parkY = 30, parkH = 65;
+    public static double parkX = -3, parkY = 30, parkH = 80;
 
-    public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 200;
-    public static double basketX = -2.7, basketY = -62, basketH = 270;
+    public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 35;
+    public static double basketX = -5, basketY = -58.5, basketH = 115;
 
     //Booleans
     boolean basket = false;
@@ -119,7 +119,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     //Timers
     public static double timeToCollect = 100;
     public static double matchTime = 30;
-    public static double timeToScore = 200;
+    public static double timeToGoDownSample = 200;
     public static double timeToCollectSample = 200;
     public double timeToWait = 0;
 
@@ -315,16 +315,17 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
         park = new Path(
                 new BezierCurve(
-                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(basketX, basketY, Point.CARTESIAN),
                         new Point(safe1SpecimenX, safe1SpecimenY, Point.CARTESIAN),
                         new Point(parkX, parkY, Point.CARTESIAN)
                 )
         );
-        park.setLinearHeadingInterpolation(Math.toRadians(scoreH), Math.toRadians(parkH));
+        park.setLinearHeadingInterpolation(Math.toRadians(basketH), Math.toRadians(parkH));
 
         collectSampleBasket = new Path(
-                new BezierLine(
+                new BezierCurve(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(safe1SpecimenX, safe1SpecimenY, Point.CARTESIAN),
                         new Point(sampleBasketX, sampleBasketY, Point.CARTESIAN)
                 )
         );
@@ -357,7 +358,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
                         lift.goToHighChamber();
-                        outtakeSubsystem.goToSpecimenScore();
+                        outtakeSubsystem.goToSpecimenPrescore();
                         outtakeSubsystem.funny.extend();
 
                         CS = STATES.MOVING;
@@ -395,6 +396,20 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     break;
 
                 case MOVING:
+                    if(basket){
+                        if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
+                            lift.goToHighBasket();
+                            basket = false;
+                        }
+                    }
+                    if(parking){
+                        if(follower.getCurrentTValue() > 0.4){
+                            lift.goToGround();
+                            outtakeSubsystem.goToTransfer();
+                            extendo.goToPos(380);
+                            parking = false;
+                        }
+                    }
                     if(!follower.isBusy()){
                         CS = NS;
                         timer.reset();
@@ -416,23 +431,24 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     follower.followPath(collectSamples);
                     lift.goToGround();
                     robotSystems.collectSpecimen();
+                    outtakeSubsystem.funny.retract();
                     intakeSubsystem.goToWall();
                     CS = STATES.MOVING;
-                    NS = STATES.CHECKPOINT;
+                    NS = STATES.COLLECTING_SPECIMEN;
                     SCORING_CS = SCORING_STATES.SCORE1;
                     break;
 
-                case CHECKPOINT:
-                    follower.followPath(checkpoint);
-                    CS = STATES.MOVING;
-                    NS = STATES.WALL1;
-                    break;
-
-                case WALL1:
-                    follower.followPath(wall1);
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
-                    break;
+//                case CHECKPOINT:
+//                    follower.followPath(checkpoint);
+//                    CS = STATES.MOVING;
+//                    NS = STATES.WALL1;
+//                    break;
+//
+//                case WALL1:
+//                    follower.followPath(wall1);
+//                    CS = STATES.MOVING;
+//                    NS = STATES.COLLECTING_SPECIMEN;
+//                    break;
 
                 case COLLECTING_SPECIMEN:
                     outtakeSubsystem.claw.close();
@@ -473,8 +489,6 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 //                    break;
 
                 case SCORE:
-                    lift.goToHighBasket();
-                    outtakeSubsystem.goToSpecimenPrescore();
                     switch (SCORING_CS){
                         case SCORE1:
                             follower.followPath(score1);
@@ -515,6 +529,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                 case COLLECTING_SAMPLE:
                     follower.followPath(collectSampleBasket);
                     intakeSubsystem.goDown();
+                    intakeSubsystem.claw.open();
                     lift.goToGround();
                     outtakeSubsystem.goToTransfer();
                     CS = STATES.MOVING;
@@ -531,9 +546,8 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     }
                     break;
                 case COLLECTING_SAMPLE2:
-                    intakeSubsystem.collect();
-                    timer.reset();
-                    if(timer.milliseconds() > 150){
+                    intakeSubsystem.bar.goToCollect();
+                    if(timer.milliseconds() > timeToGoDownSample){
                         intakeSubsystem.claw.close();
                         CS = STATES.WAITING;
                         NS = STATES.COLLECTING_SAMPLE3;
@@ -555,20 +569,23 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     break;
 
                 case SCORE_BASKET2:
-                    if(lift.isAtPosition()){
-                        outtakeSubsystem.goToSampleScore();
+                    outtakeSubsystem.goToSampleScore();
+                    CS = STATES.SCORE_BASKET3;
+                    timer.reset();
+                    break;
+
+                case SCORE_BASKET3:
+                    if(timer.milliseconds() > 100){
+                        outtakeSubsystem.claw.open();
+                        CS = STATES.PARK;
                         timer.reset();
-                        if(timer.milliseconds() > 120){
-                            outtakeSubsystem.claw.open();
-                            CS = STATES.WAITING;
-                            NS = STATES.PARK;
-                            timer.reset();
-                            timeToWait = 100;
-                        }
                     }
                     break;
 
                 case PARK:
+                    if(timer.milliseconds() > 100){
+                        outtakeSubsystem.goToTransfer();
+                    }
                     follower.followPath(park);
                     parking = true;
                     CS = STATES.MOVING;

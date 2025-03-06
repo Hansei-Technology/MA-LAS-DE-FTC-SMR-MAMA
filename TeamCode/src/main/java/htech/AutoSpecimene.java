@@ -73,7 +73,7 @@ public class AutoSpecimene extends LinearOpMode {
 
     //Coordinates
     public static double startX = 0, startY = 0, startH = 180;
-    public static double preloadX = -29.5, preloadY = -5.5, preloadH = startH;
+    public static double preloadX = -30.5, preloadY = -5.5, preloadH = startH;
 
     public static double safe1Sample1X = -5, safe1Sample1Y = 32;
     public static double safe2Sample1X = -30, safe2Sample1Y = 15;
@@ -87,14 +87,14 @@ public class AutoSpecimene extends LinearOpMode {
 
     public static double safeSample3X = -32.5, safeSample3Y = 37;
     public static double sample3X = -48, sample3Y = 52, sample3H = 180;
-    public static double human3X = -23, human3Y = 50;
+    public static double human3X = -19, human3Y = 52;
 
     public static double checkpointX = -23, checkpointY = 30, checkpointH = 180;
 
-    public static double score1X = -30, score1Y = -2, scoreH = 180;
-    public static double score2X = -31, score2Y = -4;
-    public static double score3X = -31, score3Y = -6;
-    public static double score4X = -31, score4Y = -8;
+    public static double score1X = -31.5, score1Y = -2, scoreH = 180;
+    public static double score2X = -31.5, score2Y = -4;
+    public static double score3X = -31.5, score3Y = -7;
+    public static double score4X = -31.5, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = -7;
 
     public static double specimenX = -3, specimenY = 30, specimenH = 180;
@@ -328,7 +328,7 @@ public class AutoSpecimene extends LinearOpMode {
                     if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
 
                         lift.goToHighChamber();
-                        outtakeSubsystem.goToSpecimenScore();
+                        outtakeSubsystem.goToSpecimenPrescore();
                         outtakeSubsystem.funny.extend();
 
                         CS = STATES.MOVING;
