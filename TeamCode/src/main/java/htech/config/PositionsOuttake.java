@@ -9,8 +9,8 @@ import com.acmerobotics.dashboard.config.Config;
 public abstract class PositionsOuttake {
 
     // OUTTAKE CLAW 
-    public static double closedClaw = 0.39;
-    public static double openedClaw = 0.59;
+    public static double closedClaw = 0.625;
+    public static double openedClaw = 0.44;
 
     // OUTTAKE BAR
     public static double specimenBar = 0.65;
@@ -21,7 +21,9 @@ public abstract class PositionsOuttake {
     public static double specimenPrescoreBar = 0.78;
 
     // OUTTAKE FUNNY
-    public static double extendedFunny = 0.62;
-    public static double retractedFunny = 0.41;
+    public static double extendedFunny = 0.53;
+    public static double maxRetractFunny = 0.28;
+    public static double retractedFunny = 0.36;
     public static double halfExtendedFunny = 0.48;
+    public static double transferFunny = 0.30;
 }

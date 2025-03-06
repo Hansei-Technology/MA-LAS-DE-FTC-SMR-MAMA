@@ -22,6 +22,8 @@ public abstract class RobotSettings {
 
 
     //collecting specimen timers
+    public static double timeToCloseClaw = 150;
+    public static double timeToToggleFunny = 200;
 
     //intake collect timers
     public static int intake_claw_close = 140;

@@ -24,4 +24,12 @@ public class OuttakeFunny {
     public void halfExtend() {
         servo.setPosition(PositionsOuttake.halfExtendedFunny);
     }
+
+    public void maxRetract(){
+        servo.setPosition(PositionsOuttake.maxRetractFunny);
+    }
+
+    public void goToTransfer(){
+        servo.setPosition(PositionsOuttake.transferFunny);
+    }
 }

@@ -95,9 +95,8 @@ public class TeleOp2 extends LinearOpMode {
             }
 
             if (stickyGamepad1.left_bumper) {
-                if(robotSystems.collectSpecimenState == RobotSystems.collectSpecimenStates.CLOSING_CLAW) {
-                    outtakeSubsystem.claw.close();
-                    outtakeSubsystem.goToCollectSpecimen();
+                if(robotSystems.collectSpecimenState == RobotSystems.collectSpecimenStates.WAITING) {
+                    robotSystems.collectSpecimenState = RobotSystems.collectSpecimenStates.MAX_RETRACT_FUNNY;
                 } else {
                     intakeSubsystem.claw.toggle();
                 }

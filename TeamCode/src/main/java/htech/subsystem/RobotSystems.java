@@ -1,5 +1,6 @@
 package htech.subsystem;
 
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import htech.config.PositionsExtendo;
@@ -19,6 +20,7 @@ public class RobotSystems {
 
     public boolean autoSample = false;
     public boolean fastCollect = false;
+    public boolean caca = false;
 
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
         this.extendoSystem = extendoSystem;
@@ -59,6 +61,8 @@ public class RobotSystems {
     public enum collectSpecimenStates{
         IDLE,
         GETTING_IN_POSITION,
+        WAITING,
+        MAX_RETRACT_FUNNY,
         CLOSING_CLAW,
         WAITING_FOR_CLAW,
         GO_TO_SCORE,
@@ -174,18 +178,28 @@ public class RobotSystems {
             case GETTING_IN_POSITION:
                 liftSystem.goToGround();
                 outtakeSubsystem.goToPreCollectSpecimen();
+                collectSpecimenState = collectSpecimenStates.WAITING;
+                break;
+
+            case WAITING:
+                break;
+
+            case MAX_RETRACT_FUNNY:
+                outtakeSubsystem.funny.maxRetract();
                 collectSpecimenState = collectSpecimenStates.CLOSING_CLAW;
+                timerCollect.reset();
                 break;
 
             case CLOSING_CLAW:
-                if(!outtakeSubsystem.claw.isOpen){
+                if(timerCollect.milliseconds() > RobotSettings.timeToToggleFunny){
+                    outtakeSubsystem.claw.close();
                     collectSpecimenState = collectSpecimenStates.WAITING_FOR_CLAW;
                     timerCollect.reset();
                 }
                 break;
 
             case WAITING_FOR_CLAW:
-                if(timerCollect.milliseconds() > 100){
+                if(timerCollect.milliseconds() > RobotSettings.timeToCloseClaw){
                     collectSpecimenState = collectSpecimenStates.GO_TO_SCORE;
                 }
                 break;
@@ -193,6 +207,7 @@ public class RobotSystems {
             case GO_TO_SCORE:
                 liftSystem.goToHighChamber();
                 outtakeSubsystem.goToSpecimenPrescore();
+                collectSpecimenState = collectSpecimenStates.IDLE;
                 break;
         }
 

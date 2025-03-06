@@ -43,13 +43,13 @@ public class OuttakeSubsystem {
 
     public void goToTransfer() {
         bar.goToTransfer();
-        funny.retract();
+        funny.goToTransfer();
         claw.open();
     }
 
     public void goToSampleScore() {
         bar.goToSample();
-        funny.retract();
+        funny.maxRetract();
     }
 
     public void goToSpecimenScore() {
@@ -63,19 +63,18 @@ public class OuttakeSubsystem {
 
     public void goToAfterTransfer() {
         bar.goToAfterTransfer();
-        funny.retract();
+        funny.maxRetract();
     }
 
     public void goToPreCollectSpecimen() { //
         bar.goToSpecimenCollect();
-        funny.halfExtend();
+        funny.retract();
         claw.open();
     }
 
     public void goToCollectSpecimen(){ //gen cand se retrage glisiera ca sa prinda specmenu de pe perete
         bar.goToSpecimenCollect();
         funny.retract();
-        claw.close();
     }
 
     public void retractFunny() {
