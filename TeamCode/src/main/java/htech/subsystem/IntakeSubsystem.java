@@ -3,6 +3,7 @@ package htech.subsystem;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import htech.mechanism.intake.BreakBeam;
 import htech.mechanism.intake.ColorSensor;
 import htech.mechanism.intake.IntakeBar;
 import htech.mechanism.intake.IntakeClaw;
@@ -15,8 +16,8 @@ public class IntakeSubsystem {
     public final IntakeRotation rotation;
     public final IntakeBar bar;
     public final IntakeJoint joint;
-    //public final BreakBeam breakBeam;
-    public final ColorSensor colorSensor;
+    public final BreakBeam breakBeam;
+//    public final ColorSensor colorSensor;
 
     boolean fastCollect = false;
 
@@ -36,8 +37,7 @@ public class IntakeSubsystem {
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         // MECHANISM //
-        //breakBeam = new BreakBeam(hardwareMap);
-        colorSensor = new ColorSensor(hardwareMap);
+        breakBeam = new BreakBeam(hardwareMap);
         claw = new IntakeClaw(hardwareMap);
         rotation = new IntakeRotation(hardwareMap);
         bar = new IntakeBar(hardwareMap);
@@ -86,6 +86,12 @@ public class IntakeSubsystem {
         claw.open();
         //if(intakeState != intakeState.COLLECTING)
         intakeState = intakeState.DOWN;
+    }
+
+    public void goToMoving(){
+        bar.goToMoving();
+        joint.goToMoving();
+        claw.close();
     }
 
     public void goToWall() {

@@ -15,10 +15,11 @@ public abstract class PositionsOuttake {
     // OUTTAKE BAR
     public static double specimenBar = 0.65;
     public static double transferBar = 0.64;
-    public static double sampleBar = 0.25;
+    public static double sampleBar = 0.16;
     public static double specimenCollectBar = 0.08;
     public static double afterTransferBar = 0.5;
     public static double specimenPrescoreBar = 0.78;
+    public static double parkBar = 0.82;
 
     // OUTTAKE FUNNY
     public static double extendedFunny = 0.53;

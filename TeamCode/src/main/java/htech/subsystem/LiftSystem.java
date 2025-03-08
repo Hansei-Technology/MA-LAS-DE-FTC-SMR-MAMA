@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import htech.classes.PIDController;
 import htech.config.Motors;
+import htech.config.PositionsIntake;
 import htech.config.PositionsLift;
 
 //2 motor lift system with PID
@@ -124,10 +125,17 @@ public class LiftSystem {
     }
 
     public boolean isAtPosition() {
-        return Math.abs(currentPos - target_position) < 18;
+        return Math.abs(target_position - currentPos) < 18;
     }
 
     public void update() {
+
+        if(currentPos > PositionsLift.highChamber) {
+            pidController.p = PositionsLift.kP2;
+        } else {
+            pidController.p = PositionsLift.kP;
+        }
+
         if(PIDON) {
             currentPos = -right.getCurrentPosition();
             double power = pidController.update(currentPos);

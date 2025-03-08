@@ -42,9 +42,8 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     Path preload;
     PathChain collectSamples, failSafe1, failSafe;
     Path score1, score2, score3, score4;
-    Path wall;
+    PathChain wall;
     Path park;
-    Path checkpoint, wall1;
     Path collectSampleBasket, goToBasket;
 
 
@@ -94,7 +93,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     public static double sample3X = -48, sample3Y = 52, sample3H = 180;
     public static double human3X = -3.5, human3Y = 51.5;
 
-    public static double checkpointX = -23, checkpointY = 30, checkpointH = 180;
+    public static double checkpointX = -23, checkpointY = 21, checkpointH = 180;
 
     public static double score1X = -31.5, score1Y = -2, scoreH = 180;
     public static double score2X = -31.5, score2Y = -4;
@@ -102,7 +101,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
     public static double score4X = -31.5, score4Y = -8;
     public static double safeScoreX = -14, safeScoreY = -7;
 
-    public static double specimenX = -3.5, specimenY = 30, specimenH = 180;
+    public static double specimenX = -3.5, specimenY = 27.5, specimenH = 180;
     public static double safe1SpecimenX = -15, safe1SpecimenY = -5;
     public static double safe2SpecimenX = -15, safe2SpecimenY = 30;
 
@@ -145,7 +144,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(new Pose(startX, startY, Math.toRadians(startH)));
 
-        intakeSubsystem.goToWall();
+        intakeSubsystem.goToMoving();
         outtakeSubsystem.init();
         outtakeSubsystem.claw.close();
         extendo.pidEnabled = true;
@@ -212,21 +211,24 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(sample3H))
                 .build();
 
-        checkpoint = new Path(
-                new BezierLine(
-                        new Point(human3X, human3Y, Point.CARTESIAN),
-                        new Point(checkpointX, checkpointY, Point.CARTESIAN)
-                )
-        );
-        checkpoint.setConstantHeadingInterpolation(Math.toRadians(checkpointH));
 
-        wall1 = new Path(
-                new BezierLine(
-                        new Point(checkpointX, checkpointY, Point.CARTESIAN),
-                        new Point(specimenX, specimenY, Point.CARTESIAN)
+        wall = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(preloadX, preloadY, Point.CARTESIAN),
+                                new Point(checkpointX, checkpointY, Point.CARTESIAN)
+                        )
                 )
-        );
-        wall1.setConstantHeadingInterpolation(Math.toRadians(180));
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(
+                        new BezierLine(
+                                new Point(checkpointX, checkpointY, Point.CARTESIAN),
+                                new Point(specimenX, specimenY, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
+
 
 
         score1 = new Path(
@@ -265,16 +267,6 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
         );
         score4.setConstantHeadingInterpolation(Math.toRadians(scoreH));
 
-        wall = new Path(
-                new BezierCurve(
-                        new Point(preloadX, preloadY, Point.CARTESIAN),
-                        new Point(safe1SpecimenX, safe1SpecimenY, Point.CARTESIAN),
-                        new Point(safe2SpecimenX, safe2SpecimenY, Point.CARTESIAN),
-                        new Point(specimenX, specimenY, Point.CARTESIAN)
-                )
-        );
-        wall.setConstantHeadingInterpolation(Math.toRadians(specimenH));
-        wall.setPathEndTimeoutConstraint(255);
 
         failSafe1 = follower.pathBuilder()
                 .addPath(
@@ -407,7 +399,6 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                         if(follower.getCurrentTValue() > 0.1){
                             lift.goToGround();
                             outtakeSubsystem.goToTransfer();
-                            extendo.goToPos(380);
                             parking = false;
                         }
                     }
@@ -434,7 +425,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                     outtakeSubsystem.funny.maxRetract();
                     outtakeSubsystem.bar.goToSpecimenCollect();
                     outtakeSubsystem.claw.open();
-                    intakeSubsystem.goToWall();
+                    intakeSubsystem.goToMoving();
                     CS = STATES.MOVING;
                     NS = STATES.COLLECTING_SPECIMEN;
                     SCORING_CS = SCORING_STATES.SCORE1;

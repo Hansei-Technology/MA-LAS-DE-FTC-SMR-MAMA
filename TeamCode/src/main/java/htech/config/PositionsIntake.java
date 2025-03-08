@@ -5,8 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class PositionsIntake {
     // INTAKE CLAW //
-    public static double closedClaw = 0.302;
-    public static double closedClawSliding = 0.315;
+    public static double closedClaw = 0.295;
+    public static double closedClawSliding = 0.295;
     public static double openedClaw = 0.45;
 
     // INTAKE ROTATION //
@@ -30,9 +30,11 @@ public abstract class PositionsIntake {
     public static double transferPositionBar = 0.68; // maybe change this
     public static double readyPositionBar = 0.725;
     public static double collectPositionBar = 0.41; // collect position = lower than ground
-    public static double offsetBar = 0; //difference between the two bars
+    public static double offsetBar = 0;
+    public static double movingBar = 0.73;
 
     // INTAKE JOINT //
+    public static double movingJoint = 0.55;
     public static double groundPositionJoint = 0.24;
     public static double wallPickupPositionJoint = 0.44;
     public static double prepTransferPositionJoint = 0.68;

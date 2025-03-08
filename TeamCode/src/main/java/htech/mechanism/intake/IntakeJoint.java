@@ -45,7 +45,10 @@ public class IntakeJoint {
         currentPosition = PositionsIntake.transferPositionJointSample;
     }
 
-
+    public void goToMoving(){
+        jointServo.setPosition(PositionsIntake.movingJoint);
+        currentPosition = PositionsIntake.movingJoint;
+    }
 
     public void goToCollect() {
         jointServo.setPosition(PositionsIntake.collectPositionJoint);

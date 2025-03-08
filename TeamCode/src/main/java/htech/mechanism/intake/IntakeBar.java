@@ -19,6 +19,12 @@ public class IntakeBar {
 //        currentPosition = PositionsIntake.transferPositionBar;
     }
 
+    public void goToMoving(){
+        barServo.setPosition(PositionsIntake.movingBar);
+        barServo2.setPosition(PositionsIntake.movingBar);
+        currentPosition = PositionsIntake.movingBar;
+    }
+
     public void goToGround() {
         barServo.setPosition(PositionsIntake.groundPositionBar + PositionsIntake.offsetBar);
         barServo2.setPosition(PositionsIntake.groundPositionBar);

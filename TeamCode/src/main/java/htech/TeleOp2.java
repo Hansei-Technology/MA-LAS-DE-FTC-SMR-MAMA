@@ -164,6 +164,7 @@ public class TeleOp2 extends LinearOpMode {
             telemetry.addData("[STATUS]", "Main Teleop is running.");
             telemetry.addData("Match Time", matchTimer.seconds());
             telemetry.addData("Lift", lift.currentPos);
+            telemetry.addData("lift is at POS", lift.isAtPosition());
             telemetry.addData("Extendo", extendo.currentPos);
             telemetry.addData("Intake", intakeSubsystem.intakeState);
             telemetry.addData("intakeTimer", robotSystems.timerCollect.milliseconds());
