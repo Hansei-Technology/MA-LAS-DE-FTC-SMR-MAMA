@@ -19,6 +19,7 @@ public abstract class PositionsIntake {
     public static double flippedNormalRotation = 0.642;
     public static double ticksPerDegree = 0.0031;
 
+    public static double rotation30deg2 = 0.095;
     public static double rotation30Deg = 0.095;
     public static double rotSpeed = 0.15;
     public static double rotationAuto = 0.77;

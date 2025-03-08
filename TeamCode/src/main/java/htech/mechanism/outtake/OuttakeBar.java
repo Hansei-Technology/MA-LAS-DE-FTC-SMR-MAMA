@@ -42,6 +42,14 @@ public class OuttakeBar {
         currentPositionRight = PositionsOuttake.parkBar;
     }
 
+    public void init(){
+        servoLeft.setPosition(PositionsOuttake.initBar);
+        servoRight.setPosition(PositionsOuttake.initBar);
+
+        currentPositionLeft = PositionsOuttake.initBar;
+        currentPositionRight = PositionsOuttake.initBar;
+    }
+
     public void goToSpecimenScore() {
         servoLeft.setPosition(PositionsOuttake.specimenBar);
         servoRight.setPosition(PositionsOuttake.specimenBar);

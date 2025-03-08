@@ -23,8 +23,8 @@ import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
 @Config
-@Autonomous(name = "[AUTO] 0 + 5", group = "HTECH")
-public class AutoBasket extends LinearOpMode {
+@Autonomous(name = "[AUTO] 0 + 4", group = "HTECH")
+public class AutoBasketSlab extends LinearOpMode {
 
     //Mechanisms
     IntakeSubsystem intakeSubsystem;
@@ -75,9 +75,9 @@ public class AutoBasket extends LinearOpMode {
 
     public static double scoreX = 127, scoreY = 22.4, scoreH = 125;
 
-    public static double sample1X = 122.6, sample1Y = 23.4, sample1H = 180;
+    public static double sample1X = 122.6, sample1Y = 23, sample1H = 180;
     public static double sample2X = 122, sample2Y = 15.6, sample2H = 180;
-    public static double sample3X = 119.8, sample3Y = 14.5, sample3H = 200;
+    public static double sample3X = 119.8, sample3Y = 15, sample3H = 200;
 
     public static double sampleHumanX = 135, sampleHumanY = 90, sampleHumanH = 90;
 
@@ -311,9 +311,6 @@ public class AutoBasket extends LinearOpMode {
                     CS = STATES.WAITING;
                     switch (SAMPLE_CS){
                         case PRELOAD:
-                            NS = STATES.SAMPLE_HUMAN;
-                            break;
-                        case SAMPLE_HUMAN:
                             NS = STATES.SAMPLE1;
                             break;
                         case SAMPLE1:

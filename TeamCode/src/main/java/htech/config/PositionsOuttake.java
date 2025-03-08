@@ -20,6 +20,7 @@ public abstract class PositionsOuttake {
     public static double afterTransferBar = 0.5;
     public static double specimenPrescoreBar = 0.78;
     public static double parkBar = 0.82;
+    public static double initBar = 0.5;
 
     // OUTTAKE FUNNY
     public static double extendedFunny = 0.53;

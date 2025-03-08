@@ -59,9 +59,7 @@ public class IntakeSubsystem {
     }
 
     public boolean hasElement() {
-        //return breakBeam.hasElement();
-        //return colorSensor.hasElement();
-        return true;
+        return breakBeam.hasElement();
     }
 
     public void initAuto() {
@@ -76,7 +74,7 @@ public class IntakeSubsystem {
         bar.goToGround();
         rotation.rotLevel = 0;
         rotation.goToFlipped();
-        claw.open();
+//        claw.open();
         if(intakeState != intakeState.COLLECTING) intakeState = intakeState.DOWN;
     }
 

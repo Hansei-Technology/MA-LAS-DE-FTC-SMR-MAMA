@@ -159,6 +159,9 @@ public class TeleOp2 extends LinearOpMode {
             }
 
 
+            if(stickyGamepad2.right_bumper){
+                intakeSubsystem.claw.open();
+            }
 
             //telemetry:
             telemetry.addData("[STATUS]", "Main Teleop is running.");
