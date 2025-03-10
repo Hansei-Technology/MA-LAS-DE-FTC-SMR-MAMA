@@ -479,10 +479,16 @@ public class AutoBengos extends LinearOpMode {
             telemetry.addData("CHASSIS OFFSET", preloadOffset);
             telemetry.update();
         }
-
-
-
+        
         waitForStart();
+
+        preload = new Path(
+                new BezierLine(
+                        new Point(startX, startY, Point.CARTESIAN),
+                        new Point(preloadX, preloadY, Point.CARTESIAN)
+                )
+        );
+        preload.setConstantHeadingInterpolation(Math.toRadians(preloadH));
 
         matchTimer.reset();
 
