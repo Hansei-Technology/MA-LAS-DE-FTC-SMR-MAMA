@@ -21,8 +21,8 @@ import htech.subsystem.OuttakeSubsystem;
 import htech.subsystem.RobotSystems;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-@TeleOp(name = "[TELEOP] 2", group = "HTech")
-public class TeleOp2 extends LinearOpMode {
+@TeleOp(name = "[TELEOP] 1", group = "HTech")
+public class TeleOp1 extends LinearOpMode {
     ChassisMovement chassisMovement;
     IntakeSubsystem intakeSubsystem;
     OuttakeSubsystem outtakeSubsystem;
@@ -33,11 +33,9 @@ public class TeleOp2 extends LinearOpMode {
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
     HangSystem hang;
-
-    boolean legal = false;
     boolean pedroDrive = false;
     boolean reverseDrive = false;
-//    ChassisFollower chassisFollower;
+    //    ChassisFollower chassisFollower;
     private VoltageSensor batteryVoltageSensor;
 
     @Override
@@ -67,12 +65,6 @@ public class TeleOp2 extends LinearOpMode {
         matchTimer.reset();
 
         while (opModeIsActive()) {
-
-            if(stickyGamepad2.left_stick_button){
-                legal = !legal;
-            }
-
-
             hang.setPower(gamepad2.right_stick_y);
 
 
@@ -122,20 +114,15 @@ public class TeleOp2 extends LinearOpMode {
                 intakeSubsystem.goToWall();
             }
             if(gamepad2.dpad_up && lift.isDown()) {
-                if(legal){
-                    extendo.goToPos(PositionsExtendo.maxLegal);
-                    intakeSubsystem.goDown();
-                }
-                else{
-                    extendo.goToMax();
-                }
+                extendo.goToPos(PositionsExtendo.maxLegal);
+                intakeSubsystem.goDown();
                 robotSystems.collectSpecimenState = RobotSystems.collectSpecimenStates.IDLE;
             }
 
             //lift
             if(gamepad2.b && !robotSystems.isTransfering()) {
-                lift.goToLowBasket();
-                outtakeSubsystem.goToSampleScore();
+                lift.goToHighChamber();
+                outtakeSubsystem.goToSpecimenScore();
             }
             if(gamepad2.y && !robotSystems.isTransfering()) {
                 lift.goToHighBasket();
@@ -148,6 +135,7 @@ public class TeleOp2 extends LinearOpMode {
             }
 
             if(gamepad2.right_bumper) outtakeSubsystem.claw.open();
+
 
             stickyGamepad2.update();
             stickyGamepad1.update();
@@ -188,12 +176,11 @@ public class TeleOp2 extends LinearOpMode {
             telemetry.addData("extendoPID", extendo.pidEnabled);
 //            telemetry.addData("outtakeRot", robotSystems.outtakeSubsystem.joint.getRot());
             telemetry.addData("intakeRot", intakeSubsystem.rotation.rotLevel);
-            telemetry.addData("SERVO AGATARE ACTIV", legal);
 
             double voltage = batteryVoltageSensor.getVoltage();
             telemetry.addData("Battery Voltage", voltage);
 
-           // telemetry.addData("BreakBeam", intakeSubsystem.breakBeam.hasElement());
+            // telemetry.addData("BreakBeam", intakeSubsystem.breakBeam.hasElement());
 
             telemetry.update();
         }

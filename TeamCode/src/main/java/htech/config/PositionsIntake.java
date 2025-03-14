@@ -51,9 +51,9 @@ public abstract class PositionsIntake {
     public static double limeLightPositionBar = 0.6;
 
     public static float colorSensorGain = 2;
-    public static float thresholdRed = 0.02f;
-    public static float thresholdGreen = 0.02f;
-    public static float thresholdBlue = 0.02f;
+    public static float thresholdRed = 0.016f;
+    public static float thresholdGreen = 0.03f;
+    public static float thresholdBlue = 0.025f;
 
 
     public static double specialTranferBar = 0.9;

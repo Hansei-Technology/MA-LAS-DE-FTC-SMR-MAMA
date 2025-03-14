@@ -87,6 +87,12 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
+    public void goToLowBasket() {
+        PIDON = true;
+        target_position = PositionsLift.lowBasket;
+        pidController.targetValue = target_position;
+    }
+
     public boolean isDown() {
         return currentPos < PositionsLift.ground + 25 && target_position == PositionsLift.ground;
     }

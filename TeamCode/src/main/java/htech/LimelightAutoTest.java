@@ -11,8 +11,11 @@ import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import htech.config.PositionsIntake;
@@ -25,8 +28,8 @@ import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
 @Config
-@Autonomous(name = "[AUTO] 6 + 0", group = "HTECH")
-public class AutoBengos extends LinearOpMode {
+@TeleOp
+public class LimelightAutoTest extends LinearOpMode {
 
     //Mechanisms
     IntakeSubsystem intakeSubsystem;
@@ -36,6 +39,9 @@ public class AutoBengos extends LinearOpMode {
     RobotSystems robotSystems;
     ElapsedTime timer;
     ElapsedTime matchTimer;
+    Limelight3A ll;
+    double llpython[];
+    LLResult llResult;
 
 
     //Pedro
@@ -48,6 +54,8 @@ public class AutoBengos extends LinearOpMode {
     Path collectSampleBasket, goToBasket;
     Path dropSampleFromSub;
     PathChain collectSamples2;
+    Path goToSampleLL;
+    Path pula;
 
 
     //States
@@ -61,12 +69,13 @@ public class AutoBengos extends LinearOpMode {
         PARKED,
         MOVING, WAITING, TRANSFER,
         CHECK_SPECIMEN, FAIL_SAFE,
+        LL_COLLECTING, LL_MOVING, LL_GOING_DOWN, LL_CHECK,
         CHECKPOINT, WALL1,
         COLLECTING_SAMPLE,
         COLLECTING_SAMPLE1,
         COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
         SCORE_BASKET, SCORE_BASKET2, SCORE_BASKET3,
-        DROPPING_SAMPLE
+        DROPPING_SAMPLE, DROPPING_SAMPLE2, PULA, MUIE
     }
     public enum SCORING_STATES{
         IDLE,
@@ -118,12 +127,19 @@ public class AutoBengos extends LinearOpMode {
     public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 35;
     public static double basketX = -5, basketY = -56, basketH = 115;
 
+    public static double safeDropX = -24, safeDropY = -30;
+
+    public static int pipelineNumber = 5;
+
+    public static double safePulaX = 0, safePulaY = -40;
+
     //Booleans
     boolean basket = false;
     boolean parking = false;
     boolean firstTime = true;
     boolean collectedFromSub = false;
     boolean sub = false;
+
 
 
     //Timers
@@ -133,10 +149,15 @@ public class AutoBengos extends LinearOpMode {
     public static double timeToCollectSample = 200;
     public double timeToWait = 0;
     public static double timeToDropSample = 100;
+    public static double timeToCheck = 100;
+
+
 
 
     //Speed
     public static double speed = 1;
+
+    public static double pulaX = -10, pulaY = 4, pulaH = 180;
 
     //Claw rotations
     public static double normal = PositionsIntake.normalRotation;
@@ -150,9 +171,15 @@ public class AutoBengos extends LinearOpMode {
     public static String diagonalLeftString = "Diagonal Left";
     public static String perpendicularString = "Perpendicular";
 
+    public static double offsetll = -4.4;
 
     public static int extendoPos = 0;
     public static double preloadOffset = 0;
+
+    boolean isReading = false;
+    boolean retractIntake = false;
+
+    double rotDegrees = 0;
 
 
     @Override
@@ -166,15 +193,24 @@ public class AutoBengos extends LinearOpMode {
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         timer = new ElapsedTime();
         matchTimer = new ElapsedTime();
+        ll = hardwareMap.get(Limelight3A.class, "limelight");
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(new Pose(startX, startY, Math.toRadians(startH)));
 
-        intakeSubsystem.goToMoving();
+        intakeSubsystem.goToWall();
         outtakeSubsystem.init();
         outtakeSubsystem.claw.close();
         extendo.pidEnabled = true;
+
+        pula = new Path(
+                new BezierLine(
+                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(pulaX, pulaY, Point.CARTESIAN)
+                )
+        );
+        pula.setConstantHeadingInterpolation(Math.toRadians(pulaH));
 
         preload = new Path(
                 new BezierLine(
@@ -187,7 +223,7 @@ public class AutoBengos extends LinearOpMode {
         collectSamples = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(preloadX, preloadY, Point.CARTESIAN),
+                                new Point(pulaX, pulaY, Point.CARTESIAN),
                                 new Point(safe1Sample1X, safe1Sample1Y, Point.CARTESIAN),
                                 new Point(safe2Sample1X, safe2Sample1Y, Point.CARTESIAN),
                                 new Point(safe3Sample1X, safe3Sample1Y, Point.CARTESIAN),
@@ -242,7 +278,7 @@ public class AutoBengos extends LinearOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(sampleDropX, sampleDropY, Point.CARTESIAN),
-                                new Point(safe2Sample1X, safe2Sample1Y, Point.CARTESIAN),
+                                new Point(safePulaX, safePulaY, Point.CARTESIAN),
                                 new Point(safe3Sample1X, safe3Sample1Y, Point.CARTESIAN),
                                 new Point(sample1X, sample1Y, Point.CARTESIAN)
                         )
@@ -403,6 +439,8 @@ public class AutoBengos extends LinearOpMode {
         );
         park.setLinearHeadingInterpolation(Math.toRadians(basketH), Math.toRadians(parkH));
 
+
+
         collectSampleBasket = new Path(
                 new BezierCurve(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
@@ -421,400 +459,97 @@ public class AutoBengos extends LinearOpMode {
         goToBasket.setLinearHeadingInterpolation(Math.toRadians(sampleBasketH), Math.toRadians(basketH));
 
         dropSampleFromSub = new Path(
-                new BezierLine(
-                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                new BezierCurve(
+                        new Point(pulaX, pulaY, Point.CARTESIAN),
+                        new Point(safeDropX, safeDropY, Point.CARTESIAN),
                         new Point(sampleDropX, sampleDropY, Point.CARTESIAN)
                 )
         );
         dropSampleFromSub.setLinearHeadingInterpolation(Math.toRadians(preloadH), Math.toRadians(sampleDropH));
 
-        follower.setMaxPower(speed);
-        follower.followPath(preload);
+        follower.setMaxPower(0.5);
 
-        while(opModeInInit()){
-            if(gamepad1.right_bumper){
-                preloadY += 2;
-                preloadOffset += 2;
-            }
+        while(opModeInInit()) {
+            rotDegrees += (gamepad1.right_trigger - gamepad1.left_trigger) * 0.01;
+            if(rotDegrees > 90) rotDegrees = 90;
+            if(rotDegrees < -90) rotDegrees = -90;
 
-            if(gamepad1.left_bumper){
-                preloadY -= 2;
-                preloadOffset -= 2;
-            }
+            ll.start();
+            ll.pipelineSwitch(pipelineNumber);
 
-            if(gamepad1.dpad_up){
-                diagonalRight = false;
-                diagonalLeft = false;
-                rotPos = normal;
-                rotationString = normalString;
-            }
-
-            if(gamepad1.dpad_right){
-                diagonalRight = true;
-                diagonalLeft = false;
-                rotationString = diagonalRightString;
-            }
-
-            if(gamepad1.dpad_left){
-                diagonalLeft = true;
-                diagonalRight = false;
-                rotationString = diagonalLeftString;
-            }
-
-            if(gamepad1.dpad_down){
-                diagonalRight = false;
-                diagonalLeft = false;
-                rotPos = perpendicular;
-                rotationString = perpendicularString;
-            }
-
-            if(gamepad1.a){
-                if(extendoPos != 0){
-                    extendoPos -= 50;
-                }
-            }
-
-            if(gamepad1.y){
-                if(extendoPos != 400){
-                    extendoPos += 50;
-                }
-            }
-
-            telemetry.addData("EXTENDO POSITION", extendoPos);
-            telemetry.addData("ROTATION", rotationString);
-            telemetry.addData("CHASSIS OFFSET", preloadOffset);
+            telemetry.addData("rotDegrees", rotDegrees);
             telemetry.update();
         }
 
-
-
-        waitForStart();
-
         matchTimer.reset();
 
-        while(opModeIsActive() && matchTimer.seconds() < matchTime){
+        while(opModeIsActive()){
+
+            double llMultiX = 0.4;
+            double llMultiY = 2.4;
+            double llNormalY = 223;
 
             switch (CS){
 
                 case IDLE:
-                    intakeSubsystem.goToWall();
-                    intakeSubsystem.claw.open();
-                    if(diagonalRight){
-                        intakeSubsystem.rotation.rotateToAngle(30);
-                    }
-                    else if(diagonalLeft){
-                        intakeSubsystem.rotation.rotateToAngle(-30);
-                    }
-                    else{
-                        intakeSubsystem.rotation.goToPos(rotPos);
-                    }
-                    extendo.goToPos(extendoPos);
-                    sub = true;
-                    CS = STATES.SPECIMEN;
-                    break;
-
-                case SPECIMEN:
-                    if(robotSystems.transferState == RobotSystems.TransferStates.IDLE || robotSystems.transferState == RobotSystems.TransferStates.GOING_TO_AFTER_TRANSFER) {
-
-                        lift.goToHighChamber();
-                        outtakeSubsystem.goToSpecimenPrescore();
-                        outtakeSubsystem.funny.extend();
-
-                        CS = STATES.MOVING;
-                        NS = STATES.SCORING_SPECIMEN;
-                        firstTime = true;
-                    }
-                    break;
-
-                case SCORING_SPECIMEN:
-                    if(firstTime) {
-                        robotSystems.scoreSpecimen();
-                        firstTime = false;
-                    }
-
-                    timer.reset();
-                    if(robotSystems.scoreSpecimenState == RobotSystems.scoreSpecimenStates.IDLE){
-                        if(sub){
-                            CS = STATES.COLLECTING_SAMPLE2;
-                        }
-                        else {
-                            switch (SCORING_CS) {
-                                case IDLE:
-                                    CS = STATES.COLLECTING_SAMPLES;
-                                    break;
-                                case SCORE1:
-                                    CS = STATES.WALL;
-                                    break;
-                                case SCORE2:
-                                    CS = STATES.WALL;
-                                    break;
-                                case SCORE3:
-                                    CS = STATES.WALL;
-                                    break;
-                                case SCORE4:
-                                    if(collectedFromSub){
-                                        CS = STATES.WALL;
-                                    }
-                                    else{
-                                        CS = STATES.COLLECTING_SAMPLE;
-                                    }
-                                    break;
-                                case SCORE5:
-                                    CS = STATES.PARKED;
-                                    break;
-                            }
-                        }
-                    }
+                    llResult = ll.getLatestResult();
+                    llpython = llResult.getPythonOutput();
+                    CS = STATES.LL_MOVING;
                     break;
 
                 case MOVING:
-                    if(basket){
-                        if(robotSystems.transferState == RobotSystems.TransferStates.IDLE){
-                            lift.goToHighBasket();
-                            basket = false;
-                        }
-                    }
-                    if(parking){
-                        if(follower.getCurrentTValue() > 0.1){
-                            lift.goToGround();
-                            outtakeSubsystem.goToTransfer();
-                            parking = false;
-                        }
-                    }
                     if(!follower.isBusy()){
                         CS = NS;
                         timer.reset();
-                        firstTime = true;
-
                     }
                     break;
 
-                case WAITING:
-                    if(timer.milliseconds() > timeToWait){
-                        CS = NS;
-                        timer.reset();
-                        firstTime = true;
+                case LL_MOVING:
+                    goToSampleLL = new Path(
+                            new BezierLine(
+                                    new Point(follower.getPose().getX(), follower.getPose().getY(), Point.CARTESIAN),
+                                    new Point(follower.getPose().getX(), follower.getPose().getY() + (-llpython[1] * llMultiX) + offsetll )
+                            )
+                    );
+                    goToSampleLL.setConstantHeadingInterpolation(Math.toRadians(preloadH));
+                    goToSampleLL.setPathEndTimeoutConstraint(300);
+                    if(llpython[0] == 1){
+//                        follower.followPath(goToSampleLL, true);
+                        extendo.goToPos((int) (llNormalY + llpython[2] * llMultiY));
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.rotation.rotateToAngle((int)rotDegrees);
+                        CS = STATES.MOVING;
+                        NS = STATES.LL_COLLECTING;
                     }
                     break;
 
-                case COLLECTING_SAMPLES:
-                    timer.reset();
-                    if(collectedFromSub){
-                        follower.followPath(collectSamples2);
-                        extendo.goToGround();
-                    }
-                    else{
-                        follower.followPath(collectSamples);
-                    }
-                    lift.goToGround();
-                    outtakeSubsystem.funny.maxRetract();
-                    outtakeSubsystem.bar.goToSpecimenCollect();
-                    outtakeSubsystem.claw.open();
-                    intakeSubsystem.goToMoving();
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
-                    SCORING_CS = SCORING_STATES.SCORE1;
-                    break;
-
-//                case CHECKPOINT:
-//                    follower.followPath(checkpoint);
-//                    CS = STATES.MOVING;
-//                    NS = STATES.WALL1;
-//                    break;
-//
-//                case WALL1:
-//                    follower.followPath(wall1);
-//                    CS = STATES.MOVING;
-//                    NS = STATES.COLLECTING_SPECIMEN;
-//                    break;
-
-                case COLLECTING_SPECIMEN:
-                    outtakeSubsystem.claw.close();
-                    timer.reset();
-                    timeToWait = timeToCollect;
-                    CS = STATES.WAITING;
-                    NS = STATES.SCORE;
-                    break;
-
-//                case CHECK_SPECIMEN:
-//                    if(timer.milliseconds() > timeToCheck) {
-//                        if(intakeSubsystem.hasElement()){
-//                            CS = STATES.TRANSFER;
-//                            robotSystems.transfer();
-//                        }
-//                        else{
-//                            intakeSubsystem.claw.open();
-//                            timer.reset();
-//                            timeToWait = 100;
-//                            CS = STATES.WAITING;
-//                            NS = STATES.FAIL_SAFE;
-//                        }
-//                    }
-//
-//                    break;
-//
-//                case FAIL_SAFE:
-//                    if(SCORING_CS == SCORING_STATES.SCORE1){
-//                        follower.followPath(failSafe1);
-//                        CS = STATES.MOVING;
-//                        NS = STATES.COLLECTING_SPECIMEN;
-//                    }
-//                    else{
-//                        follower.followPath(failSafe);
-//                        CS = STATES.MOVING;
-//                        NS = STATES.COLLECTING_SPECIMEN;
-//                    }
-//                    break;
-
-                case SCORE:
-                    switch (SCORING_CS) {
-                        case SCORE1:
-                            follower.followPath(score1);
-                            break;
-                        case SCORE2:
-                            follower.followPath(score2);
-                            break;
-                        case SCORE3:
-                            follower.followPath(score3);
-                            break;
-                        case SCORE4:
-                            follower.followPath(score4);
-                            break;
-                        case SCORE5:
-                            follower.followPath(score5);
-                            break;
-                    }
-                    CS = STATES.SPECIMEN;
-                    break;
-
-                case WALL:
-                    follower.followPath(wall);
-                    outtakeSubsystem.funny.maxRetract();
-                    outtakeSubsystem.bar.goToSpecimenCollect();
-                    outtakeSubsystem.claw.open();
-                    lift.goToGround();
-                    switch (SCORING_CS) {
-                        case SCORE1:
-                            SCORING_CS = SCORING_STATES.SCORE2;
-                            break;
-                        case SCORE2:
-                            SCORING_CS = SCORING_STATES.SCORE3;
-                            break;
-                        case SCORE3:
-                            SCORING_CS = SCORING_STATES.SCORE4;
-                            break;
-                        case SCORE4:
-                            SCORING_CS = SCORING_STATES.SCORE5;
-                            break;
-                    }
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SPECIMEN;
-                    break;
-
-                case COLLECTING_SAMPLE:
-                    follower.followPath(collectSampleBasket);
-                    intakeSubsystem.goDown();
-                    intakeSubsystem.claw.open();
-                    lift.goToGround();
-                    outtakeSubsystem.goToTransfer();
-                    CS = STATES.MOVING;
-                    NS = STATES.COLLECTING_SAMPLE1;
-                    break;
-
-                case COLLECTING_SAMPLE1:
-                    extendo.goToPos(380);
-                    if(extendo.isAtPosition()) {
+                case LL_COLLECTING:
+                    if(!follower.isBusy() && extendo.isAtPosition() && timer.milliseconds() > 300){
+                        intakeSubsystem.bar.goToCollect();
                         timeToWait = timeToCollectSample;
                         CS = STATES.WAITING;
-                        NS = STATES.COLLECTING_SAMPLE2;
-                        timer.reset();
-                    }
-                    break;
-                case COLLECTING_SAMPLE2:
-                    intakeSubsystem.bar.goToCollect();
-                    if(timer.milliseconds() > timeToGoDownSample){
-                        intakeSubsystem.claw.close();
-                        CS = STATES.WAITING;
-                        NS = STATES.COLLECTING_SAMPLE3;
-                        timeToWait = timeToCollect;
+                        NS = STATES.LL_GOING_DOWN;
                         timer.reset();
                     }
                     break;
 
-                case COLLECTING_SAMPLE3:
-                    if(sub){
-                        if(intakeSubsystem.hasElement()){
-                            extendo.goToGround();
-                            intakeSubsystem.goToWall();
-                            collectedFromSub = true;
-                            if(extendo.isAtPosition()){
-                                follower.followPath(dropSampleFromSub);
-                                CS = STATES.MOVING;
-                                NS = STATES.DROPPING_SAMPLE;
-                            }
-                        }
-                        else{
-                            extendo.goToGround();
-                            intakeSubsystem.goToMoving();
-                            if(extendo.isAtPosition()){
-                                follower.followPath(collectSamples);
-                                CS = STATES.MOVING;
-                                NS = STATES.COLLECTING_SPECIMEN;
-                            }
-                        }
-                        sub = false;
-                    }
-                    else{
-                        robotSystems.transfer();
-                        CS = STATES.SCORE_BASKET;
-                    }
-                    break;
-
-                case DROPPING_SAMPLE:
-                    extendo.goToPos(380);
-                    intakeSubsystem.goDown();
-                    if(extendo.isAtPosition()){
-                        intakeSubsystem.claw.open();
-                        CS = STATES.WAITING;
-                        NS = STATES.COLLECTING_SAMPLES;
-                        timeToWait = timeToDropSample;
-                        timer.reset();
-                    }
-                    break;
-
-                case SCORE_BASKET:
-                    follower.followPath(goToBasket);
-                    CS = STATES.MOVING;
-                    NS = STATES.SCORE_BASKET2;
-                    basket = true;
-                    break;
-
-                case SCORE_BASKET2:
-                    outtakeSubsystem.goToSampleScore();
-                    CS = STATES.SCORE_BASKET3;
+                case LL_GOING_DOWN:
+                    intakeSubsystem.claw.close();
+                    CS = STATES.WAITING;
+                    NS = STATES.LL_CHECK;
+                    timeToWait = timeToCollect;
                     timer.reset();
                     break;
 
-                case SCORE_BASKET3:
-                    if(timer.milliseconds() > 100){
-                        outtakeSubsystem.claw.open();
-                        CS = STATES.PARK;
-                        timer.reset();
+                case LL_CHECK:
+                    intakeSubsystem.goToWall();
+                    if(timer.milliseconds() > 200){
+                        intakeSubsystem.claw.open();
+                        CS = STATES.LL_MOVING;
                     }
                     break;
 
-                case PARK:
-                    if(timer.milliseconds() > 100){
-                        outtakeSubsystem.goToTransfer();
-                    }
-                    follower.followPath(park);
-                    parking = true;
-                    CS = STATES.MOVING;
-                    NS = STATES.PARKED;
-                    break;
 
-                case PARKED:
-                    break;
             }
 
             follower.update();
@@ -822,6 +557,9 @@ public class AutoBengos extends LinearOpMode {
             telemetry.addData("STATE", CS);
             telemetry.addData("TIMER", timer.milliseconds());
             telemetry.addData("MATCH TIMER", matchTimer.seconds());
+            telemetry.addData("has sample", llpython[0]);
+            telemetry.addData("x", llpython[1]);
+            telemetry.addData("y", llpython[2]);
             telemetry.update();
 
         }

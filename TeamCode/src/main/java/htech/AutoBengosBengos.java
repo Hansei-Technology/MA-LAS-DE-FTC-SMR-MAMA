@@ -11,6 +11,8 @@ import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,8 +27,8 @@ import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
 @Config
-@Autonomous(name = "[AUTO] 6 + 0", group = "HTECH")
-public class AutoBengos extends LinearOpMode {
+@Autonomous(name = "[AUTO] 6 + 0 LL", group = "HTECH")
+public class AutoBengosBengos extends LinearOpMode {
 
     //Mechanisms
     IntakeSubsystem intakeSubsystem;
@@ -36,6 +38,9 @@ public class AutoBengos extends LinearOpMode {
     RobotSystems robotSystems;
     ElapsedTime timer;
     ElapsedTime matchTimer;
+    Limelight3A ll;
+    double llpython[];
+    LLResult llResult;
 
 
     //Pedro
@@ -48,6 +53,8 @@ public class AutoBengos extends LinearOpMode {
     Path collectSampleBasket, goToBasket;
     Path dropSampleFromSub;
     PathChain collectSamples2;
+    Path goToSampleLL;
+    Path pula;
 
 
     //States
@@ -61,12 +68,13 @@ public class AutoBengos extends LinearOpMode {
         PARKED,
         MOVING, WAITING, TRANSFER,
         CHECK_SPECIMEN, FAIL_SAFE,
+        LL_COLLECTING, LL_MOVING, LL_GOING_DOWN, LL_CHECK,
         CHECKPOINT, WALL1,
         COLLECTING_SAMPLE,
         COLLECTING_SAMPLE1,
         COLLECTING_SAMPLE2, COLLECTING_SAMPLE3,
         SCORE_BASKET, SCORE_BASKET2, SCORE_BASKET3,
-        DROPPING_SAMPLE
+        DROPPING_SAMPLE, DROPPING_SAMPLE2, PULA, MUIE
     }
     public enum SCORING_STATES{
         IDLE,
@@ -118,12 +126,19 @@ public class AutoBengos extends LinearOpMode {
     public static double sampleBasketX = -24, sampleBasketY = 20, sampleBasketH = 35;
     public static double basketX = -5, basketY = -56, basketH = 115;
 
+    public static double safeDropX = -24, safeDropY = -30;
+
+    public static int pipelineNumber = 5;
+
+    public static double safePulaX = 0, safePulaY = -40;
+
     //Booleans
     boolean basket = false;
     boolean parking = false;
     boolean firstTime = true;
     boolean collectedFromSub = false;
     boolean sub = false;
+
 
 
     //Timers
@@ -133,10 +148,17 @@ public class AutoBengos extends LinearOpMode {
     public static double timeToCollectSample = 200;
     public double timeToWait = 0;
     public static double timeToDropSample = 100;
+    public static double timeToCheck = 100;
+
+    public static double llMultiX = 0.015;
+    public static double llMultiY = 2.8;
+    public static double llNormalY = 190;
 
 
     //Speed
     public static double speed = 1;
+
+    public static double pulaX = -10, pulaY = 4, pulaH = 180;
 
     //Claw rotations
     public static double normal = PositionsIntake.normalRotation;
@@ -154,6 +176,11 @@ public class AutoBengos extends LinearOpMode {
     public static int extendoPos = 0;
     public static double preloadOffset = 0;
 
+    boolean isReading = false;
+    boolean retractIntake = false;
+
+    double rotDegrees = 0;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -166,6 +193,7 @@ public class AutoBengos extends LinearOpMode {
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         timer = new ElapsedTime();
         matchTimer = new ElapsedTime();
+        ll = hardwareMap.get(Limelight3A.class, "limelight");
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
@@ -175,6 +203,14 @@ public class AutoBengos extends LinearOpMode {
         outtakeSubsystem.init();
         outtakeSubsystem.claw.close();
         extendo.pidEnabled = true;
+
+        pula = new Path(
+                new BezierLine(
+                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                        new Point(pulaX, pulaY, Point.CARTESIAN)
+                )
+        );
+        pula.setConstantHeadingInterpolation(Math.toRadians(pulaH));
 
         preload = new Path(
                 new BezierLine(
@@ -187,7 +223,7 @@ public class AutoBengos extends LinearOpMode {
         collectSamples = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(preloadX, preloadY, Point.CARTESIAN),
+                                new Point(pulaX, pulaY, Point.CARTESIAN),
                                 new Point(safe1Sample1X, safe1Sample1Y, Point.CARTESIAN),
                                 new Point(safe2Sample1X, safe2Sample1Y, Point.CARTESIAN),
                                 new Point(safe3Sample1X, safe3Sample1Y, Point.CARTESIAN),
@@ -242,7 +278,7 @@ public class AutoBengos extends LinearOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(sampleDropX, sampleDropY, Point.CARTESIAN),
-                                new Point(safe2Sample1X, safe2Sample1Y, Point.CARTESIAN),
+                                new Point(safePulaX, safePulaY, Point.CARTESIAN),
                                 new Point(safe3Sample1X, safe3Sample1Y, Point.CARTESIAN),
                                 new Point(sample1X, sample1Y, Point.CARTESIAN)
                         )
@@ -403,6 +439,8 @@ public class AutoBengos extends LinearOpMode {
         );
         park.setLinearHeadingInterpolation(Math.toRadians(basketH), Math.toRadians(parkH));
 
+
+
         collectSampleBasket = new Path(
                 new BezierCurve(
                         new Point(preloadX, preloadY, Point.CARTESIAN),
@@ -421,8 +459,9 @@ public class AutoBengos extends LinearOpMode {
         goToBasket.setLinearHeadingInterpolation(Math.toRadians(sampleBasketH), Math.toRadians(basketH));
 
         dropSampleFromSub = new Path(
-                new BezierLine(
-                        new Point(preloadX, preloadY, Point.CARTESIAN),
+                new BezierCurve(
+                        new Point(pulaX, pulaY, Point.CARTESIAN),
+                        new Point(safeDropX, safeDropY, Point.CARTESIAN),
                         new Point(sampleDropX, sampleDropY, Point.CARTESIAN)
                 )
         );
@@ -431,83 +470,32 @@ public class AutoBengos extends LinearOpMode {
         follower.setMaxPower(speed);
         follower.followPath(preload);
 
-        while(opModeInInit()){
-            if(gamepad1.right_bumper){
-                preloadY += 2;
-                preloadOffset += 2;
-            }
+        while(opModeInInit()) {
+            rotDegrees += (gamepad1.right_trigger - gamepad1.left_trigger) * 0.01;
+            if(rotDegrees > 90) rotDegrees = 90;
+            if(rotDegrees < -90) rotDegrees = -90;
 
-            if(gamepad1.left_bumper){
-                preloadY -= 2;
-                preloadOffset -= 2;
-            }
+            ll.start();
+            ll.pipelineSwitch(pipelineNumber);
 
-            if(gamepad1.dpad_up){
-                diagonalRight = false;
-                diagonalLeft = false;
-                rotPos = normal;
-                rotationString = normalString;
-            }
-
-            if(gamepad1.dpad_right){
-                diagonalRight = true;
-                diagonalLeft = false;
-                rotationString = diagonalRightString;
-            }
-
-            if(gamepad1.dpad_left){
-                diagonalLeft = true;
-                diagonalRight = false;
-                rotationString = diagonalLeftString;
-            }
-
-            if(gamepad1.dpad_down){
-                diagonalRight = false;
-                diagonalLeft = false;
-                rotPos = perpendicular;
-                rotationString = perpendicularString;
-            }
-
-            if(gamepad1.a){
-                if(extendoPos != 0){
-                    extendoPos -= 50;
-                }
-            }
-
-            if(gamepad1.y){
-                if(extendoPos != 400){
-                    extendoPos += 50;
-                }
-            }
-
-            telemetry.addData("EXTENDO POSITION", extendoPos);
-            telemetry.addData("ROTATION", rotationString);
-            telemetry.addData("CHASSIS OFFSET", preloadOffset);
+            telemetry.addData("rotDegrees", rotDegrees);
             telemetry.update();
         }
-
-
-
-        waitForStart();
 
         matchTimer.reset();
 
         while(opModeIsActive() && matchTimer.seconds() < matchTime){
+
+
+            llResult = ll.getLatestResult();
+            llpython = llResult.getPythonOutput();
 
             switch (CS){
 
                 case IDLE:
                     intakeSubsystem.goToWall();
                     intakeSubsystem.claw.open();
-                    if(diagonalRight){
-                        intakeSubsystem.rotation.rotateToAngle(30);
-                    }
-                    else if(diagonalLeft){
-                        intakeSubsystem.rotation.rotateToAngle(-30);
-                    }
-                    else{
-                        intakeSubsystem.rotation.goToPos(rotPos);
-                    }
+
                     extendo.goToPos(extendoPos);
                     sub = true;
                     CS = STATES.SPECIMEN;
@@ -530,12 +518,13 @@ public class AutoBengos extends LinearOpMode {
                     if(firstTime) {
                         robotSystems.scoreSpecimen();
                         firstTime = false;
+                        isReading = true;
                     }
 
                     timer.reset();
                     if(robotSystems.scoreSpecimenState == RobotSystems.scoreSpecimenStates.IDLE){
                         if(sub){
-                            CS = STATES.COLLECTING_SAMPLE2;
+                            CS = STATES.LL_MOVING;
                         }
                         else {
                             switch (SCORING_CS) {
@@ -565,6 +554,100 @@ public class AutoBengos extends LinearOpMode {
                             }
                         }
                     }
+                    break;
+
+                case LL_MOVING:
+
+                    goToSampleLL = new Path(
+                            new BezierLine(
+                                    new Point(preloadX, preloadY, Point.CARTESIAN),
+                                    new Point(preloadX, preloadY + llpython[1] * llMultiX)
+                            )
+                    );
+                    goToSampleLL.setConstantHeadingInterpolation(Math.toRadians(preloadH));
+                    goToSampleLL.setPathEndTimeoutConstraint(300);
+                    if(llpython[0] == 1){
+                        follower.followPath(goToSampleLL, true);
+                        extendo.goToPos((int) (llNormalY - llpython[2] * llMultiY));
+                        intakeSubsystem.goDown();
+                        intakeSubsystem.rotation.rotateToAngle((int)rotDegrees);
+                        CS = STATES.MOVING;
+                        NS = STATES.LL_COLLECTING;
+                    }
+                    break;
+
+                case LL_COLLECTING:
+                    if(!follower.isBusy() && extendo.isAtPosition()){
+                        intakeSubsystem.bar.goToCollect();
+                        timeToWait = timeToCollectSample;
+                        CS = STATES.WAITING;
+                        NS = STATES.LL_GOING_DOWN;
+                        timer.reset();
+                    }
+                    break;
+
+                case LL_GOING_DOWN:
+                    intakeSubsystem.claw.close();
+                    CS = STATES.WAITING;
+                    NS = STATES.LL_CHECK;
+                    timeToWait = timeToCollect;
+                    timer.reset();
+                    break;
+
+                case LL_CHECK:
+                    follower.followPath(pula);
+                    CS = STATES.MOVING;
+                    NS = STATES.MUIE;
+                    break;
+
+                case MUIE:
+                    extendo.goToGround();
+                    intakeSubsystem.goToMoving();
+                    if(extendo.isAtPosition()){
+                        CS = STATES.PULA;
+                        timer.reset();
+                    }
+                    break;
+
+                case PULA:
+                    sub = false;
+                    if(timer.milliseconds() > timeToCheck){
+                        if(intakeSubsystem.hasElement()){
+                            collectedFromSub = true;
+                            follower.followPath(dropSampleFromSub);
+                            CS = STATES.MOVING;
+                            NS = STATES.DROPPING_SAMPLE;
+                        }
+                        else{
+                            follower.followPath(collectSamples);
+                            CS = STATES.MOVING;
+                            NS = STATES.COLLECTING_SPECIMEN;
+                            SCORING_CS = SCORING_STATES.SCORE1;
+                        }
+                    }
+                    break;
+
+                case DROPPING_SAMPLE:
+                    extendo.goToPos(400);
+                    intakeSubsystem.goDown();
+                    if(extendo.isAtPosition()){
+                        intakeSubsystem.claw.open();
+                        CS = STATES.WAITING;
+                        NS = STATES.DROPPING_SAMPLE2;
+                        timeToWait = timeToCollect;
+                        timer.reset();
+                    }
+                    break;
+
+                case DROPPING_SAMPLE2:
+                    follower.followPath(collectSamples2);
+                    extendo.goToGround();
+                    intakeSubsystem.goToWall();
+                    outtakeSubsystem.claw.open();
+                    outtakeSubsystem.funny.maxRetract();
+                    SCORING_CS = SCORING_STATES.SCORE1;
+                    CS = STATES.MOVING;
+                    NS = STATES.COLLECTING_SPECIMEN;
                     break;
 
                 case MOVING:
@@ -599,13 +682,7 @@ public class AutoBengos extends LinearOpMode {
 
                 case COLLECTING_SAMPLES:
                     timer.reset();
-                    if(collectedFromSub){
-                        follower.followPath(collectSamples2);
-                        extendo.goToGround();
-                    }
-                    else{
-                        follower.followPath(collectSamples);
-                    }
+                    follower.followPath(collectSamples);
                     lift.goToGround();
                     outtakeSubsystem.funny.maxRetract();
                     outtakeSubsystem.bar.goToSpecimenCollect();
@@ -742,45 +819,10 @@ public class AutoBengos extends LinearOpMode {
                     break;
 
                 case COLLECTING_SAMPLE3:
-                    if(sub){
-                        if(intakeSubsystem.hasElement()){
-                            extendo.goToGround();
-                            intakeSubsystem.goToWall();
-                            collectedFromSub = true;
-                            if(extendo.isAtPosition()){
-                                follower.followPath(dropSampleFromSub);
-                                CS = STATES.MOVING;
-                                NS = STATES.DROPPING_SAMPLE;
-                            }
-                        }
-                        else{
-                            extendo.goToGround();
-                            intakeSubsystem.goToMoving();
-                            if(extendo.isAtPosition()){
-                                follower.followPath(collectSamples);
-                                CS = STATES.MOVING;
-                                NS = STATES.COLLECTING_SPECIMEN;
-                            }
-                        }
-                        sub = false;
-                    }
-                    else{
-                        robotSystems.transfer();
-                        CS = STATES.SCORE_BASKET;
-                    }
+                    robotSystems.transfer();
+                    CS = STATES.SCORE_BASKET;
                     break;
 
-                case DROPPING_SAMPLE:
-                    extendo.goToPos(380);
-                    intakeSubsystem.goDown();
-                    if(extendo.isAtPosition()){
-                        intakeSubsystem.claw.open();
-                        CS = STATES.WAITING;
-                        NS = STATES.COLLECTING_SAMPLES;
-                        timeToWait = timeToDropSample;
-                        timer.reset();
-                    }
-                    break;
 
                 case SCORE_BASKET:
                     follower.followPath(goToBasket);
@@ -817,11 +859,17 @@ public class AutoBengos extends LinearOpMode {
                     break;
             }
 
+            llResult = ll.getLatestResult();
+            llpython = llResult.getPythonOutput();
+
             follower.update();
             robotSystems.update();
             telemetry.addData("STATE", CS);
             telemetry.addData("TIMER", timer.milliseconds());
             telemetry.addData("MATCH TIMER", matchTimer.seconds());
+            telemetry.addData("has sample", llpython[0]);
+            telemetry.addData("x", llpython[1]);
+            telemetry.addData("y", llpython[2]);
             telemetry.update();
 
         }

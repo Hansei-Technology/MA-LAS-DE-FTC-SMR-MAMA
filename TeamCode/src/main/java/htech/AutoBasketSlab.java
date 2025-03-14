@@ -74,12 +74,13 @@ public class AutoBasketSlab extends LinearOpMode {
     public static double startX = 137, startY = 36, startH = 90;
 
     public static double scoreX = 127, scoreY = 22.4, scoreH = 125;
+    public static double scoreHumanX = 133, scoreHumanY = 22.3, scoreHumanH = 125;
 
-    public static double sample1X = 122.6, sample1Y = 23, sample1H = 180;
+    public static double sample1X = 122.6, sample1Y = 23.4, sample1H = 180;
     public static double sample2X = 122, sample2Y = 15.6, sample2H = 180;
-    public static double sample3X = 119.8, sample3Y = 15, sample3H = 200;
+    public static double sample3X = 119.8, sample3Y = 13.5, sample3H = 200;
 
-    public static double sampleHumanX = 135, sampleHumanY = 90, sampleHumanH = 90;
+    public static double sampleHumanX = 135, sampleHumanY = 92, sampleHumanH = 90;
 
     public static double parkX = 85.4, parkY = 51, parkH = 90;
     public static double parkSafeX = 84, parkSafeY = 27;
@@ -187,10 +188,10 @@ public class AutoBasketSlab extends LinearOpMode {
         scoreSampleHuman = new Path(
                 new BezierLine(
                         new Point(sampleHumanX, sampleHumanY, Point.CARTESIAN),
-                        new Point(scoreX, scoreY, Point.CARTESIAN)
+                        new Point(scoreHumanX, scoreHumanY, Point.CARTESIAN)
                 )
         );
-        scoreSampleHuman.setLinearHeadingInterpolation(Math.toRadians(sampleHumanH), Math.toRadians(scoreH));
+        scoreSampleHuman.setLinearHeadingInterpolation(Math.toRadians(sampleHumanH), Math.toRadians(scoreHumanH));
 
         score1 = new Path(
                 new BezierLine(

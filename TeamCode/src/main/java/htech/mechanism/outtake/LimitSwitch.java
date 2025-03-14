@@ -14,6 +14,6 @@ public class LimitSwitch {
     }
 
     public boolean isPressed() {
-        return sensor.getState();
+        return !sensor.getState();
     }
 }
