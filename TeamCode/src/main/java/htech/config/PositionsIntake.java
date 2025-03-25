@@ -5,9 +5,9 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public abstract class PositionsIntake {
     // INTAKE CLAW //
-    public static double closedClaw = 0.295;
+    public static double closedClaw = 0.5;
     public static double closedClawSliding = 0.295;
-    public static double openedClaw = 0.45;
+    public static double openedClaw = 0.7;
 
     // INTAKE ROTATION //
 //    public static double normalRotation = 0.275;
@@ -15,7 +15,7 @@ public abstract class PositionsIntake {
 //    public static double flippedNormalRotation = 0.84;
 
     public static double normalRotation = 0.083;
-    public static double perpendicularRotation = 0.3;
+    public static double perpendicularRotation = 0.34;
     public static double flippedNormalRotation = 0.642;
     public static double ticksPerDegree = 0.0031;
 

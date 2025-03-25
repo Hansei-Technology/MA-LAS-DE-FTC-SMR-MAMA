@@ -66,14 +66,20 @@ public class TeleOp2 extends LinearOpMode {
 
         matchTimer.reset();
 
+
+
         while (opModeIsActive()) {
 
-            if(stickyGamepad2.left_stick_button){
+            if(stickyGamepad1.left_stick_button){
+                robotSystems.noColor = !robotSystems.noColor;
+            }
+
+            if(stickyGamepad2.left_stick_button) {
                 legal = !legal;
             }
 
 
-            hang.setPower(gamepad2.right_stick_y);
+            hang.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
 
             chassisMovement.updateMovementSlowRotation(gamepad1);
@@ -189,7 +195,7 @@ public class TeleOp2 extends LinearOpMode {
 //            telemetry.addData("outtakeRot", robotSystems.outtakeSubsystem.joint.getRot());
             telemetry.addData("intakeRot", intakeSubsystem.rotation.rotLevel);
             telemetry.addData("SERVO AGATARE ACTIV", legal);
-
+            telemetry.addData("NO COLOR", !robotSystems.noColor);
             double voltage = batteryVoltageSensor.getVoltage();
             telemetry.addData("Battery Voltage", voltage);
 

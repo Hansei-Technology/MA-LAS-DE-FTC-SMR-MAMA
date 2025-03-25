@@ -3,6 +3,7 @@ package htech.subsystem;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import htech.mechanism.outtake.LimitSwitch;
 import htech.mechanism.outtake.OuttakeBar;
 import htech.mechanism.outtake.OuttakeClaw;
 import htech.mechanism.outtake.OuttakeFunny;
@@ -12,7 +13,7 @@ public class OuttakeSubsystem {
     public final OuttakeClaw claw;
     public final OuttakeBar bar;
     public final OuttakeFunny funny;
-    //public final LimitSwitch limitSwitch;
+    public final LimitSwitch limitSwitch;
 
     public enum outtakeStates {
         SPECIMEN,
@@ -24,6 +25,7 @@ public class OuttakeSubsystem {
 
     public OuttakeSubsystem(HardwareMap hardwareMap) {
         // MECHANISM //
+        limitSwitch = new LimitSwitch(hardwareMap);
         claw = new OuttakeClaw(hardwareMap);
         bar = new OuttakeBar(hardwareMap);
         funny = new OuttakeFunny(hardwareMap);
@@ -75,6 +77,10 @@ public class OuttakeSubsystem {
     public void goToCollectSpecimen(){ //gen cand se retrage glisiera ca sa prinda specmenu de pe perete
         bar.goToSpecimenCollect();
         funny.retract();
+    }
+
+    public boolean hasElement(){
+        return limitSwitch.isPressed();
     }
 
     public void retractFunny() {

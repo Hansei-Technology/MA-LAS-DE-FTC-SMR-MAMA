@@ -16,7 +16,10 @@ public class RobotSystems {
     public ElapsedTime timerScore;
     public ElapsedTime timerTransfer;
 
+
     public boolean transferFirstTime = true;
+    public boolean noColor = false;
+    public boolean isUnderLowChamber = false;
 
     public boolean autoSample = false;
     public boolean fastCollect = false;
@@ -120,8 +123,12 @@ public class RobotSystems {
                 if(transferFirstTime) {
                     intakeSubsystem.goToTransfer();
                     transferFirstTime = false;
+                    extendoSystem.setPower(-0.5);
+                    extendoSystem.pidEnabled = false;
                 }
                 if(timerTransfer.milliseconds() > RobotSettings.moving_intake) {
+                    extendoSystem.reset();
+                    extendoSystem.pidEnabled = true;
                     transferState = TransferStates.OUTTAKE_CLAW_CLOSING;
                     timerTransfer.reset();
                     transferFirstTime = true;
@@ -249,8 +256,9 @@ public class RobotSystems {
     public void updateCollect() {
         switch (intakeSubsystem.intakeState) {
             case COLLECT_GOING_DOWN:
-                if(!intakeSubsystem.claw.isOpen) {
+                if(timer.milliseconds() > RobotSettings.timeToGoDown) {
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
+                    intakeSubsystem.claw.close();
                     timer.reset();
 
                 }
@@ -264,12 +272,13 @@ public class RobotSystems {
                 break;
             case COLECT_GOING_UP:
                 if(timer.milliseconds() > RobotSettings.intake_move_collect) {
-                    if(intakeSubsystem.hasElement()) {
-                        intakeSubsystem.goToWall();
-                        extendoSystem.goToPos(PositionsExtendo.beforeTransfer);
-                    } else {
+                    if(intakeSubsystem.hasElement()){
+                        transfer();
+                    }
+                    else{
                         intakeSubsystem.goDownWithoutResetRotation();
                     }
+
                 }
         }
     }

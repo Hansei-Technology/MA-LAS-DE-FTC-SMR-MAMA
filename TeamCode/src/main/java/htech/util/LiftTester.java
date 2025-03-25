@@ -4,13 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import htech.config.PositionsLift;
 import htech.subsystem.LiftSystem;
 
 @Config
 @TeleOp(name = "[UTIL] LiftTester", group = "HTech")
 public class LiftTester extends LinearOpMode {
     LiftSystem lift;
-    public static double kp = 0.05, ki = 0.0, kd = 0.0;
+    public static double kp = PositionsLift.kP, ki = PositionsLift.kI, kd = PositionsLift.kD;
 
     @Override
     public void runOpMode() throws InterruptedException {

@@ -59,7 +59,7 @@ public class IntakeSubsystem {
     }
 
     public boolean hasElement() {
-        return colorSensor.hasElement();
+        return true;
     }
 
     public void initAuto() {
@@ -74,7 +74,7 @@ public class IntakeSubsystem {
         bar.goToGround();
         rotation.rotLevel = 0;
         rotation.goToFlipped();
-//        claw.open();
+        claw.open();
         if(intakeState != intakeState.COLLECTING) intakeState = intakeState.DOWN;
     }
 
@@ -141,6 +141,10 @@ public class IntakeSubsystem {
         bar.goToSpecialTransfer();
         rotation.goToNormal();
         intakeState = intakeState.TRANSFER;
+    }
+
+    public boolean hasYellow(){
+        return colorSensor.biggestColor == ColorSensor.Colors.GREEN;
     }
 }
 

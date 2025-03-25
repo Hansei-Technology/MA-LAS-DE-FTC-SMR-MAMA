@@ -69,4 +69,11 @@ public class ChassisMovement {
         leftRearMotor.setPower((-g.left_stick_y - g.left_stick_x + g.right_stick_x * 0.75) * speed);
         rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * 0.75) * speed);
     }
+
+    public void updateMovement(Gamepad g){
+        leftFrontMotor.setPower((-g.left_stick_y + g.left_stick_x + g.right_stick_x * RobotSettings.slowRotationSpeed) * speed);
+        rightFrontMotor.setPower((-g.left_stick_y - g.left_stick_x - g.right_stick_x * RobotSettings.slowRotationSpeed) * speed);
+        leftRearMotor.setPower((-g.left_stick_y - g.left_stick_x + g.right_stick_x * RobotSettings.slowRotationSpeed) * speed);
+        rightRearMotor.setPower((-g.left_stick_y + g.left_stick_x - g.right_stick_x * RobotSettings.slowRotationSpeed) * speed);
+    }
 }
