@@ -94,7 +94,7 @@ public class LiftSystem {
     }
 
     public boolean isDown() {
-        return currentPos < PositionsLift.ground + 25 && target_position == PositionsLift.ground;
+        return currentPos < PositionsLift.ground + 40 && target_position == PositionsLift.ground;
     }
 
     public void goToPark() {

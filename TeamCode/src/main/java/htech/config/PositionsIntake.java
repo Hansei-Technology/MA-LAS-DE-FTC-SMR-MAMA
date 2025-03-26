@@ -21,7 +21,7 @@ public abstract class PositionsIntake {
 
     public static double rotation30deg2 = 0.095;
     public static double rotation30Deg = 0.095;
-    public static double rotSpeed = 0.15;
+    public static double rotSpeed = 0.18;
     public static double rotationAuto = 0.77;
 
     // INTAKE BAR //

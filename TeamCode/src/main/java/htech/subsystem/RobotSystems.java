@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import htech.config.PositionsExtendo;
+import htech.config.PositionsLift;
 import htech.config.RobotSettings;
 
 public class RobotSystems {
@@ -20,9 +21,9 @@ public class RobotSystems {
     public boolean transferFirstTime = true;
     public boolean noColor = false;
     public boolean isUnderLowChamber = false;
+    public boolean fastCollect = false;
 
     public boolean autoSample = false;
-    public boolean fastCollect = false;
     public boolean caca = false;
 
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
@@ -93,6 +94,9 @@ public class RobotSystems {
 
     public void updateTransfer() {
         switch (transferState) {
+            case IDLE: {
+                break;
+            }
             case LIFT_GOING_DOWN:
                 if(transferFirstTime) {
                     liftSystem.goToGround();
@@ -102,7 +106,7 @@ public class RobotSystems {
                     intakeSubsystem.rotation.goToNormal();
                     transferFirstTime = false;
                 }
-                if(liftSystem.isDown() && timerTransfer.milliseconds() > RobotSettings.outtake_going_to_transfer && extendoSystem.currentPos < 100) {
+                if(/*liftSystem.isDown()*/ timerTransfer.milliseconds() > RobotSettings.outtake_going_to_transfer && extendoSystem.currentPos < 100) {
                     if(intakeSubsystem.rotation.rotLevel > 3) {
                         transferState = TransferStates.WAITING_FOR_INTAKE_ROTATION;
                     } else {
@@ -159,7 +163,7 @@ public class RobotSystems {
                 break;
             case GOING_TO_AFTER_TRANSFER:
                 if(transferFirstTime) {
-                    outtakeSubsystem.goToAfterTransfer();
+                    if(liftSystem.target_position != PositionsLift.highBasket) outtakeSubsystem.goToAfterTransfer();
                     intakeSubsystem.goToWall();
                     transferFirstTime = false;
                 }
@@ -273,7 +277,13 @@ public class RobotSystems {
             case COLECT_GOING_UP:
                 if(timer.milliseconds() > RobotSettings.intake_move_collect) {
                     if(intakeSubsystem.hasElement()){
-                        transfer();
+                        if(fastCollect){
+                            transfer();
+                        }
+                        else{
+                            intakeSubsystem.goToWall();
+                            extendoSystem.goToGround();
+                        }
                     }
                     else{
                         intakeSubsystem.goDownWithoutResetRotation();
@@ -282,6 +292,8 @@ public class RobotSystems {
                 }
         }
     }
+
+
 
     public void scoreSpecimen(){
         scoreSpecimenState = scoreSpecimenStates.GO_TO_SCORE;
