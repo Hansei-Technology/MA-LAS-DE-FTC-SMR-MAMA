@@ -65,7 +65,7 @@ public class TeleOp2 extends LinearOpMode {
         outtakeSubsystem.init();
 
         matchTimer.reset();
-
+        robotSystems.matchTimer.reset();
 
 
         while (opModeIsActive()) {
@@ -86,7 +86,7 @@ public class TeleOp2 extends LinearOpMode {
 
             //intake
             if(stickyGamepad1.right_bumper) {
-                if(lift.target_position == PositionsLift.highBasket)
+                if(lift.target_position == PositionsLift.highBasket || lift.target_position == PositionsLift.highBasket2)
                     outtakeSubsystem.claw.open();
                 else if(lift.target_position == PositionsLift.highChamber) {
                     robotSystems.scoreSpecimen();
@@ -100,9 +100,9 @@ public class TeleOp2 extends LinearOpMode {
             if(stickyGamepad1.x){
                 robotSystems.transfer();//for specimen
             }
-            if(stickyGamepad2.x) {
-                robotSystems.transfer(); //for sample
-            }
+//            if(stickyGamepad2.x) {
+//                robotSystems.transfer(); //for sample
+//            }
 
             if(gamepad1.a) {
                 robotSystems.collectSpecimen();
@@ -144,7 +144,9 @@ public class TeleOp2 extends LinearOpMode {
                 outtakeSubsystem.goToSampleScore();
             }
             if(gamepad2.y && !robotSystems.isTransfering()) {
-                lift.goToHighBasket();
+                if(robotSystems.matchTimer.seconds() > 80) lift.goToHighBasket2();
+                else lift.goToHighBasket();
+
                 outtakeSubsystem.goToSampleScore();
             }
             if(gamepad2.a) {

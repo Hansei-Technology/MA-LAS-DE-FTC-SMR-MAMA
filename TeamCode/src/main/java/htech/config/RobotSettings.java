@@ -36,7 +36,7 @@ public abstract class RobotSettings {
     public static double limeLightXMultiplyer = 1;
 
     //specimen score timers
-    public static int outtake_score = 400;
+    public static int outtake_score = 170;
 
 
 

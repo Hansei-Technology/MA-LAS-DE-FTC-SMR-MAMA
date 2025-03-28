@@ -16,6 +16,7 @@ public class RobotSystems {
     public ElapsedTime timerCollect;
     public ElapsedTime timerScore;
     public ElapsedTime timerTransfer;
+    public ElapsedTime matchTimer;
 
 
     public boolean transferFirstTime = true;
@@ -35,6 +36,7 @@ public class RobotSystems {
         timerCollect = new ElapsedTime();
         timerScore = new ElapsedTime();
         timerTransfer = new ElapsedTime();
+        matchTimer = new ElapsedTime();
     }
 
     public void update() {
@@ -163,7 +165,10 @@ public class RobotSystems {
                 break;
             case GOING_TO_AFTER_TRANSFER:
                 if(transferFirstTime) {
-                    if(liftSystem.target_position != PositionsLift.highBasket) outtakeSubsystem.goToAfterTransfer();
+                    if(matchTimer.seconds() > 80) liftSystem.goToHighBasket2();
+                    else liftSystem.goToHighBasket();
+
+                    outtakeSubsystem.goToSampleScore();
                     intakeSubsystem.goToWall();
                     transferFirstTime = false;
                 }
@@ -260,9 +265,8 @@ public class RobotSystems {
     public void updateCollect() {
         switch (intakeSubsystem.intakeState) {
             case COLLECT_GOING_DOWN:
-                if(timer.milliseconds() > RobotSettings.timeToGoDown) {
+                if(!intakeSubsystem.claw.isOpen) {
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
-                    intakeSubsystem.claw.close();
                     timer.reset();
 
                 }

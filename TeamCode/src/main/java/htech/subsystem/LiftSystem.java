@@ -87,6 +87,12 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
+    public void goToHighBasket2() {
+        PIDON = true;
+        target_position = PositionsLift.highBasket2;
+        pidController.targetValue = target_position;
+    }
+
     public void goToLowBasket() {
         PIDON = true;
         target_position = PositionsLift.lowBasket;

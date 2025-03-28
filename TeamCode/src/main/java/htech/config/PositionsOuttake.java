@@ -25,8 +25,8 @@ public abstract class PositionsOuttake {
 
     // OUTTAKE FUNNY
     public static double extendedFunny = 0.53;
-    public static double maxRetractFunny = 0.28;
-    public static double retractedFunny = 0.34;
-    public static double halfExtendedFunny = 0.48;
-    public static double transferFunny = 0.30;
+    public static double maxRetractFunny = 0.33;
+    public static double retractedFunny = 0.4;
+    public static double halfExtendedFunny = 0.5;
+    public static double transferFunny = 0.34;
 }

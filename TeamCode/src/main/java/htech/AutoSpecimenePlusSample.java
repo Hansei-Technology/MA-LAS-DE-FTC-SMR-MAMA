@@ -87,7 +87,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
     public static double safeSample2X = -48, safeSample2Y = 30;
     public static double sample2X = -47, sample2Y = 45, sample2H = 180;
-    public static double human2X = -24.5, human2Y = 45, human2H = 180;
+    public static double human2X = -23, human2Y = 45, human2H = 180;
 
     public static double safeSample3X = -34, safeSample3Y = 34;
     public static double sample3X = -48, sample3Y = 51, sample3H = 180;
@@ -118,7 +118,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
     //Timers
     public static double timeToCollect = 100;
-    public static double matchTime = 30;
+    public static double matchTime = 30.6;
     public static double timeToGoDownSample = 200;
     public static double timeToCollectSample = 200;
     public double timeToWait = 0;
@@ -410,6 +410,16 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
                         firstTime = true;
 
                     }
+
+
+                    if(NS == STATES.COLLECTING_SPECIMEN && SCORING_CS != SCORING_STATES.SCORE1 && follower.getCurrentTValue() > 0.85) {
+                        lift.PIDON = false;
+                        lift.setPower(-0.7);
+                    } else if(NS == STATES.COLLECTING_SPECIMEN && SCORING_CS == SCORING_STATES.SCORE1 && timer.seconds() > 8) {
+                        lift.PIDON = false;
+                        lift.setPower(-0.7);
+                    }
+
                     break;
 
                 case WAITING:
@@ -447,6 +457,7 @@ public class AutoSpecimenePlusSample extends LinearOpMode {
 
                 case COLLECTING_SPECIMEN:
                     outtakeSubsystem.claw.close();
+                    lift.reset();
                     timer.reset();
                     timeToWait = timeToCollect;
                     CS = STATES.WAITING;
