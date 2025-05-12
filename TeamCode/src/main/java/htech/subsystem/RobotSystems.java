@@ -25,7 +25,6 @@ public class RobotSystems {
     public boolean fastCollect = false;
 
     public boolean autoSample = false;
-    public boolean caca = false;
 
     public RobotSystems(ExtendoSystem extendoSystem, LiftSystem liftSystem, IntakeSubsystem intakeSubsystem, OuttakeSubsystem outtakeSubsystem) {
         this.extendoSystem = extendoSystem;

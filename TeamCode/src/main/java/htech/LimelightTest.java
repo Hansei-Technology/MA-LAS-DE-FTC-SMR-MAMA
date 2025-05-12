@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @Config
 @TeleOp
-public class Pulapula extends LinearOpMode {
+public class LimelightTest extends LinearOpMode {
 
     Limelight3A ll;
     LLResult result;
