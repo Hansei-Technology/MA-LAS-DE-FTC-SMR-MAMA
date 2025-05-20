@@ -59,7 +59,7 @@ public class IntakeSubsystem {
     }
 
     public boolean hasElement() {
-        return breakBeam.hasElement();
+        return true;
     }
 
     public void initAuto() {

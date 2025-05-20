@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -38,8 +39,8 @@ public class LiftSystem {
         left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        right.setDirection(DcMotorEx.Direction.REVERSE);
-        left.setDirection(DcMotorEx.Direction.FORWARD);
+        right.setDirection(DcMotorEx.Direction.FORWARD);
+        left.setDirection(DcMotorEx.Direction.REVERSE);
 
         MotorConfigurationType leftConfigurationType = left.getMotorType().clone();
         leftConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -137,7 +138,7 @@ public class LiftSystem {
         }
 
         if(PIDON) {
-            currentPos = -right.getCurrentPosition();
+            currentPos = -left.getCurrentPosition();
             double power = pidController.update(currentPos);
             setPower(power);
         }

@@ -124,6 +124,6 @@ public class ExtendoSystem {
     }
 
     public boolean isAtPosition() {
-        return Math.abs(currentPos - target_position) < 10;
+        return Math.abs(currentPos - target_position) < 25;
     }
 }
