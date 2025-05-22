@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -16,7 +17,7 @@ import htech.config.PositionsLift;
 //2 motor lift system with PID
 public class LiftSystem {
     private final DcMotorEx left, right;
-//    private DcMotorEx encoder;
+    //    private DcMotorEx encoder;
     public int target_position = 0;
     public PIDController pidController;
     public int currentPos = 0;
@@ -38,8 +39,8 @@ public class LiftSystem {
         left.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         right.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        right.setDirection(DcMotorEx.Direction.REVERSE);
-        left.setDirection(DcMotorEx.Direction.FORWARD);
+        right.setDirection(DcMotorEx.Direction.FORWARD);
+        left.setDirection(DcMotorEx.Direction.REVERSE);
 
         MotorConfigurationType leftConfigurationType = left.getMotorType().clone();
         leftConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -87,20 +88,8 @@ public class LiftSystem {
         pidController.targetValue = target_position;
     }
 
-    public void goToHighBasket2() {
-        PIDON = true;
-        target_position = PositionsLift.highBasket2;
-        pidController.targetValue = target_position;
-    }
-
-    public void goToLowBasket() {
-        PIDON = true;
-        target_position = PositionsLift.lowBasket;
-        pidController.targetValue = target_position;
-    }
-
     public boolean isDown() {
-        return currentPos < PositionsLift.ground + 40 && target_position == PositionsLift.ground;
+        return currentPos < PositionsLift.ground + 25 && target_position == PositionsLift.ground;
     }
 
     public void goToPark() {
@@ -149,7 +138,7 @@ public class LiftSystem {
         }
 
         if(PIDON) {
-            currentPos = -right.getCurrentPosition();
+            currentPos = -left.getCurrentPosition();
             double power = pidController.update(currentPos);
             setPower(power);
         }

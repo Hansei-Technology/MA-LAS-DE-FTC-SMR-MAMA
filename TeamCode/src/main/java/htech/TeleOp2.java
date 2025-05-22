@@ -2,19 +2,15 @@ package htech;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.List;
 
 import htech.classes.StickyGamepad;
 import htech.config.PositionsExtendo;
 import htech.config.PositionsLift;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
-import htech.subsystem.HangSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
@@ -32,7 +28,6 @@ public class TeleOp2 extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
-    HangSystem hang;
 
     boolean legal = false;
     boolean pedroDrive = false;
@@ -43,7 +38,6 @@ public class TeleOp2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // SUBSYSTEMS //
-        hang = new HangSystem(hardwareMap);
         chassisMovement = new ChassisMovement(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
@@ -78,8 +72,6 @@ public class TeleOp2 extends LinearOpMode {
                 legal = !legal;
             }
 
-
-            hang.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
 
 
             chassisMovement.updateMovementSlowRotation(gamepad1);
@@ -140,12 +132,11 @@ public class TeleOp2 extends LinearOpMode {
 
             //lift
             if(gamepad2.b && !robotSystems.isTransfering()) {
-                lift.goToLowBasket();
+//                lift.goToLowBasket();
                 outtakeSubsystem.goToSampleScore();
             }
             if(gamepad2.y && !robotSystems.isTransfering()) {
-                if(robotSystems.matchTimer.seconds() > 80) lift.goToHighBasket2();
-                else lift.goToHighBasket();
+                lift.goToHighBasket();
 
                 outtakeSubsystem.goToSampleScore();
             }

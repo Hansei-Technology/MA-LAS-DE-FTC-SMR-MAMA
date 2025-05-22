@@ -11,7 +11,6 @@ import htech.config.PositionsExtendo;
 import htech.config.PositionsLift;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
-import htech.subsystem.HangSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
@@ -28,15 +27,14 @@ public class TeleOpSoloBabi extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
-    HangSystem hang;
 
     boolean firstTime = true;
+    public static boolean fastCollect = true;
     boolean hasElement = false;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        hang = new HangSystem(hardwareMap);
         chassisMovement = new ChassisMovement(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
@@ -46,6 +44,7 @@ public class TeleOpSoloBabi extends LinearOpMode {
         matchTimer = new ElapsedTime();
         robotSystems = new RobotSystems(extendo, lift, intakeSubsystem, outtakeSubsystem);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        robotSystems.fastCollect = fastCollect;
 
 
         StickyGamepad stickyGamepad1 = new StickyGamepad(gamepad1, this);

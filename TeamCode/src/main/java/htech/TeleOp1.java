@@ -2,19 +2,15 @@ package htech;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.List;
 
 import htech.classes.StickyGamepad;
 import htech.config.PositionsExtendo;
 import htech.config.PositionsLift;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
-import htech.subsystem.HangSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
@@ -32,7 +28,6 @@ public class TeleOp1 extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
-    HangSystem hang;
     boolean pedroDrive = false;
     boolean reverseDrive = false;
     //    ChassisFollower chassisFollower;
@@ -41,7 +36,6 @@ public class TeleOp1 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // SUBSYSTEMS //
-        hang = new HangSystem(hardwareMap);
         chassisMovement = new ChassisMovement(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);
@@ -65,8 +59,6 @@ public class TeleOp1 extends LinearOpMode {
         matchTimer.reset();
 
         while (opModeIsActive()) {
-            hang.setPower(gamepad2.right_stick_y);
-
 
             chassisMovement.updateMovementSlowRotation(gamepad1);
 

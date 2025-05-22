@@ -6,8 +6,8 @@ import com.acmerobotics.dashboard.config.Config;
 public abstract class PositionsIntake {
     // INTAKE CLAW //
     public static double closedClaw = 0.5;
-    public static double closedClawSliding = 0.295;
-    public static double openedClaw = 0.7;
+    public static double closedClawSliding = 0.61;
+    public static double openedClaw = 0.8;
 
     // INTAKE ROTATION //
 //    public static double normalRotation = 0.275;
@@ -15,20 +15,20 @@ public abstract class PositionsIntake {
 //    public static double flippedNormalRotation = 0.84;
 
     public static double normalRotation = 0.083;
-    public static double perpendicularRotation = 0.34;
+    public static double perpendicularRotation = 0.3;
     public static double flippedNormalRotation = 0.642;
     public static double ticksPerDegree = 0.0031;
 
     public static double rotation30deg2 = 0.095;
     public static double rotation30Deg = 0.095;
-    public static double rotSpeed = 0.18;
+    public static double rotSpeed = 0.15;
     public static double rotationAuto = 0.77;
 
     // INTAKE BAR //
-    public static double groundPositionBar = 0.48; // over the samples
+    public static double groundPositionBar = 0.51; // over the samples
     public static double collectSubPositionBar = 0.45;
     public static double wallPositionBar = 0.465;
-    public static double transferPositionBar = 0.68; // maybe change this
+    public static double transferPositionBar = 0.73; // maybe change this
     public static double readyPositionBar = 0.725;
     public static double collectPositionBar = 0.41; // collect position = lower than ground
     public static double offsetBar = 0;
@@ -51,9 +51,9 @@ public abstract class PositionsIntake {
     public static double limeLightPositionBar = 0.6;
 
     public static float colorSensorGain = 2;
-    public static float thresholdRed = 0.016f;
-    public static float thresholdGreen = 0.03f;
-    public static float thresholdBlue = 0.025f;
+    public static float thresholdRed = 0.02f;
+    public static float thresholdGreen = 0.02f;
+    public static float thresholdBlue = 0.02f;
 
 
     public static double specialTranferBar = 0.9;

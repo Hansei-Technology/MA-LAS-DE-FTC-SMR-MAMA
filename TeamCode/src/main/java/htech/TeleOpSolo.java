@@ -2,9 +2,6 @@ package htech;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,13 +11,10 @@ import htech.config.PositionsExtendo;
 import htech.config.PositionsLift;
 import htech.subsystem.ChassisMovement;
 import htech.subsystem.ExtendoSystem;
-import htech.subsystem.HangSystem;
 import htech.subsystem.IntakeSubsystem;
 import htech.subsystem.LiftSystem;
 import htech.subsystem.OuttakeSubsystem;
 import htech.subsystem.RobotSystems;
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
 
 @TeleOp
 public class TeleOpSolo extends LinearOpMode {
@@ -33,7 +27,6 @@ public class TeleOpSolo extends LinearOpMode {
     ElapsedTime timer;
     ElapsedTime matchTimer;
     RobotSystems robotSystems;
-    HangSystem hang;
 
     boolean firstTime = true;
     boolean hasElement = false;
@@ -41,7 +34,6 @@ public class TeleOpSolo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        hang = new HangSystem(hardwareMap);
         chassisMovement = new ChassisMovement(hardwareMap);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap);

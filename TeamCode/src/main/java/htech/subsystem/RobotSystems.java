@@ -164,8 +164,8 @@ public class RobotSystems {
                 break;
             case GOING_TO_AFTER_TRANSFER:
                 if(transferFirstTime) {
-                    if(matchTimer.seconds() > 80) liftSystem.goToHighBasket2();
-                    else liftSystem.goToHighBasket();
+//                    if(matchTimer.seconds() > 80) liftSystem.goToHighBasket();
+                    //liftSystem.goToHighBasket();
 
                     outtakeSubsystem.goToSampleScore();
                     intakeSubsystem.goToWall();
@@ -180,7 +180,7 @@ public class RobotSystems {
 
 
     public boolean isTransfering(){
-        return transferState != TransferStates.IDLE;
+        return transferState != TransferStates.IDLE && transferState != TransferStates.GOING_TO_AFTER_TRANSFER;
     }
 
     public void updateCollectSpecimen(){
@@ -264,8 +264,9 @@ public class RobotSystems {
     public void updateCollect() {
         switch (intakeSubsystem.intakeState) {
             case COLLECT_GOING_DOWN:
-                if(!intakeSubsystem.claw.isOpen) {
+                if(timer.milliseconds() > RobotSettings.intake_move_collect) {
                     intakeSubsystem.intakeState = IntakeSubsystem.IntakeState.COLLECTING;
+                    intakeSubsystem.claw.close();
                     timer.reset();
 
                 }
